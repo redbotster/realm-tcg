@@ -713,3 +713,18 @@ body.dragging-attack .champion-block.ai {
 }
 .card .card-inner { border: 1px solid rgba(201, 162, 78, 0.30); }
 .card .card-name { font-family: var(--font-display); color: #f3e4b0; letter-spacing: 0.5px; }
+
+/* ===== Field cards: creature name as a banner pinned to the bottom edge ===== */
+.field-slot .card .card-footer {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 4;
+  padding: 5px 6px 4px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.45) 70%, transparent);
+}
+.field-slot .card .card-name {
+  max-width: 78%;
+  font-size: 11px;
+}
