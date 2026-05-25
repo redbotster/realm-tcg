@@ -17,9 +17,10 @@
   --gold-dim: #8a6f34;  /* tarnished gold (borders) */
   --amber:    #e0a463;  /* warm torchlight */
 
-  /* Typography */
+  /* Typography — Cinzel for display/titles (the fantasy signature); Inter
+     for body so the dense, Inter-tuned arena layout stays intact. */
   --font-display: "Cinzel", "Trajan Pro", "Times New Roman", serif;
-  --font-body:    "EB Garamond", "Inter", Georgia, serif;
+  --font-body:    "Inter", system-ui, sans-serif;
 }
 
 * { box-sizing: border-box; }
@@ -60,7 +61,8 @@ h1, h2, h3,
 /* Landing hero — painted banner behind the title. */
 .menu-hero {
   position: relative;
-  margin: -6px -6px 20px;
+  margin: 0 0 20px;
+  max-width: 100%;
   padding: 54px 24px 38px;
   border-radius: 16px;
   text-align: center;
