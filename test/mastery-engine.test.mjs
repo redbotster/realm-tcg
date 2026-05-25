@@ -8,7 +8,7 @@ import { createGame } from "../client/js/game.js";
 
 function mkCard(id, cardAttack = 5) {
   return {
-    id, name: "Test" + id, types: ["normal"],
+    id, name: "Test" + id, types: ["martial"],
     energyCost: 1, cardHp: 8, cardAttack,
     raw: { hp: 80, attack: 60, defense: 30, sp_attack: 60, sp_defense: 30, speed: 30 },
     abilities: [],

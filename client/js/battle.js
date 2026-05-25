@@ -30,7 +30,7 @@ export function computeDamage(attacker, defender, opts = {}) {
   const abilityMult = ability?.damageMult ?? 1;
   const ignoreDefenseFromAbility =
     ability?.id === "special" &&
-    (attackerType === "flying" || attackerType === "ghost");
+    (attackerType === "sky" || attackerType === "spectral");
   const ignoreDefense = forceIgnore || ignoreDefenseFromAbility;
   const defenseTerm = ignoreDefense ? 0 : effectiveDefense(defender) / 2;
 
@@ -64,10 +64,10 @@ export function rollStatus(attacker, defender, rand = Math.random) {
     case "fire":
       if (rand() < 0.25) return { kind: "burn", turnsLeft: 2 };
       break;
-    case "electric":
+    case "storm":
       if (rand() < 0.25) return { kind: "paralyze", turnsLeft: 1 };
       break;
-    case "psychic":
+    case "mind":
       if (rand() < 0.2) return { kind: "sleep", turnsLeft: 1 };
       break;
   }

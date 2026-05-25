@@ -5,7 +5,7 @@ import assert from "node:assert/strict";
 import { MODIFIERS, rollModifier, applyModifier } from "../client/js/match-modifiers.js";
 import { createGame, playCard, attack, effectiveCost } from "../client/js/game.js";
 
-function deck(n, type = "normal", atk = 5, hp = 10) {
+function deck(n, type = "martial", atk = 5, hp = 10) {
   return Array.from({ length: n }, (_, i) => ({
     id: 1000 + i, name: "C" + (1000 + i), types: [type],
     energyCost: 2, cardHp: hp, cardAttack: atk,
@@ -91,14 +91,14 @@ test("Fast Start: +1 max energy + +1 current energy on both sides", () => {
 
 test("Glass Cannon: damage multiplied by 1.5x", () => {
   const s = createGame({
-    playerDeck: deck(30, "fire", 6, 10), aiDeck: deck(30, "normal", 1, 30),
+    playerDeck: deck(30, "fire", 6, 10), aiDeck: deck(30, "martial", 1, 30),
     firstPlayer: "player",
   });
   s.players.player.energy = 10;
   // Drop a card directly onto AI field for the attack.
   s.players.ai.field[0] = {
     instanceId: "i1",
-    card: deck(1, "normal", 1, 30)[0],
+    card: deck(1, "martial", 1, 30)[0],
     currentHp: 30, maxHp: 30,
     summoningSickness: false, attackedThisTurn: false, status: null,
   };
@@ -123,7 +123,7 @@ test("Type Storm (fire): fire attackers get +2 ATK, others unaffected", () => {
   const s = createGame({ playerDeck: deck(30, "fire", 5, 10), aiDeck: deck(30), firstPlayer: "player" });
   s.players.player.energy = 10;
   s.players.ai.field[0] = {
-    instanceId: "i1", card: deck(1, "normal", 1, 50)[0],
+    instanceId: "i1", card: deck(1, "martial", 1, 50)[0],
     currentHp: 50, maxHp: 50,
     summoningSickness: false, attackedThisTurn: false, status: null,
   };

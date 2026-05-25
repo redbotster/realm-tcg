@@ -7,7 +7,7 @@ import { signatureFor } from "../client/js/passives.js";
 
 function mkCard(overrides = {}) {
   return {
-    id: 1, name: "Test", types: ["normal"], tier: 1,
+    id: 1, name: "Test", types: ["martial"], tier: 1,
     energyCost: 1, cardHp: 5, cardAttack: 4,
     raw: { hp: 50, attack: 60, defense: 30, sp_attack: 60, sp_defense: 30, speed: 30 },
     abilities: [],
@@ -89,7 +89,7 @@ test("boss.ignoreDefense disables the defender's defense term", () => {
   });
   // Put a heavy-defense defender on the player field.
   const heavyDef = mkCard({
-    id: 9100, name: "Wall", types: ["normal"], cardHp: 25,
+    id: 9100, name: "Wall", types: ["martial"], cardHp: 25,
     raw: { hp: 250, attack: 0, defense: 300, sp_defense: 300, sp_attack: 0, speed: 0 },
   });
   state.players.player.field[0] = {

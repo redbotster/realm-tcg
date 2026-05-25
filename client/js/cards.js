@@ -6,24 +6,24 @@ import { isGuardian } from "./passives.js";
 function isGuardianCard(card) { return isGuardian(card); }
 
 const TYPE_GLYPH = {
-  normal: "★",
-  fire: "🔥",
-  water: "💧",
-  electric: "⚡",
-  grass: "🌿",
-  ice: "❄",
-  fighting: "✊",
-  poison: "☠",
-  ground: "⛰",
-  flying: "🕊",
-  psychic: "🌀",
-  bug: "🐛",
-  rock: "🪨",
-  ghost: "👻",
-  dragon: "🐉",
-  dark: "🌒",
-  steel: "⚙",
-  fairy: "✨",
+  martial:  "⚔",
+  fire:     "🔥",
+  tide:     "🌊",
+  storm:    "⚡",
+  verdant:  "🌿",
+  frost:    "❄",
+  brawl:    "👊",
+  plague:   "☠",
+  earth:    "⛰",
+  sky:      "🌬",
+  mind:     "🧠",
+  swarm:    "🐝",
+  stone:    "🪨",
+  spectral: "👻",
+  wyrm:     "🐉",
+  shadow:   "🌑",
+  iron:     "⚙",
+  radiant:  "✨",
 };
 
 export function renderCard(card, { compact = false, instance = null } = {}) {
@@ -35,13 +35,13 @@ export function renderCard(card, { compact = false, instance = null } = {}) {
   }
 
   const el = document.createElement("div");
-  el.className = `card type-${card.types?.[0] || "normal"}${compact ? " compact" : ""}`;
+  el.className = `card type-${card.types?.[0] || "martial"}${compact ? " compact" : ""}`;
   if (instance) el.dataset.instanceId = instance.instanceId;
   el.dataset.cardId = card.id;
   if (card.is_mythical) el.dataset.cardRare = "mythical";
   else if (card.is_legendary) el.dataset.cardRare = "legendary";
 
-  const primary = card.types?.[0] || "normal";
+  const primary = card.types?.[0] || "martial";
   const secondary = card.types?.[1];
   const c1 = TYPE_COLORS[primary] || "#888";
   const c2 = TYPE_COLORS[secondary] || c1;
@@ -108,7 +108,7 @@ function statusGlyph(kind) {
 // downstream callers don't need to know about the split.
 function renderSpellCard(card, { compact = false } = {}) {
   const el = document.createElement("div");
-  const primary = card.types?.[0] || "normal";
+  const primary = card.types?.[0] || "martial";
   const rarity = card.rarity || "common";
   el.className = `card spell-card type-${primary} rarity-${rarity}${compact ? " compact" : ""}`;
   el.dataset.cardId = card.id;

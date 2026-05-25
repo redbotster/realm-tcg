@@ -81,7 +81,7 @@ function makeMatchRecord(matchId, playerId, opts = {}) {
 function makeBestiary() {
   const out = [];
   for (let i = 1; i <= 12; i++) {
-    out.push({ id: i, name: `M${i}`, types: ["normal"], tier: ((i - 1) % 5) + 1,
+    out.push({ id: i, name: `M${i}`, types: ["martial"], tier: ((i - 1) % 5) + 1,
       energyCost: 1, cardHp: 30, cardAttack: 10, sprite_front: "x",
       is_legendary: false, is_mythical: false });
   }
@@ -421,7 +421,7 @@ test("MP play-card forwards spellTarget to engine.playCard", async () => {
   const matchId = "m-mp-spell-fwd";
   const enemyInst = {
     instanceId: "i-enemy",
-    card: { id: 200, name: "Foe", types: ["normal"], tier: 2, cardHp: 8, cardAttack: 4,
+    card: { id: 200, name: "Foe", types: ["martial"], tier: 2, cardHp: 8, cardAttack: 4,
             energyCost: 1, raw: { hp: 80, attack: 60, defense: 30, sp_attack: 0, sp_defense: 30, speed: 30 } },
     currentHp: 8, maxHp: 8, summoningSickness: false, attackedThisTurn: false, status: null,
     attackBoost: 0, level: 0,

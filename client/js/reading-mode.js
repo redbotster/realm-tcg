@@ -101,7 +101,7 @@ async function renderPicker() {
 function storyCardHtml(s) {
   const sprite = s.cover?.creatureId ? SPRITE_URL(s.cover.creatureId) : null;
   const glyph = s.cover?.glyph || "📖";
-  const themeType = s.cover?.themeType || "normal";
+  const themeType = s.cover?.themeType || "martial";
   return `
     <button class="reading-card type-${escapeHtml(themeType)}" data-story-id="${escapeHtml(s.id)}">
       <div class="reading-card-art">
@@ -166,7 +166,7 @@ function renderStory() {
         <div class="reading-progress-bar" style="width: ${Math.round(((i + 1) / total) * 100)}%"></div>
         <span class="reading-progress-label">Page ${i + 1} of ${total}</span>
       </div>
-      <article class="reading-section type-${escapeHtml(_state.story.cover?.themeType || "normal")}">
+      <article class="reading-section type-${escapeHtml(_state.story.cover?.themeType || "martial")}">
         <div class="reading-speaker">
           ${speakerSprite
             ? `<img class="reading-speaker-portrait" src="${escapeHtml(speakerSprite)}" alt="">`

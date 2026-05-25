@@ -23,7 +23,7 @@ test("buildBossDeck returns 30 creature + 10 spells = 40 cards", async () => {
   const chapter = {
     boss: {
       anchorCreatureId: 15,
-      types: ["bug", "poison"],
+      types: ["swarm", "plague"],
       maxHp: 50, attack: 8,
     },
   };
@@ -42,7 +42,7 @@ test("buildBossDeck stays deterministic about the creature core (regression)", a
   // always be exactly 30 with anchor x2 inside.
   const fakeSupabase = makeFakeSupabaseWithPool();
   const chapter = {
-    boss: { anchorCreatureId: 15, types: ["bug"], maxHp: 50, attack: 8 },
+    boss: { anchorCreatureId: 15, types: ["swarm"], maxHp: 50, attack: 8 },
   };
   const deck = await buildBossDeck(fakeSupabase, chapter);
   const creatures = deck.filter((c) => !isSpell(c));
@@ -100,7 +100,7 @@ function makeFakeSupabaseWithPool() {
   for (let i = 1; i <= 60; i++) {
     rows.push({
       id: i, name: `Mon${i}`, slug: `mon${i}`,
-      types: ["bug", "normal"], hp: 50 + i, attack: 30 + i,
+      types: ["swarm", "martial"], hp: 50 + i, attack: 30 + i,
       defense: 30, sp_attack: 30, sp_defense: 30, speed: 30,
       sprite_front: null, generation: 1,
     });

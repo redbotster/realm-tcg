@@ -6,7 +6,7 @@ import { ITEM_DEFS, defaultKit, itemDef, useItem } from "../client/js/items.js";
 
 function mkCard(id, cost = 1, hp = 10, atk = 5) {
   return {
-    id, name: "C" + id, types: ["normal"],
+    id, name: "C" + id, types: ["martial"],
     energyCost: cost, cardHp: hp, cardAttack: atk,
     raw: { hp: hp * 10, attack: atk * 15, defense: 30, sp_attack: 0, sp_defense: 30, speed: 30 },
   };

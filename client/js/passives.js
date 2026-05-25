@@ -44,7 +44,7 @@ export function isGuardian(card) {
   if (card.is_legendary || card.is_mythical) return true;
   if (TANK_IDS.has(card.id)) return true;
   const t = card.types?.[0];
-  if (card.tier >= 3 && (t === "steel" || t === "rock" || t === "fighting" || t === "ground")) {
+  if (card.tier >= 3 && (t === "iron" || t === "stone" || t === "brawl" || t === "earth")) {
     if (Array.isArray(card.abilities)) {
       for (const ab of card.abilities) if (TANK_PASSIVES.has(ab)) return true;
     }
@@ -209,13 +209,13 @@ export const SIGNATURE_ABILITIES = {
     // Kyogre
     name: "Drizzle",
     desc: "While on the field, your Water creature attack with +1 ATK.",
-    fieldAura: { type: "water", attackBonus: 1 },
+    fieldAura: { type: "tide", attackBonus: 1 },
   },
   383: {
     // Groudon
     name: "Drought",
     desc: "While on the field, enemy Water creature lose 1 ATK on their attacks.",
-    fieldAura: { enemyType: "water", attackPenalty: 1 },
+    fieldAura: { enemyType: "tide", attackPenalty: 1 },
   },
   483: {
     // Dialga
@@ -268,7 +268,7 @@ export const SIGNATURE_ABILITIES = {
   3: {
     name: "Solar Beam",
     desc: "Your Grass specials hit for +1 ATK while Venusaur is on the field.",
-    fieldAura: { type: "grass", attackBonus: 1 },
+    fieldAura: { type: "verdant", attackBonus: 1 },
   },
   6: {
     name: "Flamethrower",
@@ -278,7 +278,7 @@ export const SIGNATURE_ABILITIES = {
   9: {
     name: "Hydro Cannon",
     desc: "Your Water specials hit for +1 ATK while Blastoise is on the field.",
-    fieldAura: { type: "water", attackBonus: 1 },
+    fieldAura: { type: "tide", attackBonus: 1 },
   },
 
   // --- Pseudo-legendaries + iconic rares -------------------------------
@@ -293,7 +293,7 @@ export const SIGNATURE_ABILITIES = {
         const enemy = state.players[otherSide].field[i];
         if (!enemy) continue;
         const types = enemy.card.types || [];
-        if (types.includes("rock") || types.includes("ground")) continue;
+        if (types.includes("stone") || types.includes("earth")) continue;
         enemy.currentHp = Math.max(0, enemy.currentHp - 1);
         hits++;
         if (enemy.currentHp <= 0) {
@@ -390,7 +390,7 @@ export const SIGNATURE_ABILITIES = {
     // Zekrom
     name: "Bolt Strike",
     desc: "While on the field, your Electric creature attack with +1 ATK and apply Paralyze.",
-    fieldAura: { type: "electric", attackBonus: 1, statusOnHit: "paralyze" },
+    fieldAura: { type: "storm", attackBonus: 1, statusOnHit: "paralyze" },
   },
   716: {
     // Xerneas
@@ -594,7 +594,7 @@ export const SIGNATURE_ABILITIES = {
       let healed = 0;
       for (const ally of allies) {
         const types = ally.card?.types || [];
-        if (!types.some((t) => ["fairy", "flying", "normal"].includes(t))) continue;
+        if (!types.some((t) => ["radiant", "sky", "martial"].includes(t))) continue;
         const cap = ally.maxHp ?? ally.card.cardHp;
         const before = ally.currentHp;
         ally.currentHp = Math.min(cap, ally.currentHp + 3);
@@ -652,7 +652,7 @@ export const SIGNATURE_ABILITIES = {
     // Sceptree (Sceptile) — Overgrow: Grass aura
     name: "Leaf Storm",
     desc: "While on the field, your Grass creature attack with +1 ATK and apply burn 25%.",
-    fieldAura: { type: "grass", attackBonus: 1, statusOnHit: "burn" },
+    fieldAura: { type: "verdant", attackBonus: 1, statusOnHit: "burn" },
   },
 
   // --- Crowd-control / board-clear signatures --------------------------
@@ -715,7 +715,7 @@ export const SIGNATURE_ABILITIES = {
     // Blastoise — already has Hydro Cannon aura; add a wide attack pattern too
     name: "Hydro Pump",
     desc: "Your Water specials hit for +1 ATK. On summon, deals 3 damage to a random enemy.",
-    fieldAura: { type: "water", attackBonus: 1 },
+    fieldAura: { type: "tide", attackBonus: 1 },
     onSummon(state, side, inst) {
       const otherSide = side === "player" ? "ai" : "player";
       const targets = state.players[otherSide].field
@@ -858,15 +858,15 @@ export function pinchAttackBonus(attackerInst) {
   if (hp > max / 3) return 0;
   const primary = card.types?.[0];
   if (primary === "fire"  && hasPassive(card, "blaze"))    return 1;
-  if (primary === "water" && hasPassive(card, "torrent"))  return 1;
-  if (primary === "grass" && hasPassive(card, "overgrow")) return 1;
+  if (primary === "tide" && hasPassive(card, "torrent"))  return 1;
+  if (primary === "verdant" && hasPassive(card, "overgrow")) return 1;
   return 0;
 }
 
 // Levitate immunity check — if defender has Levitate and attacker is Ground,
 // multiplier becomes 0 regardless of the chart.
 export function levitateBlocks(attackerCard, defenderCard) {
-  return attackerCard.types?.[0] === "ground" && hasPassive(defenderCard, "levitate");
+  return attackerCard.types?.[0] === "earth" && hasPassive(defenderCard, "levitate");
 }
 
 // Static-on-contact: returns a status object if the defender's static

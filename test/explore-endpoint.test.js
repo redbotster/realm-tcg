@@ -20,7 +20,7 @@ function makeBestiary() {
     const per = Math.round(bst / 6);
     rows.push(toCard({
       id: i, name: `Mon${i}`, slug: `mon${i}`,
-      types: i % 2 ? ["fire"] : ["water"],
+      types: i % 2 ? ["fire"] : ["tide"],
       hp: per, attack: per, defense: per, sp_attack: per, sp_defense: per, speed: per,
       generation: 1,
       is_legendary: i === 8,

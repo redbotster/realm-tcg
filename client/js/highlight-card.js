@@ -46,8 +46,8 @@ export async function generateHighlight({ state, currentUser, format = DEFAULT_F
   const won = state.winner === "player";
   const my = state.recap?.player || {};
   const myKOs = state.players?.ai?.discard?.length || 0;
-  const myCardType  = bestSideType(state.players?.player) || "normal";
-  const oppCardType = bestSideType(state.players?.ai)    || "normal";
+  const myCardType  = bestSideType(state.players?.player) || "martial";
+  const oppCardType = bestSideType(state.players?.ai)    || "martial";
   const c1 = TYPE_COLORS[myCardType]  || "#777";
   const c2 = TYPE_COLORS[oppCardType] || "#444";
 

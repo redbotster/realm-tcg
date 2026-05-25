@@ -19,7 +19,7 @@ const CHAMPIONS = {
     title: "Dragon Master",
     portrait: "lance",
     bio: "Kanto Champion. Specializes in pseudo-legendary dragons.",
-    typeFilter: ["dragon", "flying"],
+    typeFilter: ["wyrm", "sky"],
     coreIds: [149, 130, 142, 230, 373, 445, 635, 706, 718, 887], // Dragonite, Gyarados, Aerodactyl, Kingdra, Salamence, Garchomp, Hydreigon, Goodra, Zygarde, Dragapult
   },
   cynthia: {
@@ -37,7 +37,7 @@ const CHAMPIONS = {
     title: "Steel Magnate",
     portrait: "steven",
     bio: "Hoenn champion. Iron-clad steel-type creature only.",
-    typeFilter: ["steel"],
+    typeFilter: ["iron"],
     coreIds: [376, 227, 306, 411, 462, 530, 599, 681, 707, 805], // Metagross, Skarmory, Aggron, Bastiodon, Magnezone, Excadrill, Klang, Aegislash, Klefki, Stakataka
   },
   red: {

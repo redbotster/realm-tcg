@@ -10,41 +10,41 @@ test("18 types are defined", () => {
 });
 
 test("fire 2x vs grass, fire 0.5x vs water", () => {
-  assert.equal(getMultiplier("fire", ["grass"]), 2);
-  assert.equal(getMultiplier("fire", ["water"]), 0.5);
+  assert.equal(getMultiplier("fire", ["verdant"]), 2);
+  assert.equal(getMultiplier("fire", ["tide"]), 0.5);
 });
 
 test("ghost 0x vs normal, normal 0x vs ghost", () => {
-  assert.equal(getMultiplier("ghost", ["normal"]), 0);
-  assert.equal(getMultiplier("normal", ["ghost"]), 0);
+  assert.equal(getMultiplier("spectral", ["martial"]), 0);
+  assert.equal(getMultiplier("martial", ["spectral"]), 0);
 });
 
 test("ground capped at 2x vs fire/rock (we cap stacked super-effective)", () => {
   // ground is 2x vs fire AND 2x vs rock — raw 4x. We cap at 2x for fairness.
-  assert.equal(getMultiplier("ground", ["fire", "rock"]), 2);
+  assert.equal(getMultiplier("earth", ["fire", "stone"]), 2);
 });
 
 test("damage cap floor: stacked not-very-effective doesn't drop below 0.5x", () => {
   // fire is 0.5x vs water AND 0.5x vs rock — raw 0.25x. We floor at 0.5x.
-  assert.equal(getMultiplier("fire", ["water", "rock"]), 0.5);
+  assert.equal(getMultiplier("fire", ["tide", "stone"]), 0.5);
 });
 
 test("0x immunity still wins over the cap", () => {
   // electric is 0x vs ground, doesn't matter what the other type is.
-  assert.equal(getMultiplier("electric", ["ground", "fire"]), 0);
+  assert.equal(getMultiplier("storm", ["earth", "fire"]), 0);
 });
 
 test("electric 0x vs ground (immune)", () => {
-  assert.equal(getMultiplier("electric", ["ground"]), 0);
+  assert.equal(getMultiplier("storm", ["earth"]), 0);
 });
 
 test("dragon 0x vs fairy (Gen 6+)", () => {
-  assert.equal(getMultiplier("dragon", ["fairy"]), 0);
+  assert.equal(getMultiplier("wyrm", ["radiant"]), 0);
 });
 
 test("fairy 2x vs dragon and dark", () => {
-  assert.equal(getMultiplier("fairy", ["dragon"]), 2);
-  assert.equal(getMultiplier("fairy", ["dark"]), 2);
+  assert.equal(getMultiplier("radiant", ["wyrm"]), 2);
+  assert.equal(getMultiplier("radiant", ["shadow"]), 2);
 });
 
 test("unknown attacker / defender defaults to 1", () => {

@@ -21,7 +21,7 @@ function deck(prefix, n = 30) {
       id: i + 1,
       name: `${prefix}-${i}`,
       slug: `${prefix}-${i}`,
-      types: ["normal"],
+      types: ["martial"],
       cardHp: 5,
       cardAttack: 2,
       energyCost: 1,
@@ -144,9 +144,9 @@ test("Misty's ability discounts water cards by 1 energy (min 1)", () => {
   const player = {
     ability: "misty",
   };
-  const waterCard = { types: ["water"], energyCost: 3 };
+  const waterCard = { types: ["tide"], energyCost: 3 };
   assert.equal(effectiveCost(player, waterCard), 2);
-  const cheap = { types: ["water"], energyCost: 1 };
+  const cheap = { types: ["tide"], energyCost: 1 };
   assert.equal(effectiveCost(player, cheap), 1);
   const fireCard = { types: ["fire"], energyCost: 3 };
   assert.equal(effectiveCost(player, fireCard), 3);

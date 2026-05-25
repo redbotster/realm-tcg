@@ -15,8 +15,8 @@ import {
 
 test("normalizeQuery lowercases and splits on whitespace + delimiters", () => {
   assert.deepEqual(normalizeQuery("Char Fire"), ["char", "fire"]);
-  assert.deepEqual(normalizeQuery("water/ice"), ["water", "ice"]);
-  assert.deepEqual(normalizeQuery("rock-solid"), ["rock", "solid"]);
+  assert.deepEqual(normalizeQuery("tide/frost"), ["tide", "frost"]);
+  assert.deepEqual(normalizeQuery("stone-solid"), ["stone", "solid"]);
 });
 
 test("normalizeQuery strips punctuation inside tokens", () => {
@@ -39,7 +39,7 @@ test("matchesAllTokens with no tokens passes everything (empty-query case)", () 
 test("matchesAllTokens: each token must hit at least one haystack", () => {
   assert.equal(matchesAllTokens(["fire"], ["Charmander", "fire"]), true);
   assert.equal(matchesAllTokens(["fire", "char"], ["Charmander", "fire"]), true);
-  assert.equal(matchesAllTokens(["water"], ["Charmander", "fire"]), false);
+  assert.equal(matchesAllTokens(["tide"], ["Charmander", "fire"]), false);
 });
 
 test("matchesAllTokens ignores null / undefined haystacks (no crash)", () => {
@@ -49,12 +49,12 @@ test("matchesAllTokens ignores null / undefined haystacks (no crash)", () => {
 // --- filterBestiaryEntries -------------------------------------------
 
 const BESTIARY_FIXTURE = [
-  { id: 1,   name: "Bulbasaur",  types: ["grass", "poison"], generation: 1, quantity: 0 },
+  { id: 1,   name: "Bulbasaur",  types: ["verdant", "plague"], generation: 1, quantity: 0 },
   { id: 4,   name: "Charmander", types: ["fire"],            generation: 1, quantity: 3 },
-  { id: 6,   name: "Charizard",  types: ["fire", "flying"],  generation: 1, quantity: 0 },
-  { id: 25,  name: "Pikachu",    types: ["electric"],        generation: 1, quantity: 1 },
-  { id: 144, name: "Articuno",   types: ["ice", "flying"],   generation: 1, quantity: 0 },
-  { id: 252, name: "Treecko",    types: ["grass"],           generation: 3, quantity: 0 },
+  { id: 6,   name: "Charizard",  types: ["fire", "sky"],  generation: 1, quantity: 0 },
+  { id: 25,  name: "Pikachu",    types: ["storm"],        generation: 1, quantity: 1 },
+  { id: 144, name: "Articuno",   types: ["frost", "sky"],   generation: 1, quantity: 0 },
+  { id: 252, name: "Treecko",    types: ["verdant"],           generation: 3, quantity: 0 },
 ];
 
 test("empty query returns all entries (no filter)", () => {
@@ -68,7 +68,7 @@ test("substring name match (case-insensitive)", () => {
 });
 
 test("type match (single token)", () => {
-  const r = filterBestiaryEntries(BESTIARY_FIXTURE, "ice");
+  const r = filterBestiaryEntries(BESTIARY_FIXTURE, "frost");
   assert.deepEqual(r.map((x) => x.name), ["Articuno"]);
 });
 
@@ -77,8 +77,8 @@ test("padded dex ID match (#025 → Pikachu)", () => {
   assert.deepEqual(r.map((x) => x.name), ["Pikachu"]);
 });
 
-test("multi-token AND: 'fire flying' finds only dual-type", () => {
-  const r = filterBestiaryEntries(BESTIARY_FIXTURE, "fire flying");
+test("multi-token AND: 'fire sky' finds only dual-school", () => {
+  const r = filterBestiaryEntries(BESTIARY_FIXTURE, "fire sky");
   assert.deepEqual(r.map((x) => x.name), ["Charizard"]);
 });
 
@@ -126,7 +126,7 @@ test("filter decks by contained creature name", () => {
 });
 
 test("filter decks by contained creature TYPE", () => {
-  const r = filterDecks(DECKS_FIXTURE, DEX_BY_ID, "grass");
+  const r = filterDecks(DECKS_FIXTURE, DEX_BY_ID, "verdant");
   // d2 has Bulbasaur (grass/poison) + Treecko (grass).
   assert.deepEqual(r.map((d) => d.id), ["d2"]);
 });

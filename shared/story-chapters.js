@@ -41,7 +41,7 @@ const CHAPTERS = [
       // Anchored on Beedrill (#15) but stats are bespoke.
       anchorCreatureId: 15,
       displayName: "Forest Tyrant Beedrill",
-      types: ["bug", "poison"],
+      types: ["swarm", "plague"],
       maxHp: 55,
       attack: 9,
       defense: 1,
@@ -66,7 +66,7 @@ const CHAPTERS = [
         "swarm-strike": { name: "Swarm Strike", power: 1.4, target: "all", flavor: "The swarm descends on both champions!" },
       },
     },
-    reward: { picks: 3, themeType: "bug", guaranteedLegendary: false },
+    reward: { picks: 3, themeType: "swarm", guaranteedLegendary: false },
   },
   {
     id: "ch2_mt_moon",
@@ -92,7 +92,7 @@ const CHAPTERS = [
     boss: {
       anchorCreatureId: 95,
       displayName: "Elder Onix",
-      types: ["rock", "ground"],
+      types: ["stone", "earth"],
       maxHp: 70,
       attack: 8,
       defense: 3,
@@ -101,7 +101,7 @@ const CHAPTERS = [
       transformTo: {
         anchorCreatureId: 208,
         displayName: "Awakened Steelix",
-        types: ["steel", "ground"],
+        types: ["iron", "earth"],
         attackBonus: 3,
         defenseBonus: 2,
         flavor: "The Onix's body sheathes itself in living steel — Steelix awakened!",
@@ -124,7 +124,7 @@ const CHAPTERS = [
         "iron-tail": { name: "Iron Tail", power: 1.5, target: "active", flavor: "A devastating metallic strike." },
       },
     },
-    reward: { picks: 4, themeType: "rock", guaranteedLegendary: false },
+    reward: { picks: 4, themeType: "stone", guaranteedLegendary: false },
   },
   {
     id: "ch3_cerulean_cave",
@@ -150,7 +150,7 @@ const CHAPTERS = [
     boss: {
       anchorCreatureId: 150,
       displayName: "Mewtwo",
-      types: ["psychic"],
+      types: ["mind"],
       maxHp: 80,
       attack: 10,
       defense: 2,
@@ -177,7 +177,7 @@ const CHAPTERS = [
         "mind-crush": { name: "Mind Crush", power: 1.5, target: "all", flavor: "An overwhelming psychic detonation hits both champions!" },
       },
     },
-    reward: { picks: 4, themeType: "psychic", guaranteedLegendary: true },
+    reward: { picks: 4, themeType: "mind", guaranteedLegendary: true },
   },
   {
     id: "finale_dragons_den",
@@ -205,7 +205,7 @@ const CHAPTERS = [
     boss: {
       anchorCreatureId: 149,
       displayName: "Lance's Dragonite",
-      types: ["dragon", "flying"],
+      types: ["wyrm", "sky"],
       maxHp: 100,
       attack: 11,
       defense: 3,
@@ -238,7 +238,7 @@ const CHAPTERS = [
         "draco-meteor": { name: "Draco Meteor", power: 1.7, target: "all", flavor: "Meteors crash on both champions — devastating AoE!" },
       },
     },
-    reward: { picks: 5, themeType: "dragon", guaranteedLegendary: true },
+    reward: { picks: 5, themeType: "wyrm", guaranteedLegendary: true },
   },
 ];
 

@@ -23,7 +23,7 @@ const DEFENDER = spellToCard(SPELL_CARDS.find((s) => s.effect === "defender"));
 const EVOLVE   = spellToCard(SPELL_CARDS.find((s) => s.effect === "evolve"));
 const AOE      = spellToCard(SPELL_CARDS.find((s) => s.effect === "aoe"));
 
-function creature(id, { hp = 8, atk = 4, cost = 1, types = ["normal"] } = {}) {
+function creature(id, { hp = 8, atk = 4, cost = 1, types = ["martial"] } = {}) {
   return {
     id, name: `P${id}`, types,
     energyCost: cost, cardHp: hp, cardAttack: atk,
@@ -357,7 +357,7 @@ test("Hard AI attack lands +1 damage compared to baseline", async () => {
   }
   function mkCreature(id, atk) {
     return {
-      id, name: "M" + id, types: ["normal"],
+      id, name: "M" + id, types: ["martial"],
       energyCost: 1, cardHp: 20, cardAttack: atk,
       tier: 2, rarity: "uncommon",
       raw: { hp: 200, attack: atk * 15, defense: 0, sp_attack: 0, sp_defense: 0, speed: 30 },

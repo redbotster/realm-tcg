@@ -191,7 +191,7 @@ function renderUnit(unit, slot, side) {
   const dead = unit.hp <= 0;
   const used = unit.used;
   const sel = side === "player" && _state.selectedSlot === slot;
-  const type = unit.card?.types?.[0] || "normal";
+  const type = unit.card?.types?.[0] || "martial";
   const color = TYPE_COLORS[type] || "#888";
   const types = (unit.card?.types || []).map((t) =>
     `<span class="puzzle-type" style="background:${TYPE_COLORS[t] || "#888"}">${t}</span>`).join("");

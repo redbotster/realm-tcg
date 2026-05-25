@@ -151,7 +151,7 @@ test("Freeze is uncommon and costs 1 energy (slice 1 contract)", () => {
   const freeze = SPELL_CARDS.find((s) => s.effect === "freeze");
   assert.equal(freeze.rarity, "uncommon");
   assert.equal(freeze.target, "enemyField");
-  assert.equal(freeze.types[0], "ice");
+  assert.equal(freeze.types[0], "frost");
   const c = spellToCard(freeze);
   assert.equal(c.energyCost, 1);
 });

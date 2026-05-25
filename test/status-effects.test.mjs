@@ -6,7 +6,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { rollStatus, tickStatus, isLockedOut } from "../client/js/battle.js";
 
-function mkCard(types = ["normal"]) {
+function mkCard(types = ["martial"]) {
   return {
     name: "C", types,
     cardAttack: 5, cardHp: 10,
@@ -28,7 +28,7 @@ function mkInst(card, opts = {}) {
 test("rollStatus: fire attacker has ~25% burn chance on contact", () => {
   // Deterministic rand always-below-threshold → always burns.
   const attacker = mkCard(["fire"]);
-  const defender = mkCard(["normal"]);
+  const defender = mkCard(["martial"]);
   const status = rollStatus(attacker, defender, () => 0.1);
   assert.equal(status?.kind, "burn");
   assert.equal(status.turnsLeft, 2);
@@ -36,29 +36,29 @@ test("rollStatus: fire attacker has ~25% burn chance on contact", () => {
 
 test("rollStatus: fire above threshold → no status", () => {
   const attacker = mkCard(["fire"]);
-  const defender = mkCard(["normal"]);
+  const defender = mkCard(["martial"]);
   const status = rollStatus(attacker, defender, () => 0.9);
   assert.equal(status, null);
 });
 
 test("rollStatus: electric attacker has paralyze chance", () => {
-  const attacker = mkCard(["electric"]);
-  const defender = mkCard(["normal"]);
+  const attacker = mkCard(["storm"]);
+  const defender = mkCard(["martial"]);
   const status = rollStatus(attacker, defender, () => 0.1);
   assert.equal(status?.kind, "paralyze");
 });
 
 test("rollStatus: psychic attacker has sleep chance", () => {
-  const attacker = mkCard(["psychic"]);
-  const defender = mkCard(["normal"]);
+  const attacker = mkCard(["mind"]);
+  const defender = mkCard(["martial"]);
   const status = rollStatus(attacker, defender, () => 0.05);
   assert.equal(status?.kind, "sleep");
 });
 
 test("rollStatus: non-status types return null", () => {
-  for (const type of ["normal", "rock", "grass", "fighting"]) {
+  for (const type of ["martial", "stone", "verdant", "brawl"]) {
     const attacker = mkCard([type]);
-    const defender = mkCard(["normal"]);
+    const defender = mkCard(["martial"]);
     const status = rollStatus(attacker, defender, () => 0);
     assert.equal(status, null, `${type} should not apply status`);
   }

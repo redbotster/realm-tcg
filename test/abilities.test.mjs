@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { abilitiesFor, basicAbility, specialAbility, abilityById } from "../client/js/abilities.js";
 import { computeDamage } from "../client/js/battle.js";
 
-function mkCard({ type = "normal", cardAttack = 6, hp = 100 } = {}) {
+function mkCard({ type = "martial", cardAttack = 6, hp = 100 } = {}) {
   return {
     name: "Test",
     types: [type],
@@ -14,7 +14,7 @@ function mkCard({ type = "normal", cardAttack = 6, hp = 100 } = {}) {
 }
 
 test("every creature gets a basic + special ability", () => {
-  for (const type of ["normal","fire","water","electric","grass","psychic","dragon"]) {
+  for (const type of ["martial","fire","tide","storm","verdant","mind","wyrm"]) {
     const card = mkCard({ type });
     const list = abilitiesFor(card);
     assert.equal(list.length, 2);
@@ -27,15 +27,15 @@ test("every creature gets a basic + special ability", () => {
 
 test("special damage > basic damage for the same matchup", () => {
   const attacker = mkCard({ type: "fire", cardAttack: 6 });
-  const defender = mkCard({ type: "grass" });
+  const defender = mkCard({ type: "verdant" });
   const basic = computeDamage(attacker, defender, { ability: basicAbility(attacker) });
   const special = computeDamage(attacker, defender, { ability: specialAbility(attacker) });
   assert.ok(special.damage > basic.damage, `special ${special.damage} should beat basic ${basic.damage}`);
 });
 
 test("flying special ignores defense", () => {
-  const flying = mkCard({ type: "flying", cardAttack: 4 });
-  const heavy = mkCard({ type: "rock" });
+  const flying = mkCard({ type: "sky", cardAttack: 4 });
+  const heavy = mkCard({ type: "stone" });
   // Stack the defender with huge defense to make the difference obvious.
   heavy.raw.defense = 300;
   heavy.raw.sp_defense = 300;
@@ -58,6 +58,6 @@ test("fire special carries guaranteed burn status", () => {
 });
 
 test("psychic special carries guaranteed sleep status", () => {
-  const ab = specialAbility(mkCard({ type: "psychic" }));
+  const ab = specialAbility(mkCard({ type: "mind" }));
   assert.equal(ab.status, "sleep");
 });

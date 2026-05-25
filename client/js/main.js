@@ -1953,7 +1953,7 @@ function bindChampionAttackTarget() {
 }
 
 function animateHit(attackerEl, defenderEl, attackerInst, result, done) {
-  const t = attackerInst?.card?.types?.[0] || "normal";
+  const t = attackerInst?.card?.types?.[0] || "martial";
   fireAttackTrail(attackerEl, defenderEl, t);
   sfxAttack();
   setTimeout(() => {
@@ -2247,7 +2247,7 @@ async function handleAiActionInner(action) {
     } else {
       defenderEl = $(`.player-field .field-slot[data-slot="${action.target}"] .card`);
     }
-    const aType = action.attackerCard?.types?.[0] || "normal";
+    const aType = action.attackerCard?.types?.[0] || "martial";
     fireAttackTrail(attackerEl, defenderEl, aType);
     sfxAttack();
     await sleep(450);
@@ -2784,7 +2784,7 @@ function handleMpAnim(anim) {
         ? $(`.player-field .field-slot[data-slot="${anim.target}"] .card`)
         : $(`.ai-field .field-slot[data-slot="${anim.target}"] .card`);
     }
-    fireAttackTrail(attackerEl, defenderEl, anim.attackerType || "normal");
+    fireAttackTrail(attackerEl, defenderEl, anim.attackerType || "martial");
     sfxAttack();
     if (defenderEl) {
       floatDamage(defenderEl, anim.multiplier === 0 ? "MISS" : `-${anim.damage}`, {

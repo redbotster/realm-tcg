@@ -13,7 +13,7 @@ import { SIGNATURE_ABILITIES, signatureFor, isGuardian } from "../client/js/pass
 
 const ENTRIES = Object.entries(SIGNATURE_ABILITIES);
 
-function mkCard(id, types = ["normal"]) {
+function mkCard(id, types = ["martial"]) {
   return {
     id, name: "C" + id, types,
     cardHp: 8, cardAttack: 5,
@@ -110,7 +110,7 @@ test("#208 Steelix passive damage reduction is exactly 1", () => {
 
 test("#254 Sceptile field aura buffs Grass type with burn-on-hit", () => {
   const sig = signatureFor({ id: 254 });
-  assert.equal(sig?.fieldAura?.type, "grass");
+  assert.equal(sig?.fieldAura?.type, "verdant");
   assert.equal(sig?.fieldAura?.attackBonus, 1);
   assert.equal(sig?.fieldAura?.statusOnHit, "burn");
 });
@@ -119,10 +119,10 @@ test("#468 Togekiss Fairy Wind heals Fairy/Flying/Normal allies, not others", ()
   const sig = signatureFor({ id: 468 });
   assert.ok(sig);
   const s = mkState();
-  const fairy  = mkInst(mkCard(700, ["fairy"]));   fairy.maxHp = 10; fairy.currentHp = 5;
-  const flying = mkInst(mkCard(701, ["flying"]));  flying.maxHp = 10; flying.currentHp = 5;
-  const normal = mkInst(mkCard(702, ["normal"]));  normal.maxHp = 10; normal.currentHp = 5;
-  const water  = mkInst(mkCard(703, ["water"]));   water.maxHp = 10;  water.currentHp = 5;
+  const fairy  = mkInst(mkCard(700, ["radiant"]));   fairy.maxHp = 10; fairy.currentHp = 5;
+  const flying = mkInst(mkCard(701, ["sky"]));  flying.maxHp = 10; flying.currentHp = 5;
+  const normal = mkInst(mkCard(702, ["martial"]));  normal.maxHp = 10; normal.currentHp = 5;
+  const water  = mkInst(mkCard(703, ["tide"]));   water.maxHp = 10;  water.currentHp = 5;
   s.players.player.field[0] = fairy;
   s.players.player.field[1] = flying;
   s.players.player.field[2] = normal;

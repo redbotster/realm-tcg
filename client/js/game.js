@@ -54,12 +54,12 @@ const nextInstanceId = () => `i${++_instanceCounter}`;
 // (https://play.creatureshowdown.com/sprites/champions). Used under fair-use
 // for this non-commercial fan project.
 export const CHAMPIONS = {
-  brock:   { id: "brock",   name: "Brock",     bio: "+1 Defense to Rock/Ground",        portrait: "rock",     sprite: "brock" },
-  misty:   { id: "misty",   name: "Misty",     bio: "Water cards cost 1 less (min 1)",  portrait: "water",    sprite: "misty" },
-  pikachu: { id: "pikachu", name: "Lt. Surge", bio: "+1 Attack to Electric creature",    portrait: "electric", sprite: "ltsurge" },
-  erika:   { id: "erika",   name: "Erika",     bio: "+1 HP to all Grass creature",       portrait: "grass",    sprite: "erika" },
-  sabrina: { id: "sabrina", name: "Sabrina",   bio: "Psychic specials cost 1 less",     portrait: "psychic",  sprite: "sabrina" },
-  lance:   { id: "lance",   name: "Lance",     bio: "+1 Attack to Dragon creature",      portrait: "dragon",   sprite: "lance" },
+  brock:   { id: "brock",   name: "Brock",     bio: "+1 Defense to Rock/Ground",        portrait: "stone",     sprite: "brock" },
+  misty:   { id: "misty",   name: "Misty",     bio: "Water cards cost 1 less (min 1)",  portrait: "tide",    sprite: "misty" },
+  pikachu: { id: "pikachu", name: "Lt. Surge", bio: "+1 Attack to Electric creature",    portrait: "storm", sprite: "ltsurge" },
+  erika:   { id: "erika",   name: "Erika",     bio: "+1 HP to all Grass creature",       portrait: "verdant",    sprite: "erika" },
+  sabrina: { id: "sabrina", name: "Sabrina",   bio: "Psychic specials cost 1 less",     portrait: "mind",  sprite: "sabrina" },
+  lance:   { id: "lance",   name: "Lance",     bio: "+1 Attack to Dragon creature",      portrait: "wyrm",   sprite: "lance" },
 };
 
 // creature Showdown CDN — humans, transparent PNG, ~96×96.
@@ -141,7 +141,7 @@ function tryEvolveInstance(state, side, instance) {
 }
 
 function hasQuickTrait(card) {
-  return Array.isArray(card.types) && card.types[0] === "flying" && !card.is_legendary;
+  return Array.isArray(card.types) && card.types[0] === "sky" && !card.is_legendary;
 }
 
 function emptySlot(field) {
@@ -169,16 +169,16 @@ function abilityModifiers(playerState, card) {
   let attackBonus = 0;
   let defenseBonus = 0;
   let hpBonus = 0;
-  if (a === "misty" && card.types?.includes("water")) costMod -= 1;
-  if (a === "pikachu" && card.types?.includes("electric")) attackBonus += 1;
+  if (a === "misty" && card.types?.includes("tide")) costMod -= 1;
+  if (a === "pikachu" && card.types?.includes("storm")) attackBonus += 1;
   // Brock — boosted: now also adds +1 max HP to Rock/Ground for parity with
   // Erika / Lance.
-  if (a === "brock" && (card.types?.includes("rock") || card.types?.includes("ground"))) {
+  if (a === "brock" && (card.types?.includes("stone") || card.types?.includes("earth"))) {
     defenseBonus += 1;
     hpBonus += 1;
   }
-  if (a === "erika" && card.types?.includes("grass")) hpBonus += 1;
-  if (a === "lance" && card.types?.includes("dragon")) attackBonus += 1;
+  if (a === "erika" && card.types?.includes("verdant")) hpBonus += 1;
+  if (a === "lance" && card.types?.includes("wyrm")) attackBonus += 1;
   // Sabrina's discount is applied per-ability (Psychic specials only), see
   // specialAbilityCost() below.
   return { costMod, attackBonus, defenseBonus, hpBonus };
@@ -191,7 +191,7 @@ export function championAbilityCostMod(playerState, card, ability) {
   if (!playerState || !ability) return 0;
   let mod = 0;
   if (playerState.ability === "sabrina"
-      && card.types?.includes("psychic")
+      && card.types?.includes("mind")
       && ability.id === "special") {
     mod -= 1;
   }
@@ -379,7 +379,7 @@ function beginTurn(state) {
   if (p.ability === "erika") {
     for (const inst of p.field) {
       if (!inst) continue;
-      if (!inst.card.types?.includes("grass")) continue;
+      if (!inst.card.types?.includes("verdant")) continue;
       const cap = inst.maxHp ?? inst.card.cardHp;
       if (inst.currentHp < cap) {
         inst.currentHp = Math.min(cap, inst.currentHp + 1);
@@ -1316,7 +1316,7 @@ export function attack(
     }
 
     // Bug Special: leech 50% of damage as healing for the attacker.
-    if (ability.id === "special" && (attackerInst.card.types?.[0] === "bug")) {
+    if (ability.id === "special" && (attackerInst.card.types?.[0] === "swarm")) {
       const heal = Math.max(1, Math.floor(damage / 2));
       const before = attackerInst.currentHp;
       attackerInst.currentHp = Math.min(attackerInst.card.cardHp, attackerInst.currentHp + heal);

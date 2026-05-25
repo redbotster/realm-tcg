@@ -6,7 +6,7 @@ import { effectiveCost, createGame } from "../client/js/game.js";
 
 function mkCard(id, cost = 3) {
   return {
-    id, name: "T" + id, types: ["normal"],
+    id, name: "T" + id, types: ["martial"],
     energyCost: cost, cardHp: 8, cardAttack: 5,
     raw: { hp: 80, attack: 60, defense: 30, sp_attack: 60, sp_defense: 30, speed: 30 },
   };

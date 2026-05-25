@@ -97,7 +97,7 @@ function paintGrid() {
     if (_selectedId === row.id) cell.classList.add("selected");
     if (row.is_legendary) cell.classList.add("legendary");
     else if (row.is_mythical) cell.classList.add("mythical");
-    const primary = row.types?.[0] || "normal";
+    const primary = row.types?.[0] || "martial";
     cell.style.setProperty("--type-1", TYPE_COLORS[primary] || "#888");
     cell.innerHTML = `
       <div class="explore-cell-id">#${String(row.id).padStart(3, "0")}</div>
@@ -121,7 +121,7 @@ function renderDetail(row) {
   if (!_overlay) return;
   const panel = _overlay.querySelector(".explore-detail");
   if (!panel) return;
-  const primary = row.types?.[0] || "normal";
+  const primary = row.types?.[0] || "martial";
   const c1 = TYPE_COLORS[primary] || "#888";
   panel.style.setProperty("--type-1", c1);
   const rarityLabel = (row.rarity || "common").replace(/^./, (c) => c.toUpperCase());

@@ -381,7 +381,7 @@ function mount(app, supabase, getBestiary) {
             attackerLeveled: r.attackerLeveled || 0,
             attackerType: m.state.players[side].field[payload.fromSlot]?.card?.types?.[0]
               || (m.state.discard?.[m.state.discard.length-1]?.types?.[0])
-              || "normal",
+              || "martial",
           };
           break;
         case "end-turn":

@@ -302,7 +302,7 @@ function render() {
       const c = ownedById.get(id);
       if (!c) continue;
       const row = document.createElement("div");
-      row.className = `cb-deck-row type-${c.types?.[0] || "normal"}`;
+      row.className = `cb-deck-row type-${c.types?.[0] || "martial"}`;
       row.innerHTML = `
         <span class="cb-deck-name">${escape(c.name)}</span>
         <span class="cb-deck-meta">T${c.tier} · ⚡${c.energyCost}</span>
@@ -423,7 +423,7 @@ async function setCurrentAsActive() {
 }
 
 function renderTypeOptions(current) {
-  const types = ["all","normal","fire","water","electric","grass","ice","fighting","poison","ground","flying","psychic","bug","rock","ghost","dragon","dark","steel","fairy"];
+  const types = ["all","martial","fire","tide","storm","verdant","frost","brawl","plague","earth","sky","mind","swarm","stone","spectral","wyrm","shadow","iron","radiant"];
   return types.map((t) =>
     `<option value="${t}" ${t===current?"selected":""}>${t === "all" ? "All types" : t}</option>`
   ).join("");
@@ -455,15 +455,15 @@ const PRESETS = [
   },
   {
     id: "mono-water", label: "💧 Mono Water", hint: "Disrupt with water + heals.",
-    pref: (c) => (c.types || []).includes("water") ? 100 : 0,
+    pref: (c) => (c.types || []).includes("tide") ? 100 : 0,
   },
   {
     id: "mono-grass", label: "🌿 Mono Grass", hint: "Sustain — heal over time.",
-    pref: (c) => (c.types || []).includes("grass") ? 100 : 0,
+    pref: (c) => (c.types || []).includes("verdant") ? 100 : 0,
   },
   {
     id: "mono-psychic", label: "🌀 Mono Psychic", hint: "Status effects + bursts.",
-    pref: (c) => (c.types || []).includes("psychic") ? 100 : 0,
+    pref: (c) => (c.types || []).includes("mind") ? 100 : 0,
   },
   {
     id: "balanced", label: "⚖ Balanced", hint: "Mix of types — adapts to any matchup.",
@@ -474,8 +474,8 @@ const PRESETS = [
     pref: (c) => {
       const t = c.types || [];
       let s = 0;
-      if (t.includes("steel") || t.includes("rock") || t.includes("ground")) s += 50;
-      if (t.includes("fighting")) s += 20;
+      if (t.includes("iron") || t.includes("stone") || t.includes("earth")) s += 50;
+      if (t.includes("brawl")) s += 20;
       // Bias toward higher HP cards.
       s += (c.cardHp || 0) * 2;
       return s;

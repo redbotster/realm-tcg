@@ -80,7 +80,7 @@ function makeBestiary() {
     out.push({
       id: i,
       name: `Mon${i}`,
-      types: ["normal"],
+      types: ["martial"],
       tier: ((i - 1) % 5) + 1,
       energyCost: 1,
       cardHp: 30,

@@ -12,7 +12,7 @@ const { SPELL_CARDS, spellToCard } = spellCards.default ?? spellCards;
 const FREEZE = spellToCard(SPELL_CARDS.find((s) => s.effect === "freeze"));
 
 // Tiny test-card factory — mirrors the shape buildDeck produces.
-function creature(id, { hp = 8, atk = 4, cost = 1, types = ["normal"] } = {}) {
+function creature(id, { hp = 8, atk = 4, cost = 1, types = ["martial"] } = {}) {
   return {
     id, name: `P${id}`, kind: undefined, // explicitly NOT a spell
     types, energyCost: cost, cardHp: hp, cardAttack: atk,

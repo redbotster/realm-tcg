@@ -64,7 +64,7 @@ function easeOut(t) {
 }
 
 // Fire a particle trail from one element to another, colored by attacker type.
-export function fireAttackTrail(fromEl, toEl, attackerType = "normal") {
+export function fireAttackTrail(fromEl, toEl, attackerType = "martial") {
   if (!fromEl || !toEl) return;
   ensureCanvas();
   const a = fromEl.getBoundingClientRect();

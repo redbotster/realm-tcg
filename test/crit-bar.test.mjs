@@ -6,7 +6,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { computeDamage } from "../client/js/battle.js";
 
-function mkCard(type = "normal", cardAttack = 5) {
+function mkCard(type = "martial", cardAttack = 5) {
   return {
     name: "C", types: [type], cardAttack,
     cardHp: 8,
@@ -16,7 +16,7 @@ function mkCard(type = "normal", cardAttack = 5) {
 
 test("forceCrit makes critical fire regardless of rand()", () => {
   // rand always returns 1 → would never crit by random chance
-  const r = computeDamage(mkCard("fire", 6), mkCard("grass"), {
+  const r = computeDamage(mkCard("fire", 6), mkCard("verdant"), {
     rand: () => 1,
     forceCrit: true,
   });
@@ -24,15 +24,15 @@ test("forceCrit makes critical fire regardless of rand()", () => {
 });
 
 test("without forceCrit + rand()=1, no crit", () => {
-  const r = computeDamage(mkCard("fire", 6), mkCard("grass"), {
+  const r = computeDamage(mkCard("fire", 6), mkCard("verdant"), {
     rand: () => 1,
   });
   assert.equal(r.critical, false);
 });
 
 test("forceCrit still respects 0× immunity (no crit on a no-effect attack)", () => {
-  const ghost = mkCard("ghost", 6);
-  const normal = mkCard("normal");
+  const ghost = mkCard("spectral", 6);
+  const normal = mkCard("martial");
   const r = computeDamage(ghost, normal, { rand: () => 0, forceCrit: true });
   // Normal is immune to ghost → multiplier 0 → no crit applied
   assert.equal(r.multiplier, 0);
@@ -40,14 +40,14 @@ test("forceCrit still respects 0× immunity (no crit on a no-effect attack)", ()
 });
 
 test("forceCrit applies the 1.5× damage multiplier", () => {
-  const without = computeDamage(mkCard("fire", 10), mkCard("water"), { rand: () => 1 });
-  const with_   = computeDamage(mkCard("fire", 10), mkCard("water"), { rand: () => 1, forceCrit: true });
+  const without = computeDamage(mkCard("fire", 10), mkCard("tide"), { rand: () => 1 });
+  const with_   = computeDamage(mkCard("fire", 10), mkCard("tide"), { rand: () => 1, forceCrit: true });
   assert.ok(with_.damage >= without.damage, "forceCrit damage should be >= non-crit damage");
   assert.equal(with_.critical, true);
 });
 
 test("forceCrit in preview mode is suppressed (preview must stay deterministic)", () => {
-  const r = computeDamage(mkCard("fire", 6), mkCard("water"), {
+  const r = computeDamage(mkCard("fire", 6), mkCard("tide"), {
     forceCrit: true,
     preview: true,
   });

@@ -32,24 +32,24 @@ const { toCard } = require("../shared/deck-builder");
 function fixture() {
   return [
     // common (tier 1)
-    { id: 1, name: "PidgeyOne",   types: ["normal"], tier: 1, energyCost: 1, cardHp: 1, cardAttack: 1, sprite_front: "" },
-    { id: 2, name: "PidgeyTwo",   types: ["normal"], tier: 1, energyCost: 1, cardHp: 1, cardAttack: 1, sprite_front: "" },
+    { id: 1, name: "PidgeyOne",   types: ["martial"], tier: 1, energyCost: 1, cardHp: 1, cardAttack: 1, sprite_front: "" },
+    { id: 2, name: "PidgeyTwo",   types: ["martial"], tier: 1, energyCost: 1, cardHp: 1, cardAttack: 1, sprite_front: "" },
     // uncommon (tier 2)
-    { id: 3, name: "RattataOne",  types: ["normal"], tier: 2, energyCost: 2, cardHp: 2, cardAttack: 2, sprite_front: "" },
-    { id: 4, name: "RattataTwo",  types: ["normal"], tier: 2, energyCost: 2, cardHp: 2, cardAttack: 2, sprite_front: "" },
+    { id: 3, name: "RattataOne",  types: ["martial"], tier: 2, energyCost: 2, cardHp: 2, cardAttack: 2, sprite_front: "" },
+    { id: 4, name: "RattataTwo",  types: ["martial"], tier: 2, energyCost: 2, cardHp: 2, cardAttack: 2, sprite_front: "" },
     // rare (tier 3)
-    { id: 5, name: "GyaradosOne", types: ["water"],  tier: 3, energyCost: 3, cardHp: 3, cardAttack: 3, sprite_front: "" },
-    { id: 6, name: "GyaradosTwo", types: ["water"],  tier: 3, energyCost: 3, cardHp: 3, cardAttack: 3, sprite_front: "" },
+    { id: 5, name: "GyaradosOne", types: ["tide"],  tier: 3, energyCost: 3, cardHp: 3, cardAttack: 3, sprite_front: "" },
+    { id: 6, name: "GyaradosTwo", types: ["tide"],  tier: 3, energyCost: 3, cardHp: 3, cardAttack: 3, sprite_front: "" },
     // epic (tier 4)
-    { id: 7, name: "DragoniteOne",types: ["dragon"], tier: 4, energyCost: 4, cardHp: 4, cardAttack: 4, sprite_front: "" },
-    { id: 8, name: "DragoniteTwo",types: ["dragon"], tier: 4, energyCost: 4, cardHp: 4, cardAttack: 4, sprite_front: "" },
+    { id: 7, name: "DragoniteOne",types: ["wyrm"], tier: 4, energyCost: 4, cardHp: 4, cardAttack: 4, sprite_front: "" },
+    { id: 8, name: "DragoniteTwo",types: ["wyrm"], tier: 4, energyCost: 4, cardHp: 4, cardAttack: 4, sprite_front: "" },
     // legendary (tier 5, plus a few flag-overrides)
-    { id: 9, name: "MewtwoLeg",   types: ["psychic"],tier: 5, energyCost: 5, cardHp: 5, cardAttack: 5, sprite_front: "", is_legendary: true  },
-    { id:10, name: "MewMyth",     types: ["psychic"],tier: 5, energyCost: 5, cardHp: 5, cardAttack: 5, sprite_front: "", is_mythical: true   },
-    { id:11, name: "ArticunoLeg", types: ["ice"],    tier: 5, energyCost: 5, cardHp: 5, cardAttack: 5, sprite_front: "", is_legendary: true  },
+    { id: 9, name: "MewtwoLeg",   types: ["mind"],tier: 5, energyCost: 5, cardHp: 5, cardAttack: 5, sprite_front: "", is_legendary: true  },
+    { id:10, name: "MewMyth",     types: ["mind"],tier: 5, energyCost: 5, cardHp: 5, cardAttack: 5, sprite_front: "", is_mythical: true   },
+    { id:11, name: "ArticunoLeg", types: ["frost"],    tier: 5, energyCost: 5, cardHp: 5, cardAttack: 5, sprite_front: "", is_legendary: true  },
     // Flag-override coverage: a tier-2 card that's flagged legendary.
     // Its rarity MUST read as "legendary", not "uncommon".
-    { id:12, name: "OddLeg",      types: ["fairy"],  tier: 2, energyCost: 2, cardHp: 2, cardAttack: 2, sprite_front: "", is_legendary: true  },
+    { id:12, name: "OddLeg",      types: ["radiant"],  tier: 2, energyCost: 2, cardHp: 2, cardAttack: 2, sprite_front: "", is_legendary: true  },
   ];
 }
 
@@ -206,7 +206,7 @@ test("medium roll excludes a flagged-legendary card even if its tier is in range
   // which isn't in MEDIUM_RARITIES — so the pool is empty and we return
   // 0 picks (the safety bail).
   const dex = [
-    { id: 99, name: "OnlyLeg", types: ["fairy"], tier: 2, energyCost: 2, cardHp: 2, cardAttack: 2, sprite_front: "", is_legendary: true },
+    { id: 99, name: "OnlyLeg", types: ["radiant"], tier: 2, energyCost: 2, cardHp: 2, cardAttack: 2, sprite_front: "", is_legendary: true },
   ];
   const picks = rollPicks(dex, 1, Math.random, {
     allowedRarities: MEDIUM_RARITIES,
@@ -252,8 +252,8 @@ test("rollPicks fallback walks ONLY the allowed rarities (no bleed across pools)
   const dex = [
     // Only commons + an epic. Medium roll should never return the epic
     // even when its weighted pick lands on a rarity with no cards.
-    { id: 1, name: "T1a", tier: 1, types: ["normal"], energyCost: 1, cardHp: 1, cardAttack: 1, sprite_front: "" },
-    { id: 7, name: "T4a", tier: 4, types: ["normal"], energyCost: 4, cardHp: 4, cardAttack: 4, sprite_front: "" },
+    { id: 1, name: "T1a", tier: 1, types: ["martial"], energyCost: 1, cardHp: 1, cardAttack: 1, sprite_front: "" },
+    { id: 7, name: "T4a", tier: 4, types: ["martial"], energyCost: 4, cardHp: 4, cardAttack: 4, sprite_front: "" },
   ];
   for (let trial = 0; trial < 50; trial++) {
     const picks = rollPicks(dex, 1, Math.random, {

@@ -15,7 +15,7 @@ const READING_STORIES = [
   {
     id: "pikachus-lost-berry",
     title: "Pikachu's Lost Berry",
-    cover: { creatureId: 25, glyph: "⚡", themeType: "electric" },
+    cover: { creatureId: 25, glyph: "⚡", themeType: "storm" },
     estimatedMinutes: 4,
     readingLevel: "K-1",
     summary: "Pikachu loses a special berry and friends help find it.",
@@ -61,7 +61,7 @@ const READING_STORIES = [
   {
     id: "the-brave-bug-catcher",
     title: "The Brave Caterpie",
-    cover: { creatureId: 10, glyph: "🐛", themeType: "bug" },
+    cover: { creatureId: 10, glyph: "🐛", themeType: "swarm" },
     estimatedMinutes: 4,
     readingLevel: "K-1",
     summary: "A small Caterpie shows that brave comes in all sizes.",
@@ -101,7 +101,7 @@ const READING_STORIES = [
   {
     id: "snorlaxs-big-nap",
     title: "Snorlax's Big Nap",
-    cover: { creatureId: 143, glyph: "💤", themeType: "normal" },
+    cover: { creatureId: 143, glyph: "💤", themeType: "martial" },
     estimatedMinutes: 5,
     readingLevel: "1-2",
     summary: "Snorlax sleeps on the path. Friends find a kind way to help.",

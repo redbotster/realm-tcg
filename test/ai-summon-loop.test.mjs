@@ -10,7 +10,7 @@ import { createGame, aiTakeTurn, endTurn } from "../client/js/game.js";
 
 function deck(n, cost = 1) {
   return Array.from({ length: n }, (_, i) => ({
-    id: 1000 + i, name: "C" + (1000 + i), types: ["normal"], tier: 1,
+    id: 1000 + i, name: "C" + (1000 + i), types: ["martial"], tier: 1,
     energyCost: cost, cardHp: 10, cardAttack: 4,
     raw: { hp: 60, attack: 40, defense: 30, sp_attack: 40, sp_defense: 30, speed: 30 },
   }));
@@ -41,10 +41,10 @@ test("AI replaces weakest field card on smart policies when hand has a clear upg
   const s = createGame({ playerDeck: deck(30), aiDeck: deck(30, 1), firstPlayer: "ai" });
   const ai = s.players.ai;
   // Fill field with a weak attacker; give AI an obviously better card in hand.
-  const weak = { id: 9999, name: "WeakBoi", types: ["normal"], tier: 1,
+  const weak = { id: 9999, name: "WeakBoi", types: ["martial"], tier: 1,
     energyCost: 1, cardHp: 5, cardAttack: 1,
     raw: { hp: 30, attack: 10, defense: 10, sp_attack: 10, sp_defense: 10, speed: 10 } };
-  const strong = { id: 9998, name: "Ace", types: ["normal"], tier: 4,
+  const strong = { id: 9998, name: "Ace", types: ["martial"], tier: 4,
     energyCost: 3, cardHp: 30, cardAttack: 10,
     raw: { hp: 100, attack: 80, defense: 60, sp_attack: 80, sp_defense: 60, speed: 80 },
     abilities: [{ name: "Iron Defense", short: "Reduce damage" }] };

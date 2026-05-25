@@ -9,7 +9,7 @@ import { scoreCardForSummon, matchupBonus } from "../client/js/game.js";
 
 function mkCard(opts = {}) {
   return {
-    id: 1, name: "C", types: ["normal"], tier: 2,
+    id: 1, name: "C", types: ["martial"], tier: 2,
     energyCost: 3, cardHp: 10, cardAttack: 5,
     raw: { hp: 100, attack: 60, defense: 30, sp_attack: 60, sp_defense: 30, speed: 30 },
     abilities: [],
@@ -32,17 +32,17 @@ function mkSide(field = [null, null, null, null, null]) {
 // --- matchupBonus ----------------------------------------------------
 
 test("matchupBonus: fire attacker vs grass enemy → +3 (super-effective)", () => {
-  const opp = mkSide([mkInst(mkCard({ types: ["grass"] }))]);
+  const opp = mkSide([mkInst(mkCard({ types: ["verdant"] }))]);
   const bonus = matchupBonus(mkCard({ types: ["fire"] }), opp);
   assert.equal(bonus, 3);
 });
 
 test("matchupBonus: water attacker vs ground/rock → +3 each (capped at 2x in chart)", () => {
   const opp = mkSide([
-    mkInst(mkCard({ types: ["ground", "rock"] })),
+    mkInst(mkCard({ types: ["earth", "stone"] })),
     mkInst(mkCard({ types: ["fire"] })),
   ]);
-  const bonus = matchupBonus(mkCard({ types: ["water"] }), opp);
+  const bonus = matchupBonus(mkCard({ types: ["tide"] }), opp);
   // ground/rock (2x), fire (2x) → 3 + 3 = 6
   assert.equal(bonus, 6);
 });
@@ -53,8 +53,8 @@ test("matchupBonus: 0x immunity → +4 (best score)", () => {
   // because dropping a card that no-effects is intentionally NOT
   // chosen — wait actually the test should verify behavior, not
   // intent. Let's check the actual value.
-  const opp = mkSide([mkInst(mkCard({ types: ["ground"] }))]);
-  const bonus = matchupBonus(mkCard({ types: ["electric"] }), opp);
+  const opp = mkSide([mkInst(mkCard({ types: ["earth"] }))]);
+  const bonus = matchupBonus(mkCard({ types: ["storm"] }), opp);
   // Per the implementation: mult===0 → +4. That's a perverse
   // outcome that the existing AI accepts; documenting it here so
   // future-me knows it's intentional behavior, not a bug.
@@ -63,7 +63,7 @@ test("matchupBonus: 0x immunity → +4 (best score)", () => {
 
 test("matchupBonus: not-very-effective → -1", () => {
   // Fire vs Water is 0.5x → -1
-  const opp = mkSide([mkInst(mkCard({ types: ["water"] }))]);
+  const opp = mkSide([mkInst(mkCard({ types: ["tide"] }))]);
   const bonus = matchupBonus(mkCard({ types: ["fire"] }), opp);
   assert.equal(bonus, -1);
 });
@@ -99,7 +99,7 @@ test("scoreCardForSummon: signature card scores higher than vanilla same-cost", 
 
 test("scoreCardForSummon: super-effective vs enemy raises score", () => {
   const ai = { field: [null] };
-  const oppGrass = mkSide([mkInst(mkCard({ types: ["grass"] }))]);
+  const oppGrass = mkSide([mkInst(mkCard({ types: ["verdant"] }))]);
   const oppEmpty = mkSide();
   const fireCard = mkCard({ id: 999, types: ["fire"], energyCost: 4 });
   assert.ok(scoreCardForSummon(ai, oppGrass, fireCard)

@@ -4,9 +4,9 @@
 // are biased toward that type (~30% extra chance per pick).
 
 const TYPES_IN_ROTATION = [
-  "fire", "water", "grass", "electric", "psychic", "ice",
-  "fighting", "poison", "ground", "flying", "bug", "rock",
-  "ghost", "dragon", "dark", "steel", "fairy", "normal",
+  "fire", "tide", "verdant", "storm", "mind", "frost",
+  "brawl", "plague", "earth", "sky", "swarm", "stone",
+  "spectral", "wyrm", "shadow", "iron", "radiant", "martial",
 ];
 
 function isoWeek(date = new Date()) {

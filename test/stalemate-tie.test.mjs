@@ -8,7 +8,7 @@ import { createGame, endTurn } from "../client/js/game.js";
 
 function deck(n) {
   return Array.from({ length: n }, (_, i) => ({
-    id: 100 + i, name: "C" + (100 + i), types: ["normal"], tier: 1,
+    id: 100 + i, name: "C" + (100 + i), types: ["martial"], tier: 1,
     energyCost: 1, cardHp: 5, cardAttack: 2,
     raw: { hp: 30, attack: 20, defense: 10, sp_attack: 20, sp_defense: 10, speed: 10 },
   }));

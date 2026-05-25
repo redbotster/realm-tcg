@@ -14,7 +14,7 @@ function synthDex(n = 200) {
       id: i,
       name: `Mon${i}`,
       slug: `mon${i}`,
-      types: [["fire", "water", "grass", "electric"][i % 4]],
+      types: [["fire", "tide", "verdant", "storm"][i % 4]],
       hp: per,
       attack: per,
       defense: per,

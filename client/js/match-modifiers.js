@@ -56,7 +56,7 @@ export const MODIFIERS = [
     icon: "🌊",
     desc: "Water attacks deal +2 ATK all match.",
     apply(state) {
-      state.modifier_typeAtkBonus = { type: "water", bonus: 2 };
+      state.modifier_typeAtkBonus = { type: "tide", bonus: 2 };
     },
   },
   {
@@ -65,7 +65,7 @@ export const MODIFIERS = [
     icon: "⚡",
     desc: "Electric attacks deal +2 ATK all match.",
     apply(state) {
-      state.modifier_typeAtkBonus = { type: "electric", bonus: 2 };
+      state.modifier_typeAtkBonus = { type: "storm", bonus: 2 };
     },
   },
   {

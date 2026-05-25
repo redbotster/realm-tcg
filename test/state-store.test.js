@@ -118,7 +118,7 @@ test("playerBind + playerLastRoom round-trip", async () => {
 });
 
 test("playerLastRoom returns null for unknown players", async () => {
-  const got = await store.playerLastRoom("ghost");
+  const got = await store.playerLastRoom("spectral");
   assert.equal(got, null);
 });
 

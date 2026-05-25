@@ -17,7 +17,7 @@ function synthCreature(n) {
     const per = Math.round(bst / 6);
     rows.push({
       id: i, name: `Mon${i}`, slug: `mon${i}`,
-      types: [["fire", "water", "grass", "electric"][i % 4]],
+      types: [["fire", "tide", "verdant", "storm"][i % 4]],
       hp: per, attack: per, defense: per,
       sp_attack: per, sp_defense: per, speed: per,
       sprite_front: null, generation: 1,

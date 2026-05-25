@@ -8,7 +8,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { createGame, playCard, attack, endTurn, mulliganHand, FIELD_SIZE, CHAMPION_START_HP } from "../client/js/game.js";
 
-function deck(n, ofType = "normal", baseAttack = 5, baseHp = 10) {
+function deck(n, ofType = "martial", baseAttack = 5, baseHp = 10) {
   return Array.from({ length: n }, (_, i) => ({
     id: 1000 + i, name: "C" + (1000 + i), types: [ofType],
     energyCost: 1, cardHp: baseHp, cardAttack: baseAttack,
@@ -26,7 +26,7 @@ test("createGame returns a state with two sides + initial recap counters", () =>
 });
 
 test("playCard moves a card from hand → field, decrements energy", () => {
-  const s = createGame({ playerDeck: deck(30, "normal", 5, 10), aiDeck: deck(30), firstPlayer: "player" });
+  const s = createGame({ playerDeck: deck(30, "martial", 5, 10), aiDeck: deck(30), firstPlayer: "player" });
   s.players.player.energy = 5; // skip the natural ramp for the test
   const before = s.players.player.hand.length;
   const r = playCard(s, "player", 0);
@@ -44,7 +44,7 @@ test("playCard rejects if energy insufficient", () => {
 });
 
 test("attack with no defenders targets champion + drops HP", () => {
-  const s = createGame({ playerDeck: deck(30, "fire", 8, 10), aiDeck: deck(30, "grass"), firstPlayer: "player" });
+  const s = createGame({ playerDeck: deck(30, "fire", 8, 10), aiDeck: deck(30, "verdant"), firstPlayer: "player" });
   s.players.player.energy = 10;
   playCard(s, "player", 0);
   // Clear summoning sickness so the new card can attack this turn
@@ -74,12 +74,12 @@ function placeAi(s, slot, card, currentHp = null) {
 }
 
 test("attack against a defender deals damage scaled by type chart", () => {
-  const s = createGame({ playerDeck: deck(30, "fire", 8, 10), aiDeck: deck(30, "grass", 1, 10), firstPlayer: "player" });
+  const s = createGame({ playerDeck: deck(30, "fire", 8, 10), aiDeck: deck(30, "verdant", 1, 10), firstPlayer: "player" });
   s.players.player.energy = 10;
   playCard(s, "player", 0);
   s.players.player.field.forEach((i) => { if (i) i.summoningSickness = false; });
   // Place a defender directly so we don't have to advance turn order.
-  placeAi(s, 0, deck(1, "grass", 1, 10)[0]);
+  placeAi(s, 0, deck(1, "verdant", 1, 10)[0]);
   const before = s.players.ai.field[0].currentHp;
   const r = attack(s, "player", 0, 0, { abilityId: "basic" });
   assert.ok(r.ok, r.reason);
@@ -93,7 +93,7 @@ test("KO'd defender moves to opponent's discard pile + clears field slot", () =>
   s.players.player.energy = 10;
   playCard(s, "player", 0);
   s.players.player.field.forEach((i) => { if (i) i.summoningSickness = false; });
-  placeAi(s, 0, deck(1, "grass", 1, 1)[0]);
+  placeAi(s, 0, deck(1, "verdant", 1, 1)[0]);
   const r = attack(s, "player", 0, 0, { abilityId: "basic" });
   assert.ok(r.ok);
   assert.equal(s.players.ai.field[0], null, "slot cleared on KO");
@@ -129,7 +129,7 @@ test("recap.biggestHit + biggestHitName track the largest single hit", () => {
   s.players.player.energy = 10;
   playCard(s, "player", 0);
   s.players.player.field.forEach((i) => { if (i) i.summoningSickness = false; });
-  placeAi(s, 0, deck(1, "grass", 1, 25)[0]);
+  placeAi(s, 0, deck(1, "verdant", 1, 25)[0]);
   attack(s, "player", 0, 0, { abilityId: "basic" });
   assert.ok(s.recap.player.biggestHit > 0, `biggestHit was ${s.recap.player.biggestHit}`);
   assert.equal(s.recap.player.biggestHitName, s.players.player.field[0].card.name);

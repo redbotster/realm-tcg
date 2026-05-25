@@ -6,7 +6,7 @@ import { isGuardian, signatureFor, SIGNATURE_ABILITIES } from "../client/js/pass
 
 function mkCard(overrides = {}) {
   return {
-    id: 1, name: "Test", types: ["normal"], tier: 1,
+    id: 1, name: "Test", types: ["martial"], tier: 1,
     energyCost: 1, cardHp: 8, cardAttack: 4,
     raw: { hp: 80, attack: 60, defense: 30, sp_attack: 60, sp_defense: 30, speed: 30 },
     abilities: [],
@@ -40,39 +40,39 @@ test("mythicals are Guardians", () => {
 });
 
 test("Snorlax (#143) is a Guardian", () => {
-  assert.ok(isGuardian(mkCard({ id: 143, name: "Snorlax", types: ["normal"], tier: 3 })));
+  assert.ok(isGuardian(mkCard({ id: 143, name: "Snorlax", types: ["martial"], tier: 3 })));
 });
 
 test("Lapras (#131) is a Guardian", () => {
-  assert.ok(isGuardian(mkCard({ id: 131, name: "Lapras", types: ["water"], tier: 4 })));
+  assert.ok(isGuardian(mkCard({ id: 131, name: "Lapras", types: ["tide"], tier: 4 })));
 });
 
 test("Shuckle (#213) is a Guardian", () => {
-  assert.ok(isGuardian(mkCard({ id: 213, name: "Shuckle", types: ["bug", "rock"], tier: 3 })));
+  assert.ok(isGuardian(mkCard({ id: 213, name: "Shuckle", types: ["swarm", "stone"], tier: 3 })));
 });
 
 test("Rhyperior (#464) is a Guardian", () => {
-  assert.ok(isGuardian(mkCard({ id: 464, name: "Rhyperior", types: ["ground", "rock"], tier: 4 })));
+  assert.ok(isGuardian(mkCard({ id: 464, name: "Rhyperior", types: ["earth", "stone"], tier: 4 })));
 });
 
 test("low-tier non-tank is NOT a Guardian", () => {
-  assert.equal(isGuardian(mkCard({ types: ["normal"], tier: 1 })), false);
+  assert.equal(isGuardian(mkCard({ types: ["martial"], tier: 1 })), false);
 });
 
 test("tier 3 steel WITH sturdy passive is a Guardian", () => {
-  const c = mkCard({ types: ["steel"], tier: 3, abilities: ["sturdy"] });
+  const c = mkCard({ types: ["iron"], tier: 3, abilities: ["sturdy"] });
   assert.ok(isGuardian(c));
 });
 
 test("tier 3 steel WITHOUT a tank passive is NOT a Guardian", () => {
-  const c = mkCard({ types: ["steel"], tier: 3, abilities: ["levitate"] });
+  const c = mkCard({ types: ["iron"], tier: 3, abilities: ["levitate"] });
   assert.equal(isGuardian(c), false);
 });
 
 // --- New AOE signatures --------------------------------------------------
 
 test("Gyarados Tsunami damages every enemy on field (scaling)", () => {
-  const sig = signatureFor({ id: 130, types: ["water"] });
+  const sig = signatureFor({ id: 130, types: ["tide"] });
   assert.ok(sig, "Gyarados should have a signature");
   assert.equal(sig.name, "Tsunami");
   const state = mkState();
@@ -80,7 +80,7 @@ test("Gyarados Tsunami damages every enemy on field (scaling)", () => {
   for (let i = 0; i < 3; i++) {
     state.players.ai.field[i] = mkInst(mkCard({ id: 100 + i, name: "Enemy" + i, cardHp: 10 }));
   }
-  const gyarados = mkInst(mkCard({ id: 130, name: "Gyarados", types: ["water"] }));
+  const gyarados = mkInst(mkCard({ id: 130, name: "Gyarados", types: ["tide"] }));
   sig.onSummon(state, "player", gyarados);
   // damage = 2 + 3 = 5 per enemy
   for (let i = 0; i < 3; i++) {
@@ -93,7 +93,7 @@ test("Gyarados Tsunami knocks out low-HP enemies", () => {
   const state = mkState();
   state.players.ai.field[0] = mkInst(mkCard({ id: 100, cardHp: 2 }));
   state.players.ai.field[1] = mkInst(mkCard({ id: 101, cardHp: 10 }));
-  const inst = mkInst(mkCard({ id: 130, types: ["water"] }));
+  const inst = mkInst(mkCard({ id: 130, types: ["tide"] }));
   sig.onSummon(state, "player", inst);
   // damage = 2 + 2 = 4 per enemy; first KO'd, second at 6
   assert.equal(state.players.ai.field[0], null);
