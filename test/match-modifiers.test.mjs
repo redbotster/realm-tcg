@@ -129,14 +129,15 @@ test("Type Storm (fire): fire attackers get +2 ATK, others unaffected", () => {
   };
   playCard(s, "player", 0);
   s.players.player.field.forEach((i) => { if (i) i.summoningSickness = false; });
-  // Baseline.
-  attack(s, "player", 0, 0, { abilityId: "basic" });
+  // Baseline. Fixed rand so neither attack crits — we're isolating the
+  // modifier's flat bonus, not damage variance.
+  attack(s, "player", 0, 0, { abilityId: "basic", rand: () => 0.99 });
   const vanilla = 50 - s.players.ai.field[0].currentHp;
   // Reset + apply.
   s.players.ai.field[0].currentHp = 50;
   s.players.player.field[0].attackedThisTurn = false;
   applyModifier(s, MODIFIERS.find((x) => x.id === "type-storm-fire"));
-  attack(s, "player", 0, 0, { abilityId: "basic" });
+  attack(s, "player", 0, 0, { abilityId: "basic", rand: () => 0.99 });
   const stormed = 50 - s.players.ai.field[0].currentHp;
   assert.ok(stormed > vanilla, `fire storm should boost fire attacks (${stormed} vs ${vanilla})`);
 });

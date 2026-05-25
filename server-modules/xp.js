@@ -88,11 +88,13 @@ function mount(app, supabase) {
     if (!req.user) return res.status(401).json({ error: "Sign in required." });
     const { won = false, kos = 0, crits = 0, abandoned = false } = req.body || {};
     let gained = 0;
-    if (abandoned) gained = 10;
-    else if (won) gained = 100;
-    else gained = 40;
-    gained += Math.max(0, Math.min(20, Number(kos) || 0)) * 20;
-    gained += Math.max(0, Math.min(20, Number(crits) || 0)) * 10;
+    // Conceding / abandoning grants no experience at all — no base, no
+    // KO/crit bonuses. Only a played-out match earns XP.
+    if (!abandoned) {
+      gained = won ? 100 : 40;
+      gained += Math.max(0, Math.min(20, Number(kos) || 0)) * 20;
+      gained += Math.max(0, Math.min(20, Number(crits) || 0)) * 10;
+    }
 
     const { data: cur } = await supabase
       .from("users")
