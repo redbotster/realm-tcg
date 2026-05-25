@@ -45,7 +45,7 @@ export const TURN_DURATION_MS = 60_000; // each player has 60s per turn
 let _instanceCounter = 0;
 const nextInstanceId = () => `i${++_instanceCounter}`;
 
-// Six canonical Kanto-era human champions (gym leaders + champion). Each is
+// Six original playable champions, each with a passive ability. Each is
 // flavored to a creature type and grants a passive ability for that type.
 // The internal id ("brock", "misty", "pikachu", …) is preserved as an opaque
 // ability key so existing saves/decks that reference it keep working; only the

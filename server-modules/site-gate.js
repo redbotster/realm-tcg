@@ -62,7 +62,7 @@ function gatePage({ wrong = false, redirectTo = "/" } = {}) {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>creature TCG — Access</title>
+  <title>Realm TCG — Access</title>
   <style>
     *,*::before,*::after { box-sizing: border-box; }
     body {
@@ -136,7 +136,7 @@ function gatePage({ wrong = false, redirectTo = "/" } = {}) {
 </head>
 <body>
   <form class="gate" method="POST" action="/api/gate">
-    <h1>creature TCG</h1>
+    <h1>Realm TCG</h1>
     <p>Private build — enter the password to continue.</p>
     ${wrong ? `<div class="err">Wrong password. Try again.</div>` : ""}
     <input type="hidden" name="redirect" value="${escapeHtml(redirectTo)}">

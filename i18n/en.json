@@ -1,6 +1,6 @@
 {
   "menu": {
-    "title": "creature TCG",
+    "title": "Realm TCG",
     "tagline": "Build a 30-card deck. Wield Legendary signature moves. Out-strategize your rival.",
     "chooseChampion": "Choose a champion to begin",
     "battleAs": "Battle as {name} ▸",
@@ -20,7 +20,7 @@
     "medium": "Medium",
     "hard": "Hard",
     "easyBio": "AI plays the cheapest card, sometimes passes, attacks randomly.",
-    "mediumBio": "AI picks the strongest affordable card and aims for type-effective targets.",
+    "mediumBio": "AI picks the strongest affordable card and aims for school-effective targets.",
     "hardBio": "AI ramps to its biggest card with signature awareness and chases guaranteed KOs."
   },
   "arena": {
@@ -59,7 +59,7 @@
     "moves": "Moves",
     "restart": "↺ Restart",
     "giveUp": "Give up",
-    "tapYourFirst": "Tap one of your creature, then tap an enemy.",
+    "tapYourFirst": "Tap one of your creatures, then tap an enemy.",
     "tapEnemy": "Tap an enemy to attack with {name}."
   },
   "share": {

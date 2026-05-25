@@ -64,7 +64,7 @@ function rpFromReq(req) {
   } else {
     rpID = host;
   }
-  const rpName = (process.env.RP_NAME || "creature TCG").trim();
+  const rpName = (process.env.RP_NAME || "Realm TCG").trim();
   // Origin must match the page the user is on, so always derive from request.
   const proto = req.headers["x-forwarded-proto"] || req.protocol || "https";
   const origin = `${proto}://${req.headers.host}`;

@@ -294,7 +294,7 @@ function renderMenu() {
   menu.innerHTML = `
     ${renderAccountPanel()}
     <div class="menu-stage">
-      <h1 class="game-title">creature TCG</h1>
+      <h1 class="game-title">Realm TCG</h1>
       <div class="menu-tagline">Build a 30-card deck. Wield Legendary signature moves. Out-strategize your rival.</div>
       ${renderFeatureStrip()}
       <div id="daily-card-slot"></div>
@@ -750,7 +750,7 @@ async function openChampionPicker() {
       <div class="champ-list">
         ${champions.map((c) => `
           <button class="champ-row" data-id="${c.id}">
-            <img class="champ-art" src="https://play.creatureshowdown.com/sprites/champions/${c.portrait}.png" alt="${escape(c.name)}" loading="lazy">
+            <img class="champ-art" src="/client/assets/champions/${c.portrait}.webp" alt="${escape(c.name)}" loading="lazy">
             <div class="champ-body">
               <div class="champ-name">${escape(c.name)}</div>
               <div class="champ-titletag">${escape(c.title)}</div>
@@ -1146,7 +1146,7 @@ function renderFeatureStrip() {
     <div class="feature-strip">
       ${picks.map((c) => `
         <div class="feature-card">
-          <div class="feature-art" style="background-image:url('https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/creature/other/official-artwork/${c.id}.png')"></div>
+          <div class="feature-art" style="background-image:url('/client/assets/creatures/${c.id}.webp')"></div>
           <div class="feature-body">
             <div class="feature-name">${escape(c.name)}</div>
             <div class="feature-ability">⭐ ${escape(c.tag)}</div>

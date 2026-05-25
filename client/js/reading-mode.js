@@ -27,7 +27,7 @@ let _audioEl = null;
 let _detachWordClicks = null;
 
 const SPRITE_URL = (id) =>
-  `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/creature/other/official-artwork/${id}.png`;
+  `/client/assets/creatures/${id}.webp`;
 
 // Speaker → Bestiary ID. Used to fetch a portrait sprite next to each
 // section so kids can pair "who's talking" with the dialog.

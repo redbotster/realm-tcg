@@ -114,7 +114,7 @@ const INTRO_SPEAKER_TO_CREATURE_ID = {
   lance: null, // human champion — show a generic glyph instead
 };
 const CREATURE_SPRITE_URL = (id) =>
-  `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/creature/other/official-artwork/${id}.png`;
+  `/client/assets/creatures/${id}.webp`;
 
 // Read-along chapter intro: section-by-section with Read Aloud TTS.
 // Kid-friendly fallback to the legacy line-by-line `intro` array if no

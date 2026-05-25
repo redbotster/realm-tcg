@@ -13,41 +13,44 @@
 const { toCard } = require("../shared/deck-builder");
 
 const CHAMPIONS = {
+  // Boss champions for "Fight a Champion". Internal ids kept as opaque keys.
+  // coreIds reference the curated Bestiary; the builder falls back to typeFilter
+  // / tier-balanced picks for any id not present, so decks always reach 30.
   lance: {
     id: "lance",
-    name: "Lance",
-    title: "Dragon Master",
-    portrait: "lance",
-    bio: "Kanto Champion. Specializes in pseudo-legendary dragons.",
+    name: "Vorthak, the Dragon Tyrant",
+    title: "Wyrmlord of the Ember Peaks",
+    portrait: "wyrm",
+    bio: "Master of the great wyrms; his roost is carved into a living volcano.",
     typeFilter: ["wyrm", "sky"],
-    coreIds: [149, 130, 142, 230, 373, 445, 635, 706, 718, 887], // Dragonite, Gyarados, Aerodactyl, Kingdra, Salamence, Garchomp, Hydreigon, Goodra, Zygarde, Dragapult
+    coreIds: [5, 6, 7, 8, 19], // Cinder Drakeling, Ashscale Wyvern, Pyraxis, Glacith, Skyreach Griffon
   },
   cynthia: {
     id: "cynthia",
-    name: "Cynthia",
-    title: "Sinnoh Champion",
-    portrait: "cynthia",
-    bio: "Adapts to any matchup with a balanced legendary roster.",
+    name: "Archmagus Selene",
+    title: "the Balanced Crown",
+    portrait: "mind",
+    bio: "A scholar-queen who answers every strategy with a measured one.",
     typeFilter: null,
-    coreIds: [445, 612, 448, 442, 407, 467, 488, 491, 487, 493], // Garchomp, Haxorus, Lucario, Spiritomb, Roserade, Magmortar, Cresselia, Darkrai, Giratina, Arceus
+    coreIds: [7, 8, 11, 15, 26, 32], // a spread of legends across schools
   },
   steven: {
     id: "steven",
-    name: "Steven",
-    title: "Steel Magnate",
-    portrait: "steven",
-    bio: "Hoenn champion. Iron-clad steel-type creature only.",
+    name: "Ferrovax the Ironclad",
+    title: "the Iron Magnate",
+    portrait: "iron",
+    bio: "Warden of the deep forges; fields only constructs of living iron and stone.",
     typeFilter: ["iron"],
-    coreIds: [376, 227, 306, 411, 462, 530, 599, 681, 707, 805], // Metagross, Skarmory, Aggron, Bastiodon, Magnezone, Excadrill, Klang, Aegislash, Klefki, Stakataka
+    coreIds: [4, 28, 29], // Thurgrim Ironbeard, Stone Gargoyle, Iron Golem Sentinel
   },
   red: {
     id: "red",
-    name: "Red",
-    title: "Pallet's Champion",
-    portrait: "red",
-    bio: "Classic Kanto: starters, Pikachu, and iconic Gen 1 heavies.",
+    name: "The Nameless Wanderer",
+    title: "Champion of the First Age",
+    portrait: "martial",
+    bio: "A silent legend who has bested every hall. None know their true name.",
     typeFilter: null,
-    coreIds: [3, 6, 9, 25, 130, 131, 143, 149, 150, 151], // Venusaur, Charizard, Blastoise, Pikachu, Gyarados, Lapras, Snorlax, Dragonite, Mewtwo, Mew
+    coreIds: [3, 7, 12, 18, 25, 29, 32], // an all-rounder gauntlet
   },
 };
 

@@ -236,8 +236,8 @@ function mount(app, supabase, getBestiary) {
     const origin = (req.headers["x-forwarded-host"] && `https://${req.headers["x-forwarded-host"]}`) || (req.headers.host && `https://${req.headers.host}`) || "";
     const url = `${origin}/?d=${dayNumber}`;
     const shareText = won
-      ? `creature TCG Daily #${dayNumber} · ${boss.name}\n${stars}  ✅ ${turns} turn${turns === 1 ? "" : "s"} · ${hpLeft} HP left\nplay: ${url}`
-      : `creature TCG Daily #${dayNumber} · ${boss.name}\n${stars}  ❌ Survived ${turns} turns\nplay: ${url}`;
+      ? `Realm TCG Daily #${dayNumber} · ${boss.name}\n${stars}  ✅ ${turns} turn${turns === 1 ? "" : "s"} · ${hpLeft} HP left\nplay: ${url}`
+      : `Realm TCG Daily #${dayNumber} · ${boss.name}\n${stars}  ❌ Survived ${turns} turns\nplay: ${url}`;
     res.json({ ok: true, dayNumber, dateKey: session.dateKey, stars, shareText, shareUrl: url, bossName: boss.name });
   });
 

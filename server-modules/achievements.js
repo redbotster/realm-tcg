@@ -63,7 +63,7 @@ const DEFS = [
   { id: "collector_100",    name: "Collector",           icon: "📚",  goal: 100,  tier: "bronze",
     description: "Own 100 cards.",
     progress: (c) => c.stats.cards_owned || c.owned.reduce((s, o) => s + (o.quantity || 0), 0) },
-  { id: "collector_300",    name: "Pokémaster",          icon: "🎴",  goal: 300,  tier: "silver",
+  { id: "collector_300",    name: "Bestiary Master",          icon: "🎴",  goal: 300,  tier: "silver",
     description: "Own 300 cards.",
     progress: (c) => c.stats.cards_owned || c.owned.reduce((s, o) => s + (o.quantity || 0), 0) },
   { id: "collector_1000",   name: "Curator",             icon: "🗄️",  goal: 1000, tier: "gold",
@@ -100,11 +100,11 @@ const DEFS = [
     progress: (c) => c.owned.reduce((s, o) => s + ((o.shiny_level || 0) >= 3 ? 1 : 0), 0) },
 
   // --- Generation completionism (subtle long-term hooks) ---------------
-  { id: "gen1_half",        name: "Kanto Apprentice",    icon: "🟥",  goal: 75,   tier: "silver",
-    description: "Own 75 different Gen 1 creature.",
+  { id: "gen1_half",        name: "Wardens Apprentice",    icon: "🟥",  goal: 75,   tier: "silver",
+    description: "Own 75 different first-age creatures.",
     progress: (c) => uniqueOwnedMatching(c, (p) => p.generation === 1) },
-  { id: "gen1_complete",    name: "Kanto Complete",      icon: "🔴",  goal: 151,  tier: "diamond",
-    description: "Own all 151 Gen 1 creature.",
+  { id: "gen1_complete",    name: "Warden of the First Age",      icon: "🔴",  goal: 151,  tier: "diamond",
+    description: "Own all 151 first-age creatures.",
     progress: (c) => uniqueOwnedMatching(c, (p) => p.generation === 1) },
   { id: "any_gen_complete", name: "Generation Master",   icon: "🎓",  goal: 1,    tier: "diamond",
     description: "Complete any one full generation.",
@@ -130,7 +130,7 @@ const DEFS = [
     description: "Defeat your first Champion.",
     progress: (c) => c.championWins.size },
   { id: "champion_all",     name: "Champion of Champions", icon: "👑", goal: 4,   tier: "diamond",
-    description: "Defeat every Champion (Lance, Cynthia, Steven, Red).",
+    description: "Defeat every Champion.",
     progress: (c) => c.championWins.size },
 
   // --- Story-mode progression -------------------------------------------
@@ -141,7 +141,7 @@ const DEFS = [
     description: "Clear three story chapters.",
     progress: (c) => c.storyProgress.completed.length },
   { id: "story_finale",     name: "Dragon Slayer",       icon: "🐉",  goal: 1,    tier: "gold",
-    description: "Defeat Lance's Dragonite in the story finale.",
+    description: "Defeat the ancient wyrm in the story finale.",
     progress: (c) => c.storyProgress.completed.includes("finale_dragons_den") ? 1 : 0 },
   { id: "story_all",        name: "The Tale is Told",    icon: "✨",  goal: 4,    tier: "diamond",
     description: "Clear every story chapter.",

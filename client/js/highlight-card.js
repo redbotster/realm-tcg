@@ -166,7 +166,7 @@ export async function generateHighlight({ state, currentUser, format = DEFAULT_F
   }
 
   // 7. Footer.
-  drawText(ctx, "play • creature TCG", {
+  drawText(ctx, "play • Realm TCG", {
     x: W / 2, y: H - cfg.footerY,
     color: "rgba(255,255,255,0.55)",
     font: "italic 22px Inter, system-ui",
@@ -391,11 +391,11 @@ export async function showHighlightShare({ state, currentUser } = {}) {
       const file = new File([currentBlob], "creature-tcg-highlight.png", { type: "image/png" });
       if (navigator.canShare?.({ files: [file] })) {
         await navigator.share({
-          title: state.winner === "player" ? "I won my creature TCG match!" : "Tough match in creature TCG",
+          title: state.winner === "player" ? "I won my Realm TCG match!" : "Tough match in Realm TCG",
           files: [file],
         });
       } else if (navigator.share) {
-        await navigator.share({ title: "creature TCG", url: location.origin });
+        await navigator.share({ title: "Realm TCG", url: location.origin });
       }
     } catch {}
   });

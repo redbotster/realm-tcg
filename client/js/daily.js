@@ -32,7 +32,7 @@ export async function renderDailyCard(targetEl, { currentUser } = {}) {
     return;
   }
   const sprite = today.boss.anchorCreatureId
-    ? `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/creature/other/official-artwork/${today.boss.anchorCreatureId}.png`
+    ? `/client/assets/creatures/${today.boss.anchorCreatureId}.webp`
     : null;
   const playedTag = today.alreadyPlayed
     ? `<div class="daily-result-line">${today.alreadyPlayed.won ? "✅ Cleared today" : "❌ Defeated today"} — ${today.alreadyPlayed.turns} turns · ${today.alreadyPlayed.hp_left} HP left</div>`
@@ -142,7 +142,7 @@ export function showShareDialog(result) {
         <a class="share-social tw" target="_blank" rel="noopener noreferrer"
            href="https://twitter.com/intent/tweet?text=${tweetText}">𝕏 / Twitter</a>
         <a class="share-social rd" target="_blank" rel="noopener noreferrer"
-           href="https://www.reddit.com/submit?title=${encodeURIComponent(`creature TCG Daily #${result.dayNumber}: ${result.bossName}`)}&url=${encodeURIComponent(result.shareUrl)}">Reddit</a>
+           href="https://www.reddit.com/submit?title=${encodeURIComponent(`Realm TCG Daily #${result.dayNumber}: ${result.bossName}`)}&url=${encodeURIComponent(result.shareUrl)}">Reddit</a>
         <a class="share-social wa" target="_blank" rel="noopener noreferrer"
            href="https://wa.me/?text=${tweetText}">WhatsApp</a>
         <a class="share-social tg" target="_blank" rel="noopener noreferrer"
@@ -179,7 +179,7 @@ async function nativeShare(result) {
   if (!navigator.share) { copyToClipboard(result.shareText); return; }
   try {
     await navigator.share({
-      title: `creature TCG Daily #${result.dayNumber}`,
+      title: `Realm TCG Daily #${result.dayNumber}`,
       text: result.shareText,
       url: result.shareUrl,
     });
@@ -198,8 +198,8 @@ function shareLastResult() {
     ? (p.turns <= 8 ? "★★★★★" : p.turns <= 12 ? "★★★★☆" : p.turns <= 18 ? "★★★☆☆" : "★★☆☆☆")
     : "💀";
   const text = p.won
-    ? `creature TCG Daily #${_today.dayNumber} · ${_today.boss.displayName}\n${stars}  ✅ ${p.turns} turn${p.turns === 1 ? "" : "s"} · ${p.hp_left} HP left\nplay: ${url}`
-    : `creature TCG Daily #${_today.dayNumber} · ${_today.boss.displayName}\n${stars}  ❌ Survived ${p.turns} turns\nplay: ${url}`;
+    ? `Realm TCG Daily #${_today.dayNumber} · ${_today.boss.displayName}\n${stars}  ✅ ${p.turns} turn${p.turns === 1 ? "" : "s"} · ${p.hp_left} HP left\nplay: ${url}`
+    : `Realm TCG Daily #${_today.dayNumber} · ${_today.boss.displayName}\n${stars}  ❌ Survived ${p.turns} turns\nplay: ${url}`;
   showShareDialog({ shareText: text, shareUrl: url, dayNumber: _today.dayNumber, stars, bossName: _today.boss.displayName });
 }
 
