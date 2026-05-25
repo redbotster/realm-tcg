@@ -55,21 +55,23 @@ const nextInstanceId = () => `i${++_instanceCounter}`;
 // Portraits are original generated art (see scripts/generate-art.js); no
 // external sprite CDN is used. `sprite` stays null until art is produced.
 export const CHAMPIONS = {
-  brock:   { id: "brock",   name: "Thordak, the Stonewarden", title: "Dwarf Paladin",      bio: "+1 Defense to Stone & Earth allies",   portrait: "stone",   sprite: null },
-  misty:   { id: "misty",   name: "Lyralei, Tidecaller",      title: "Elf Mage",           bio: "Tide cards cost 1 less (min 1)",       portrait: "tide",    sprite: null },
-  pikachu: { id: "pikachu", name: "Zix the Sparkthief",       title: "Goblin Tinker",      bio: "+1 Attack to Storm allies",            portrait: "storm",   sprite: null },
-  erika:   { id: "erika",   name: "Sylvanis Greenmother",     title: "Wood Elf Druid",     bio: "Verdant allies regenerate +1 HP/turn", portrait: "verdant", sprite: null },
-  sabrina: { id: "sabrina", name: "Vael the Mindweaver",      title: "Human Arcanist",     bio: "Mind specials cost 1 less",            portrait: "mind",    sprite: null },
-  lance:   { id: "lance",   name: "Drakkonir Wyrmlord",       title: "Dragonborn Warlord", bio: "+1 Attack to Wyrm allies",             portrait: "wyrm",    sprite: null },
+  brock:   { id: "brock",   name: "Thordak, the Stonewarden", title: "Dwarf Paladin",      bio: "+1 Defense to Stone & Earth allies",   portrait: "stone",   sprite: "https://gmlhnbpbqjlkahvnoxjl.supabase.co/storage/v1/object/public/creatures/champions/brock.webp" },
+  misty:   { id: "misty",   name: "Lyralei, Tidecaller",      title: "Elf Mage",           bio: "Tide cards cost 1 less (min 1)",       portrait: "tide",    sprite: "https://gmlhnbpbqjlkahvnoxjl.supabase.co/storage/v1/object/public/creatures/champions/misty.webp" },
+  pikachu: { id: "pikachu", name: "Zix the Sparkthief",       title: "Goblin Tinker",      bio: "+1 Attack to Storm allies",            portrait: "storm",   sprite: "https://gmlhnbpbqjlkahvnoxjl.supabase.co/storage/v1/object/public/creatures/champions/pikachu.webp" },
+  erika:   { id: "erika",   name: "Sylvanis Greenmother",     title: "Wood Elf Druid",     bio: "Verdant allies regenerate +1 HP/turn", portrait: "verdant", sprite: "https://gmlhnbpbqjlkahvnoxjl.supabase.co/storage/v1/object/public/creatures/champions/erika.webp" },
+  sabrina: { id: "sabrina", name: "Vael the Mindweaver",      title: "Human Arcanist",     bio: "Mind specials cost 1 less",            portrait: "mind",    sprite: "https://gmlhnbpbqjlkahvnoxjl.supabase.co/storage/v1/object/public/creatures/champions/sabrina.webp" },
+  lance:   { id: "lance",   name: "Drakkonir Wyrmlord",       title: "Dragonborn Warlord", bio: "+1 Attack to Wyrm allies",             portrait: "wyrm",    sprite: "https://gmlhnbpbqjlkahvnoxjl.supabase.co/storage/v1/object/public/creatures/champions/lance.webp" },
 };
 
 // Champion portrait URL. Original generated art lives under
 // /assets/champions/<id>.webp once produced; null until then so the UI
 // falls back to the school-tinted portrait placeholder.
 export function championSpriteUrl(champion) {
-  const slug = CHAMPIONS[champion]?.sprite;
-  if (!slug) return null;
-  return `/client/assets/champions/${slug}.webp`;
+  const s = CHAMPIONS[champion]?.sprite;
+  if (!s) return null;
+  // Absolute (Supabase Storage) URL passes through; a bare slug resolves to a
+  // local asset path.
+  return /^https?:\/\//.test(s) ? s : `/client/assets/champions/${s}.webp`;
 }
 
 // Backwards-compat alias (older import sites used championMascotUrl).

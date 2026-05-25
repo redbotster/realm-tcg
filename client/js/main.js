@@ -294,8 +294,11 @@ function renderMenu() {
   menu.innerHTML = `
     ${renderAccountPanel()}
     <div class="menu-stage">
-      <h1 class="game-title">Realm TCG</h1>
-      <div class="menu-tagline">Build a 30-card deck. Wield Legendary signature moves. Out-strategize your rival.</div>
+      <div class="menu-hero">
+        <h1 class="game-title">Realm TCG</h1>
+        <div class="menu-subtitle">Bestiary of the Sundered Age</div>
+        <div class="menu-tagline">Build a 30-card deck. Wield Legendary signature moves. Out-strategize your rival.</div>
+      </div>
       ${renderFeatureStrip()}
       <div id="daily-card-slot"></div>
       <div id="challenges-inbox"></div>

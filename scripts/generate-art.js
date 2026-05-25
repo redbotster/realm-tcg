@@ -163,23 +163,31 @@ async function googleAdapter(prompt, opts) {
     console.warn("  (google/imagen adapter ignores --style-ref / --lora)");
   }
   const model = process.env.GOOGLE_IMAGE_MODEL || "imagen-4.0-generate-001";
-  const res = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/${model}:predict?key=${key}`,
-    {
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:predict?key=${key}`;
+  const body = JSON.stringify({
+    instances: [{ prompt }],
+    parameters: { sampleCount: 1, aspectRatio: "3:4", personGeneration: "allow_all" },
+  });
+  let json;
+  for (let attempt = 0; ; attempt++) {
+    const res = await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        instances: [{ prompt }],
-        parameters: {
-          sampleCount: 1,
-          aspectRatio: "3:4",          // portrait card art
-          personGeneration: "allow_all",
-        },
-      }),
-    },
-  );
-  if (!res.ok) throw new Error(`google ${res.status}: ${await res.text()}`);
-  const json = await res.json();
+      body,
+    });
+    if (res.status === 429 && attempt < 6) {
+      // Imagen free/standard tier is ~10 req/min; respect the suggested delay.
+      const txt = await res.text();
+      const m = txt.match(/retry in ([\d.]+)s/i);
+      const waitMs = Math.ceil((m ? parseFloat(m[1]) : 25) + 1) * 1000;
+      console.warn(`  rate-limited, waiting ${Math.round(waitMs / 1000)}s…`);
+      await new Promise((r) => setTimeout(r, waitMs));
+      continue;
+    }
+    if (!res.ok) throw new Error(`google ${res.status}: ${await res.text()}`);
+    json = await res.json();
+    break;
+  }
   const b64 = json.predictions?.[0]?.bytesBase64Encoded;
   if (!b64) throw new Error(`google returned no image: ${JSON.stringify(json).slice(0, 200)}`);
   return Buffer.from(b64, "base64"); // PNG/JPEG bytes; saved as .webp (see note below)

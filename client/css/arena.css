@@ -57,6 +57,28 @@ h1, h2, h3,
 }
 .menu-tagline { color: var(--amber); }
 
+/* Landing hero — painted banner behind the title. */
+.menu-hero {
+  position: relative;
+  margin: -6px -6px 20px;
+  padding: 54px 24px 38px;
+  border-radius: 16px;
+  text-align: center;
+  background:
+    linear-gradient(180deg, rgba(14, 26, 36, 0.30) 0%, rgba(14, 26, 36, 0.55) 45%, rgba(14, 26, 36, 0.94) 100%),
+    url("https://gmlhnbpbqjlkahvnoxjl.supabase.co/storage/v1/object/public/creatures/hero/banner.webp") center 30% / cover no-repeat;
+  border: 1px solid var(--gold-dim);
+  box-shadow: 0 12px 34px rgba(0, 0, 0, 0.5), inset 0 0 70px rgba(0, 0, 0, 0.45);
+}
+.menu-subtitle {
+  font-family: var(--font-display);
+  color: var(--amber);
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  font-size: 13px;
+  margin: 2px 0 6px;
+}
+
 /* QR + user counter from slop-computer baseline — tuck them out of the way */
 .qr-code, .user-counter {
   display: none;
