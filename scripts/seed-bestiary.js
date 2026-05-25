@@ -35,7 +35,12 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY, {
 // Map an authored bestiary entry to a `bestiary` table row. `schools` maps to
 // the `types` text[] column (the engine still keys off `card.types`). Art is a
 // shared placeholder until scripts/generate-art.js produces per-creature art.
-function toRow(c) {
+function toRow(c, existingSprite) {
+  // Preserve already-generated art (Storage URLs) across re-seeds; only fall
+  // back to the placeholder when no real art exists yet.
+  const sprite = existingSprite && /storage/.test(existingSprite)
+    ? existingSprite
+    : (c.sprite_front || PLACEHOLDER_ART);
   return {
     id: c.id,
     name: c.name,
@@ -50,7 +55,7 @@ function toRow(c) {
     creature_family: c.creature_family,
     tier: c.tier ?? 1,
     abilities: c.abilities || [],
-    sprite_front: c.sprite_front || PLACEHOLDER_ART,
+    sprite_front: sprite,
     sprite_back: null,
     cry_url: null,
     height_m: null,
@@ -78,7 +83,11 @@ async function main() {
   }
 
   console.log(`Seeding ${entries.length} creatures into the bestiary table...`);
-  const rows = entries.map(toRow);
+  // Preserve generated art: read existing sprite_front so a re-seed doesn't
+  // reset Storage URLs back to the placeholder.
+  const { data: existing } = await supabase.from("bestiary").select("id, sprite_front");
+  const existingArt = new Map((existing || []).map((r) => [r.id, r.sprite_front]));
+  const rows = entries.map((c) => toRow(c, existingArt.get(c.id)));
 
   for (let i = 0; i < rows.length; i += BATCH_SIZE) {
     const chunk = rows.slice(i, i + BATCH_SIZE);
