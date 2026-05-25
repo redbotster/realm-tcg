@@ -1,0 +1,714 @@
+[
+  {
+    "id": 1,
+    "name": "Mudtusk Whelp",
+    "slug": "mudtusk-whelp",
+    "creature_family": "Humanoid",
+    "schools": [
+      "martial"
+    ],
+    "tier": 1,
+    "hp": 45,
+    "attack": 55,
+    "defense": 45,
+    "sp_attack": 30,
+    "sp_defense": 30,
+    "speed": 50,
+    "abilities": [],
+    "flavor_text": "The runt of the warren, all nerve and no caution. It bites first and counts its teeth later.",
+    "is_legendary": false,
+    "is_mythical": false,
+    "art_prompt": "A young initiate Mudtusk Whelp, a Humanoid of the martial school, depicted as a single full-body fantasy trading card illustration. a runty green goblin scout in patched leather, clutching a notched dagger, ears pricked. Heroic three-quarter pose, shot slightly from below, centered triangular composition. Painted in late-1990s fantasy box-art style: traditional oil on board, painterly realism in the Brandywine tradition, visible brushwork blended smooth. Dramatic single-source warm lighting (sunset gold or torchfire) cutting through cool atmospheric shadow, strong chiaroscuro, glowing rim light on edges of armor and scales. Rich saturated earthy palette — warm amber and ochre on the figure, cool teal and indigo in the haze behind. Lavish ornamentation: etched runes, gem inlays, filigreed armor, layered scale, woven cloth — every rivet visible. Atmospheric background of mistwood hollow dissolving into mist and ember-haze, tiny distant silhouettes implying scale. Mythic and noble in tone. No text, no logos, no watermarks, no UI overlay. Matte oil-paint finish, not digital-slick. Aspect 3:4 portrait. --ar 3:4 --style raw --stylize 400"
+  },
+  {
+    "id": 2,
+    "name": "Bog Goblin Raider",
+    "slug": "bog-goblin-raider",
+    "creature_family": "Humanoid",
+    "schools": [
+      "martial",
+      "plague"
+    ],
+    "tier": 2,
+    "hp": 60,
+    "attack": 75,
+    "defense": 55,
+    "sp_attack": 40,
+    "sp_defense": 45,
+    "speed": 65,
+    "abilities": [],
+    "flavor_text": "Raiders of the fenlands coat their blades in marsh-rot, so even a glancing cut festers for days.",
+    "is_legendary": false,
+    "is_mythical": false,
+    "art_prompt": "A seasoned warrior Bog Goblin Raider, a Humanoid of the martial school, attuned also to the plague school, depicted as a single full-body fantasy trading card illustration. a wiry goblin raider in bone-studded armor, twin rusted hatchets, warpaint across the face. Heroic three-quarter pose, shot slightly from below, centered triangular composition. Painted in late-1990s fantasy box-art style: traditional oil on board, painterly realism in the Brandywine tradition, visible brushwork blended smooth. Dramatic single-source warm lighting (sunset gold or torchfire) cutting through cool atmospheric shadow, strong chiaroscuro, glowing rim light on edges of armor and scales. Rich saturated earthy palette — warm amber and ochre on the figure, cool teal and indigo in the haze behind. Lavish ornamentation: etched runes, gem inlays, filigreed armor, layered scale, woven cloth — every rivet visible. Atmospheric background of sunken jungle ruin dissolving into mist and ember-haze, tiny distant silhouettes implying scale. Mythic and noble in tone. No text, no logos, no watermarks, no UI overlay. Matte oil-paint finish, not digital-slick. Aspect 3:4 portrait. --ar 3:4 --style raw --stylize 400"
+  },
+  {
+    "id": 3,
+    "name": "Grommash Warhowl",
+    "slug": "grommash-warhowl",
+    "creature_family": "Humanoid",
+    "schools": [
+      "martial",
+      "brawl"
+    ],
+    "tier": 3,
+    "hp": 95,
+    "attack": 110,
+    "defense": 80,
+    "sp_attack": 50,
+    "sp_defense": 60,
+    "speed": 75,
+    "abilities": [],
+    "flavor_text": "His warcry has broken shield-walls before his axe ever lands. The clans follow the howl.",
+    "is_legendary": false,
+    "is_mythical": false,
+    "art_prompt": "An elite champion Grommash Warhowl, a Humanoid of the martial school, attuned also to the brawl school, depicted as a single full-body fantasy trading card illustration. a towering orc warlord in spiked iron plate, hefting a rune-burned greataxe over one shoulder, twin braids and warpaint. Heroic three-quarter pose, shot slightly from below, centered triangular composition. Painted in late-1990s fantasy box-art style: traditional oil on board, painterly realism in the Brandywine tradition, visible brushwork blended smooth. Dramatic single-source warm lighting (sunset gold or torchfire) cutting through cool atmospheric shadow, strong chiaroscuro, glowing rim light on edges of armor and scales. Rich saturated earthy palette — warm amber and ochre on the figure, cool teal and indigo in the haze behind. Lavish ornamentation: etched runes, gem inlays, filigreed armor, layered scale, woven cloth — every rivet visible. Atmospheric background of volcanic ridge dissolving into mist and ember-haze, tiny distant silhouettes implying scale. Mythic and noble in tone. No text, no logos, no watermarks, no UI overlay. Matte oil-paint finish, not digital-slick. Aspect 3:4 portrait. --ar 3:4 --style raw --stylize 400"
+  },
+  {
+    "id": 4,
+    "name": "Thurgrim Ironbeard",
+    "slug": "thurgrim-ironbeard",
+    "creature_family": "Humanoid",
+    "schools": [
+      "iron",
+      "earth"
+    ],
+    "tier": 3,
+    "hp": 110,
+    "attack": 90,
+    "defense": 120,
+    "sp_attack": 55,
+    "sp_defense": 60,
+    "speed": 40,
+    "abilities": [
+      "sturdy"
+    ],
+    "flavor_text": "An ancestor-sworn dwarf defender. Where he plants his shield, the line does not move.",
+    "is_legendary": false,
+    "is_mythical": false,
+    "art_prompt": "An elite champion Thurgrim Ironbeard, a Humanoid of the iron school, attuned also to the earth school, depicted as a single full-body fantasy trading card illustration. a broad dwarven defender in interlocking dwarf-forged plate, a tower shield etched with ancestor-runes, braided beard ringed in gold. Heroic three-quarter pose, shot slightly from below, centered triangular composition. Painted in late-1990s fantasy box-art style: traditional oil on board, painterly realism in the Brandywine tradition, visible brushwork blended smooth. Dramatic single-source warm lighting (sunset gold or torchfire) cutting through cool atmospheric shadow, strong chiaroscuro, glowing rim light on edges of armor and scales. Rich saturated earthy palette — warm amber and ochre on the figure, cool teal and indigo in the haze behind. Lavish ornamentation: etched runes, gem inlays, filigreed armor, layered scale, woven cloth — every rivet visible. Atmospheric background of frost-spire pass dissolving into mist and ember-haze, tiny distant silhouettes implying scale. Mythic and noble in tone. No text, no logos, no watermarks, no UI overlay. Matte oil-paint finish, not digital-slick. Aspect 3:4 portrait. --ar 3:4 --style raw --stylize 400"
+  },
+  {
+    "id": 5,
+    "name": "Cinder Drakeling",
+    "slug": "cinder-drakeling",
+    "creature_family": "Dragon",
+    "schools": [
+      "fire",
+      "wyrm"
+    ],
+    "tier": 1,
+    "hp": 50,
+    "attack": 60,
+    "defense": 45,
+    "sp_attack": 55,
+    "sp_defense": 40,
+    "speed": 55,
+    "abilities": [],
+    "flavor_text": "Newly hatched and already arrogant. The smoke curling from its snout is mostly bluff. Mostly.",
+    "is_legendary": false,
+    "is_mythical": false,
+    "art_prompt": "A young initiate Cinder Drakeling, a Dragon of the fire school, attuned also to the wyrm school, depicted as a single full-body fantasy trading card illustration. a fox-sized red hatchling drake, scales like embers, wings half-furled, a curl of smoke from its snout. Heroic three-quarter pose, shot slightly from below, centered triangular composition. Painted in late-1990s fantasy box-art style: traditional oil on board, painterly realism in the Brandywine tradition, visible brushwork blended smooth. Dramatic single-source warm lighting (sunset gold or torchfire) cutting through cool atmospheric shadow, strong chiaroscuro, glowing rim light on edges of armor and scales. Rich saturated earthy palette — warm amber and ochre on the figure, cool teal and indigo in the haze behind. Lavish ornamentation: etched runes, gem inlays, filigreed armor, layered scale, woven cloth — every rivet visible. Atmospheric background of volcanic ridge dissolving into mist and ember-haze, tiny distant silhouettes implying scale. Mythic and noble in tone. No text, no logos, no watermarks, no UI overlay. Matte oil-paint finish, not digital-slick. Aspect 3:4 portrait. --ar 3:4 --style raw --stylize 400"
+  },
+  {
+    "id": 6,
+    "name": "Ashscale Wyvern",
+    "slug": "ashscale-wyvern",
+    "creature_family": "Dragon",
+    "schools": [
+      "fire",
+      "sky"
+    ],
+    "tier": 2,
+    "hp": 75,
+    "attack": 85,
+    "defense": 60,
+    "sp_attack": 65,
+    "sp_defense": 55,
+    "speed": 80,
+    "abilities": [],
+    "flavor_text": "It hunts the thermals above the calderas, folding its wings to fall on prey like a burning spear.",
+    "is_legendary": false,
+    "is_mythical": false,
+    "art_prompt": "A seasoned warrior Ashscale Wyvern, a Dragon of the fire school, attuned also to the sky school, depicted as a single full-body fantasy trading card illustration. a lean crimson wyvern mid-snarl, leathery wings spread, barbed tail-stinger raised. Heroic three-quarter pose, shot slightly from below, centered triangular composition. Painted in late-1990s fantasy box-art style: traditional oil on board, painterly realism in the Brandywine tradition, visible brushwork blended smooth. Dramatic single-source warm lighting (sunset gold or torchfire) cutting through cool atmospheric shadow, strong chiaroscuro, glowing rim light on edges of armor and scales. Rich saturated earthy palette — warm amber and ochre on the figure, cool teal and indigo in the haze behind. Lavish ornamentation: etched runes, gem inlays, filigreed armor, layered scale, woven cloth — every rivet visible. Atmospheric background of volcanic ridge dissolving into mist and ember-haze, tiny distant silhouettes implying scale. Mythic and noble in tone. No text, no logos, no watermarks, no UI overlay. Matte oil-paint finish, not digital-slick. Aspect 3:4 portrait. --ar 3:4 --style raw --stylize 400"
+  },
+  {
+    "id": 7,
+    "name": "Pyraxis the Emberwyrm",
+    "slug": "pyraxis-the-emberwyrm",
+    "creature_family": "Dragon",
+    "schools": [
+      "fire",
+      "wyrm"
+    ],
+    "tier": 4,
+    "hp": 130,
+    "attack": 125,
+    "defense": 95,
+    "sp_attack": 120,
+    "sp_defense": 90,
+    "speed": 85,
+    "abilities": [],
+    "flavor_text": "Older than the kingdoms whose crowns line its hoard. To wake it is to end an age in fire.",
+    "is_legendary": true,
+    "is_mythical": false,
+    "art_prompt": "An ancient and dread Pyraxis the Emberwyrm, a Dragon of the fire school, attuned also to the wyrm school, depicted as a single full-body fantasy trading card illustration. a colossal ancient red dragon coiled on a hoard of molten gold, horns like obsidian, eyes blazing, every scale rimmed in fire. Heroic three-quarter pose, shot slightly from below, centered triangular composition. Painted in late-1990s fantasy box-art style: traditional oil on board, painterly realism in the Brandywine tradition, visible brushwork blended smooth. Dramatic single-source warm lighting (sunset gold or torchfire) cutting through cool atmospheric shadow, strong chiaroscuro, glowing rim light on edges of armor and scales. Rich saturated earthy palette — warm amber and ochre on the figure, cool teal and indigo in the haze behind. Lavish ornamentation: etched runes, gem inlays, filigreed armor, layered scale, woven cloth — every rivet visible. Atmospheric background of volcanic ridge dissolving into mist and ember-haze, tiny distant silhouettes implying scale. Mythic and noble in tone. No text, no logos, no watermarks, no UI overlay. Matte oil-paint finish, not digital-slick. Aspect 3:4 portrait. --ar 3:4 --style raw --stylize 400"
+  },
+  {
+    "id": 8,
+    "name": "Glacith Frostwyrm",
+    "slug": "glacith-frostwyrm",
+    "creature_family": "Dragon",
+    "schools": [
+      "frost",
+      "wyrm"
+    ],
+    "tier": 4,
+    "hp": 130,
+    "attack": 110,
+    "defense": 100,
+    "sp_attack": 125,
+    "sp_defense": 95,
+    "speed": 80,
+    "abilities": [],
+    "flavor_text": "It sleeps beneath the glacier and dreams in slow centuries. Its breath freezes the question on your lips.",
+    "is_legendary": true,
+    "is_mythical": false,
+    "art_prompt": "An ancient and dread Glacith Frostwyrm, a Dragon of the frost school, attuned also to the wyrm school, depicted as a single full-body fantasy trading card illustration. a vast pale-blue ancient dragon, frost rimming its spines, breath fogging the air, glacial cavern behind. Heroic three-quarter pose, shot slightly from below, centered triangular composition. Painted in late-1990s fantasy box-art style: traditional oil on board, painterly realism in the Brandywine tradition, visible brushwork blended smooth. Dramatic single-source warm lighting (sunset gold or torchfire) cutting through cool atmospheric shadow, strong chiaroscuro, glowing rim light on edges of armor and scales. Rich saturated earthy palette — warm amber and ochre on the figure, cool teal and indigo in the haze behind. Lavish ornamentation: etched runes, gem inlays, filigreed armor, layered scale, woven cloth — every rivet visible. Atmospheric background of frost-spire pass dissolving into mist and ember-haze, tiny distant silhouettes implying scale. Mythic and noble in tone. No text, no logos, no watermarks, no UI overlay. Matte oil-paint finish, not digital-slick. Aspect 3:4 portrait. --ar 3:4 --style raw --stylize 400"
+  },
+  {
+    "id": 9,
+    "name": "Rattle Thrall",
+    "slug": "rattle-thrall",
+    "creature_family": "Undead",
+    "schools": [
+      "shadow"
+    ],
+    "tier": 1,
+    "hp": 40,
+    "attack": 50,
+    "defense": 40,
+    "sp_attack": 30,
+    "sp_defense": 30,
+    "speed": 45,
+    "abilities": [],
+    "flavor_text": "Bound bone and borrowed malice. It remembers nothing of life but the swing of a sword.",
+    "is_legendary": false,
+    "is_mythical": false,
+    "art_prompt": "A young initiate Rattle Thrall, a Undead of the shadow school, depicted as a single full-body fantasy trading card illustration. a crude animated skeleton in rusted chain, jaw agape, clutching a chipped sword, faint green soul-glow in its sockets. Heroic three-quarter pose, shot slightly from below, centered triangular composition. Painted in late-1990s fantasy box-art style: traditional oil on board, painterly realism in the Brandywine tradition, visible brushwork blended smooth. Dramatic single-source warm lighting (sunset gold or torchfire) cutting through cool atmospheric shadow, strong chiaroscuro, glowing rim light on edges of armor and scales. Rich saturated earthy palette — warm amber and ochre on the figure, cool teal and indigo in the haze behind. Lavish ornamentation: etched runes, gem inlays, filigreed armor, layered scale, woven cloth — every rivet visible. Atmospheric background of shattered planar void dissolving into mist and ember-haze, tiny distant silhouettes implying scale. Mythic and noble in tone. No text, no logos, no watermarks, no UI overlay. Matte oil-paint finish, not digital-slick. Aspect 3:4 portrait. --ar 3:4 --style raw --stylize 400"
+  },
+  {
+    "id": 10,
+    "name": "Grave Revenant",
+    "slug": "grave-revenant",
+    "creature_family": "Undead",
+    "schools": [
+      "shadow",
+      "spectral"
+    ],
+    "tier": 2,
+    "hp": 70,
+    "attack": 80,
+    "defense": 60,
+    "sp_attack": 55,
+    "sp_defense": 50,
+    "speed": 55,
+    "abilities": [],
+    "flavor_text": "It rose to finish an oath the grave interrupted. The mist that leaks from its armor is what's left of its rage.",
+    "is_legendary": false,
+    "is_mythical": false,
+    "art_prompt": "A seasoned warrior Grave Revenant, a Undead of the shadow school, attuned also to the spectral school, depicted as a single full-body fantasy trading card illustration. an armored revenant knight, tattered surcoat, spectral mist leaking from gaps in its corroded plate, runic blade. Heroic three-quarter pose, shot slightly from below, centered triangular composition. Painted in late-1990s fantasy box-art style: traditional oil on board, painterly realism in the Brandywine tradition, visible brushwork blended smooth. Dramatic single-source warm lighting (sunset gold or torchfire) cutting through cool atmospheric shadow, strong chiaroscuro, glowing rim light on edges of armor and scales. Rich saturated earthy palette — warm amber and ochre on the figure, cool teal and indigo in the haze behind. Lavish ornamentation: etched runes, gem inlays, filigreed armor, layered scale, woven cloth — every rivet visible. Atmospheric background of mistwood hollow dissolving into mist and ember-haze, tiny distant silhouettes implying scale. Mythic and noble in tone. No text, no logos, no watermarks, no UI overlay. Matte oil-paint finish, not digital-slick. Aspect 3:4 portrait. --ar 3:4 --style raw --stylize 400"
+  },
+  {
+    "id": 11,
+    "name": "Mortis the Lich-King",
+    "slug": "mortis-the-lich-king",
+    "creature_family": "Undead",
+    "schools": [
+      "shadow",
+      "mind"
+    ],
+    "tier": 4,
+    "hp": 115,
+    "attack": 95,
+    "defense": 90,
+    "sp_attack": 135,
+    "sp_defense": 90,
+    "speed": 70,
+    "abilities": [],
+    "flavor_text": "He traded his heartbeat for centuries and his name for a phylactery. Now he collects both from others.",
+    "is_legendary": true,
+    "is_mythical": false,
+    "art_prompt": "An ancient and dread Mortis the Lich-King, a Undead of the shadow school, attuned also to the mind school, depicted as a single full-body fantasy trading card illustration. a skeletal lich crowned in cold iron, robes of midnight, a staff capped with a captured soul-gem, swirling necrotic energy. Heroic three-quarter pose, shot slightly from below, centered triangular composition. Painted in late-1990s fantasy box-art style: traditional oil on board, painterly realism in the Brandywine tradition, visible brushwork blended smooth. Dramatic single-source warm lighting (sunset gold or torchfire) cutting through cool atmospheric shadow, strong chiaroscuro, glowing rim light on edges of armor and scales. Rich saturated earthy palette — warm amber and ochre on the figure, cool teal and indigo in the haze behind. Lavish ornamentation: etched runes, gem inlays, filigreed armor, layered scale, woven cloth — every rivet visible. Atmospheric background of shattered planar void dissolving into mist and ember-haze, tiny distant silhouettes implying scale. Mythic and noble in tone. No text, no logos, no watermarks, no UI overlay. Matte oil-paint finish, not digital-slick. Aspect 3:4 portrait. --ar 3:4 --style raw --stylize 400"
+  },
+  {
+    "id": 12,
+    "name": "Sanguine Vampire Lord",
+    "slug": "sanguine-vampire-lord",
+    "creature_family": "Undead",
+    "schools": [
+      "shadow",
+      "spectral"
+    ],
+    "tier": 3,
+    "hp": 95,
+    "attack": 100,
+    "defense": 75,
+    "sp_attack": 90,
+    "sp_defense": 70,
+    "speed": 95,
+    "abilities": [],
+    "flavor_text": "Courtly, patient, and very old. He will compliment your courage before he drains it.",
+    "is_legendary": false,
+    "is_mythical": false,
+    "art_prompt": "An elite champion Sanguine Vampire Lord, a Undead of the shadow school, attuned also to the spectral school, depicted as a single full-body fantasy trading card illustration. a gaunt vampire lord in regal crimson and black, clawed hands, fangs bared, a cloak that frays into bats. Heroic three-quarter pose, shot slightly from below, centered triangular composition. Painted in late-1990s fantasy box-art style: traditional oil on board, painterly realism in the Brandywine tradition, visible brushwork blended smooth. Dramatic single-source warm lighting (sunset gold or torchfire) cutting through cool atmospheric shadow, strong chiaroscuro, glowing rim light on edges of armor and scales. Rich saturated earthy palette — warm amber and ochre on the figure, cool teal and indigo in the haze behind. Lavish ornamentation: etched runes, gem inlays, filigreed armor, layered scale, woven cloth — every rivet visible. Atmospheric background of mistwood hollow dissolving into mist and ember-haze, tiny distant silhouettes implying scale. Mythic and noble in tone. No text, no logos, no watermarks, no UI overlay. Matte oil-paint finish, not digital-slick. Aspect 3:4 portrait. --ar 3:4 --style raw --stylize 400"
+  },
+  {
+    "id": 13,
+    "name": "Pit Imp",
+    "slug": "pit-imp",
+    "creature_family": "Demon",
+    "schools": [
+      "fire",
+      "shadow"
+    ],
+    "tier": 1,
+    "hp": 42,
+    "attack": 55,
+    "defense": 40,
+    "sp_attack": 50,
+    "sp_defense": 40,
+    "speed": 60,
+    "abilities": [],
+    "flavor_text": "A minor nuisance from below, sent to fetch, spy, and snicker. The hellfire in its palm is real, though.",
+    "is_legendary": false,
+    "is_mythical": false,
+    "art_prompt": "A young initiate Pit Imp, a Demon of the fire school, attuned also to the shadow school, depicted as a single full-body fantasy trading card illustration. a small horned imp with bat wings and a barbed tail, grinning, a flick of hellfire in its palm. Heroic three-quarter pose, shot slightly from below, centered triangular composition. Painted in late-1990s fantasy box-art style: traditional oil on board, painterly realism in the Brandywine tradition, visible brushwork blended smooth. Dramatic single-source warm lighting (sunset gold or torchfire) cutting through cool atmospheric shadow, strong chiaroscuro, glowing rim light on edges of armor and scales. Rich saturated earthy palette — warm amber and ochre on the figure, cool teal and indigo in the haze behind. Lavish ornamentation: etched runes, gem inlays, filigreed armor, layered scale, woven cloth — every rivet visible. Atmospheric background of shattered planar void dissolving into mist and ember-haze, tiny distant silhouettes implying scale. Mythic and noble in tone. No text, no logos, no watermarks, no UI overlay. Matte oil-paint finish, not digital-slick. Aspect 3:4 portrait. --ar 3:4 --style raw --stylize 400"
+  },
+  {
+    "id": 14,
+    "name": "Hellhound Stalker",
+    "slug": "hellhound-stalker",
+    "creature_family": "Demon",
+    "schools": [
+      "fire",
+      "brawl"
+    ],
+    "tier": 2,
+    "hp": 70,
+    "attack": 90,
+    "defense": 55,
+    "sp_attack": 50,
+    "sp_defense": 45,
+    "speed": 85,
+    "abilities": [],
+    "flavor_text": "It tracks by the scent of fear and breathes the embers of the pit. Both heads always agree on the kill.",
+    "is_legendary": false,
+    "is_mythical": false,
+    "art_prompt": "A seasoned warrior Hellhound Stalker, a Demon of the fire school, attuned also to the brawl school, depicted as a single full-body fantasy trading card illustration. a coal-black two-headed hellhound, embers in its maw, muscles taut, smoke curling from its hide. Heroic three-quarter pose, shot slightly from below, centered triangular composition. Painted in late-1990s fantasy box-art style: traditional oil on board, painterly realism in the Brandywine tradition, visible brushwork blended smooth. Dramatic single-source warm lighting (sunset gold or torchfire) cutting through cool atmospheric shadow, strong chiaroscuro, glowing rim light on edges of armor and scales. Rich saturated earthy palette — warm amber and ochre on the figure, cool teal and indigo in the haze behind. Lavish ornamentation: etched runes, gem inlays, filigreed armor, layered scale, woven cloth — every rivet visible. Atmospheric background of volcanic ridge dissolving into mist and ember-haze, tiny distant silhouettes implying scale. Mythic and noble in tone. No text, no logos, no watermarks, no UI overlay. Matte oil-paint finish, not digital-slick. Aspect 3:4 portrait. --ar 3:4 --style raw --stylize 400"
+  },
+  {
+    "id": 15,
+    "name": "Balethorn Pit Fiend",
+    "slug": "balethorn-pit-fiend",
+    "creature_family": "Demon",
+    "schools": [
+      "fire",
+      "shadow"
+    ],
+    "tier": 4,
+    "hp": 125,
+    "attack": 130,
+    "defense": 100,
+    "sp_attack": 110,
+    "sp_defense": 85,
+    "speed": 80,
+    "abilities": [],
+    "flavor_text": "A general of the lower planes. Mortal armies are, to it, a brief and tedious paperwork problem.",
+    "is_legendary": true,
+    "is_mythical": false,
+    "art_prompt": "An ancient and dread Balethorn Pit Fiend, a Demon of the fire school, attuned also to the shadow school, depicted as a single full-body fantasy trading card illustration. a towering winged pit fiend wreathed in flame, a flaming whip and serrated blade, horns scraping a smoke-choked sky. Heroic three-quarter pose, shot slightly from below, centered triangular composition. Painted in late-1990s fantasy box-art style: traditional oil on board, painterly realism in the Brandywine tradition, visible brushwork blended smooth. Dramatic single-source warm lighting (sunset gold or torchfire) cutting through cool atmospheric shadow, strong chiaroscuro, glowing rim light on edges of armor and scales. Rich saturated earthy palette — warm amber and ochre on the figure, cool teal and indigo in the haze behind. Lavish ornamentation: etched runes, gem inlays, filigreed armor, layered scale, woven cloth — every rivet visible. Atmospheric background of shattered planar void dissolving into mist and ember-haze, tiny distant silhouettes implying scale. Mythic and noble in tone. No text, no logos, no watermarks, no UI overlay. Matte oil-paint finish, not digital-slick. Aspect 3:4 portrait. --ar 3:4 --style raw --stylize 400"
+  },
+  {
+    "id": 16,
+    "name": "Soulbinder Succubus",
+    "slug": "soulbinder-succubus",
+    "creature_family": "Demon",
+    "schools": [
+      "shadow",
+      "mind"
+    ],
+    "tier": 3,
+    "hp": 85,
+    "attack": 80,
+    "defense": 65,
+    "sp_attack": 110,
+    "sp_defense": 75,
+    "speed": 90,
+    "abilities": [],
+    "flavor_text": "She does not take what isn't offered. She is simply very, very good at making you offer.",
+    "is_legendary": false,
+    "is_mythical": false,
+    "art_prompt": "An elite champion Soulbinder Succubus, a Demon of the shadow school, attuned also to the mind school, depicted as a single full-body fantasy trading card illustration. an elegant winged fiend in dark silks, eyes glowing, beckoning with clawed grace, shadow-tendrils curling. Heroic three-quarter pose, shot slightly from below, centered triangular composition. Painted in late-1990s fantasy box-art style: traditional oil on board, painterly realism in the Brandywine tradition, visible brushwork blended smooth. Dramatic single-source warm lighting (sunset gold or torchfire) cutting through cool atmospheric shadow, strong chiaroscuro, glowing rim light on edges of armor and scales. Rich saturated earthy palette — warm amber and ochre on the figure, cool teal and indigo in the haze behind. Lavish ornamentation: etched runes, gem inlays, filigreed armor, layered scale, woven cloth — every rivet visible. Atmospheric background of shattered planar void dissolving into mist and ember-haze, tiny distant silhouettes implying scale. Mythic and noble in tone. No text, no logos, no watermarks, no UI overlay. Matte oil-paint finish, not digital-slick. Aspect 3:4 portrait. --ar 3:4 --style raw --stylize 400"
+  },
+  {
+    "id": 17,
+    "name": "Dire Wolf Pup",
+    "slug": "dire-wolf-pup",
+    "creature_family": "Beast",
+    "schools": [
+      "martial"
+    ],
+    "tier": 1,
+    "hp": 48,
+    "attack": 55,
+    "defense": 42,
+    "sp_attack": 28,
+    "sp_defense": 30,
+    "speed": 65,
+    "abilities": [],
+    "flavor_text": "Already the size of a war-hound and twice as hungry. The pack is never far behind.",
+    "is_legendary": false,
+    "is_mythical": false,
+    "art_prompt": "A young initiate Dire Wolf Pup, a Beast of the martial school, depicted as a single full-body fantasy trading card illustration. a shaggy oversized wolf pup, frost on its fur, amber eyes, snow-dusted paws. Heroic three-quarter pose, shot slightly from below, centered triangular composition. Painted in late-1990s fantasy box-art style: traditional oil on board, painterly realism in the Brandywine tradition, visible brushwork blended smooth. Dramatic single-source warm lighting (sunset gold or torchfire) cutting through cool atmospheric shadow, strong chiaroscuro, glowing rim light on edges of armor and scales. Rich saturated earthy palette — warm amber and ochre on the figure, cool teal and indigo in the haze behind. Lavish ornamentation: etched runes, gem inlays, filigreed armor, layered scale, woven cloth — every rivet visible. Atmospheric background of frost-spire pass dissolving into mist and ember-haze, tiny distant silhouettes implying scale. Mythic and noble in tone. No text, no logos, no watermarks, no UI overlay. Matte oil-paint finish, not digital-slick. Aspect 3:4 portrait. --ar 3:4 --style raw --stylize 400"
+  },
+  {
+    "id": 18,
+    "name": "Frostmane Direwolf",
+    "slug": "frostmane-direwolf",
+    "creature_family": "Beast",
+    "schools": [
+      "frost",
+      "martial"
+    ],
+    "tier": 2,
+    "hp": 75,
+    "attack": 90,
+    "defense": 60,
+    "sp_attack": 40,
+    "sp_defense": 45,
+    "speed": 90,
+    "abilities": [],
+    "flavor_text": "It runs down elk across frozen leagues and brings winter in its wake. Its howl carries for miles.",
+    "is_legendary": false,
+    "is_mythical": false,
+    "art_prompt": "A seasoned warrior Frostmane Direwolf, a Beast of the frost school, attuned also to the martial school, depicted as a single full-body fantasy trading card illustration. a massive snow-white direwolf mid-lunge, breath steaming, ice crusting its mane. Heroic three-quarter pose, shot slightly from below, centered triangular composition. Painted in late-1990s fantasy box-art style: traditional oil on board, painterly realism in the Brandywine tradition, visible brushwork blended smooth. Dramatic single-source warm lighting (sunset gold or torchfire) cutting through cool atmospheric shadow, strong chiaroscuro, glowing rim light on edges of armor and scales. Rich saturated earthy palette — warm amber and ochre on the figure, cool teal and indigo in the haze behind. Lavish ornamentation: etched runes, gem inlays, filigreed armor, layered scale, woven cloth — every rivet visible. Atmospheric background of frost-spire pass dissolving into mist and ember-haze, tiny distant silhouettes implying scale. Mythic and noble in tone. No text, no logos, no watermarks, no UI overlay. Matte oil-paint finish, not digital-slick. Aspect 3:4 portrait. --ar 3:4 --style raw --stylize 400"
+  },
+  {
+    "id": 19,
+    "name": "Skyreach Griffon",
+    "slug": "skyreach-griffon",
+    "creature_family": "Beast",
+    "schools": [
+      "sky",
+      "martial"
+    ],
+    "tier": 3,
+    "hp": 90,
+    "attack": 95,
+    "defense": 70,
+    "sp_attack": 55,
+    "sp_defense": 60,
+    "speed": 105,
+    "abilities": [
+      "intimidate"
+    ],
+    "flavor_text": "Half eagle, half lion, wholly proud. It bonds for life and stoops from the sun without warning.",
+    "is_legendary": false,
+    "is_mythical": false,
+    "art_prompt": "An elite champion Skyreach Griffon, a Beast of the sky school, attuned also to the martial school, depicted as a single full-body fantasy trading card illustration. a noble griffon with eagle fore and lion hind, wings spread against the sun, talons gleaming. Heroic three-quarter pose, shot slightly from below, centered triangular composition. Painted in late-1990s fantasy box-art style: traditional oil on board, painterly realism in the Brandywine tradition, visible brushwork blended smooth. Dramatic single-source warm lighting (sunset gold or torchfire) cutting through cool atmospheric shadow, strong chiaroscuro, glowing rim light on edges of armor and scales. Rich saturated earthy palette — warm amber and ochre on the figure, cool teal and indigo in the haze behind. Lavish ornamentation: etched runes, gem inlays, filigreed armor, layered scale, woven cloth — every rivet visible. Atmospheric background of frost-spire pass dissolving into mist and ember-haze, tiny distant silhouettes implying scale. Mythic and noble in tone. No text, no logos, no watermarks, no UI overlay. Matte oil-paint finish, not digital-slick. Aspect 3:4 portrait. --ar 3:4 --style raw --stylize 400"
+  },
+  {
+    "id": 20,
+    "name": "Manticore Stalker",
+    "slug": "manticore-stalker",
+    "creature_family": "Beast",
+    "schools": [
+      "martial",
+      "plague"
+    ],
+    "tier": 3,
+    "hp": 95,
+    "attack": 105,
+    "defense": 75,
+    "sp_attack": 60,
+    "sp_defense": 55,
+    "speed": 90,
+    "abilities": [],
+    "flavor_text": "Lion's body, scorpion's tail, a mouth of human teeth. It is said to ask riddles. It is said to be lying.",
+    "is_legendary": false,
+    "is_mythical": false,
+    "art_prompt": "An elite champion Manticore Stalker, a Beast of the martial school, attuned also to the plague school, depicted as a single full-body fantasy trading card illustration. a lion-bodied manticore with a barbed scorpion tail and rows of fangs, bat wings, prowling low. Heroic three-quarter pose, shot slightly from below, centered triangular composition. Painted in late-1990s fantasy box-art style: traditional oil on board, painterly realism in the Brandywine tradition, visible brushwork blended smooth. Dramatic single-source warm lighting (sunset gold or torchfire) cutting through cool atmospheric shadow, strong chiaroscuro, glowing rim light on edges of armor and scales. Rich saturated earthy palette — warm amber and ochre on the figure, cool teal and indigo in the haze behind. Lavish ornamentation: etched runes, gem inlays, filigreed armor, layered scale, woven cloth — every rivet visible. Atmospheric background of sunken jungle ruin dissolving into mist and ember-haze, tiny distant silhouettes implying scale. Mythic and noble in tone. No text, no logos, no watermarks, no UI overlay. Matte oil-paint finish, not digital-slick. Aspect 3:4 portrait. --ar 3:4 --style raw --stylize 400"
+  },
+  {
+    "id": 21,
+    "name": "Krakenspawn",
+    "slug": "krakenspawn",
+    "creature_family": "Beast",
+    "schools": [
+      "tide"
+    ],
+    "tier": 2,
+    "hp": 80,
+    "attack": 70,
+    "defense": 75,
+    "sp_attack": 75,
+    "sp_defense": 55,
+    "speed": 50,
+    "abilities": [
+      "torrent"
+    ],
+    "flavor_text": "The smallest of its kind could still pull a longship under. It is not yet the largest of its kind.",
+    "is_legendary": false,
+    "is_mythical": false,
+    "art_prompt": "A seasoned warrior Krakenspawn, a Beast of the tide school, depicted as a single full-body fantasy trading card illustration. a young kraken, mottled purple, coiling tentacles breaching dark water, bioluminescent spots glowing. Heroic three-quarter pose, shot slightly from below, centered triangular composition. Painted in late-1990s fantasy box-art style: traditional oil on board, painterly realism in the Brandywine tradition, visible brushwork blended smooth. Dramatic single-source warm lighting (sunset gold or torchfire) cutting through cool atmospheric shadow, strong chiaroscuro, glowing rim light on edges of armor and scales. Rich saturated earthy palette — warm amber and ochre on the figure, cool teal and indigo in the haze behind. Lavish ornamentation: etched runes, gem inlays, filigreed armor, layered scale, woven cloth — every rivet visible. Atmospheric background of sunken jungle ruin dissolving into mist and ember-haze, tiny distant silhouettes implying scale. Mythic and noble in tone. No text, no logos, no watermarks, no UI overlay. Matte oil-paint finish, not digital-slick. Aspect 3:4 portrait. --ar 3:4 --style raw --stylize 400"
+  },
+  {
+    "id": 22,
+    "name": "Cinder Mote",
+    "slug": "cinder-mote",
+    "creature_family": "Elemental",
+    "schools": [
+      "fire"
+    ],
+    "tier": 1,
+    "hp": 40,
+    "attack": 50,
+    "defense": 35,
+    "sp_attack": 55,
+    "sp_defense": 40,
+    "speed": 55,
+    "abilities": [],
+    "flavor_text": "A spark with intent. Feed it and it grows; ignore it and your tent is gone.",
+    "is_legendary": false,
+    "is_mythical": false,
+    "art_prompt": "A young initiate Cinder Mote, a Elemental of the fire school, depicted as a single full-body fantasy trading card illustration. a small living flame-spirit with ember eyes, drifting sparks, a core of white heat. Heroic three-quarter pose, shot slightly from below, centered triangular composition. Painted in late-1990s fantasy box-art style: traditional oil on board, painterly realism in the Brandywine tradition, visible brushwork blended smooth. Dramatic single-source warm lighting (sunset gold or torchfire) cutting through cool atmospheric shadow, strong chiaroscuro, glowing rim light on edges of armor and scales. Rich saturated earthy palette — warm amber and ochre on the figure, cool teal and indigo in the haze behind. Lavish ornamentation: etched runes, gem inlays, filigreed armor, layered scale, woven cloth — every rivet visible. Atmospheric background of volcanic ridge dissolving into mist and ember-haze, tiny distant silhouettes implying scale. Mythic and noble in tone. No text, no logos, no watermarks, no UI overlay. Matte oil-paint finish, not digital-slick. Aspect 3:4 portrait. --ar 3:4 --style raw --stylize 400"
+  },
+  {
+    "id": 23,
+    "name": "Magma Colossus",
+    "slug": "magma-colossus",
+    "creature_family": "Elemental",
+    "schools": [
+      "fire",
+      "earth"
+    ],
+    "tier": 3,
+    "hp": 120,
+    "attack": 100,
+    "defense": 110,
+    "sp_attack": 70,
+    "sp_defense": 65,
+    "speed": 40,
+    "abilities": [
+      "blaze"
+    ],
+    "flavor_text": "It wakes when the mountain is angry and walks until the mountain is calm. The journey is rarely gentle.",
+    "is_legendary": false,
+    "is_mythical": false,
+    "art_prompt": "An elite champion Magma Colossus, a Elemental of the fire school, attuned also to the earth school, depicted as a single full-body fantasy trading card illustration. a lumbering humanoid of cracked basalt and glowing magma veins, fists like boulders. Heroic three-quarter pose, shot slightly from below, centered triangular composition. Painted in late-1990s fantasy box-art style: traditional oil on board, painterly realism in the Brandywine tradition, visible brushwork blended smooth. Dramatic single-source warm lighting (sunset gold or torchfire) cutting through cool atmospheric shadow, strong chiaroscuro, glowing rim light on edges of armor and scales. Rich saturated earthy palette — warm amber and ochre on the figure, cool teal and indigo in the haze behind. Lavish ornamentation: etched runes, gem inlays, filigreed armor, layered scale, woven cloth — every rivet visible. Atmospheric background of volcanic ridge dissolving into mist and ember-haze, tiny distant silhouettes implying scale. Mythic and noble in tone. No text, no logos, no watermarks, no UI overlay. Matte oil-paint finish, not digital-slick. Aspect 3:4 portrait. --ar 3:4 --style raw --stylize 400"
+  },
+  {
+    "id": 24,
+    "name": "Tideborn Sylph",
+    "slug": "tideborn-sylph",
+    "creature_family": "Elemental",
+    "schools": [
+      "tide",
+      "sky"
+    ],
+    "tier": 2,
+    "hp": 65,
+    "attack": 60,
+    "defense": 55,
+    "sp_attack": 80,
+    "sp_defense": 60,
+    "speed": 85,
+    "abilities": [],
+    "flavor_text": "A spirit of storm-spray and sea-wind, here and gone like a breaking wave. Sailors pray it stays playful.",
+    "is_legendary": false,
+    "is_mythical": false,
+    "art_prompt": "A seasoned warrior Tideborn Sylph, a Elemental of the tide school, attuned also to the sky school, depicted as a single full-body fantasy trading card illustration. a graceful water-and-wind spirit, translucent blue, ribbons of mist and droplets trailing. Heroic three-quarter pose, shot slightly from below, centered triangular composition. Painted in late-1990s fantasy box-art style: traditional oil on board, painterly realism in the Brandywine tradition, visible brushwork blended smooth. Dramatic single-source warm lighting (sunset gold or torchfire) cutting through cool atmospheric shadow, strong chiaroscuro, glowing rim light on edges of armor and scales. Rich saturated earthy palette — warm amber and ochre on the figure, cool teal and indigo in the haze behind. Lavish ornamentation: etched runes, gem inlays, filigreed armor, layered scale, woven cloth — every rivet visible. Atmospheric background of sunken jungle ruin dissolving into mist and ember-haze, tiny distant silhouettes implying scale. Mythic and noble in tone. No text, no logos, no watermarks, no UI overlay. Matte oil-paint finish, not digital-slick. Aspect 3:4 portrait. --ar 3:4 --style raw --stylize 400"
+  },
+  {
+    "id": 25,
+    "name": "Ancient Treant",
+    "slug": "ancient-treant",
+    "creature_family": "Elemental",
+    "schools": [
+      "verdant",
+      "earth"
+    ],
+    "tier": 3,
+    "hp": 125,
+    "attack": 95,
+    "defense": 115,
+    "sp_attack": 75,
+    "sp_defense": 70,
+    "speed": 30,
+    "abilities": [
+      "overgrow"
+    ],
+    "flavor_text": "It has stood so long it has forgotten it can move. When it remembers, the forest moves with it.",
+    "is_legendary": false,
+    "is_mythical": false,
+    "art_prompt": "An elite champion Ancient Treant, a Elemental of the verdant school, attuned also to the earth school, depicted as a single full-body fantasy trading card illustration. a towering ancient treant, bark armored and moss-bearded, glowing runes in its trunk-hollow, birds nesting in its boughs. Heroic three-quarter pose, shot slightly from below, centered triangular composition. Painted in late-1990s fantasy box-art style: traditional oil on board, painterly realism in the Brandywine tradition, visible brushwork blended smooth. Dramatic single-source warm lighting (sunset gold or torchfire) cutting through cool atmospheric shadow, strong chiaroscuro, glowing rim light on edges of armor and scales. Rich saturated earthy palette — warm amber and ochre on the figure, cool teal and indigo in the haze behind. Lavish ornamentation: etched runes, gem inlays, filigreed armor, layered scale, woven cloth — every rivet visible. Atmospheric background of mistwood hollow dissolving into mist and ember-haze, tiny distant silhouettes implying scale. Mythic and noble in tone. No text, no logos, no watermarks, no UI overlay. Matte oil-paint finish, not digital-slick. Aspect 3:4 portrait. --ar 3:4 --style raw --stylize 400"
+  },
+  {
+    "id": 26,
+    "name": "Storm Djinn",
+    "slug": "storm-djinn",
+    "creature_family": "Elemental",
+    "schools": [
+      "storm",
+      "sky"
+    ],
+    "tier": 4,
+    "hp": 110,
+    "attack": 110,
+    "defense": 85,
+    "sp_attack": 120,
+    "sp_defense": 90,
+    "speed": 100,
+    "abilities": [],
+    "flavor_text": "Bound once to a lamp, now bound to nothing. It answers no wishes and grants only thunder.",
+    "is_legendary": true,
+    "is_mythical": false,
+    "art_prompt": "An ancient and dread Storm Djinn, a Elemental of the storm school, attuned also to the sky school, depicted as a single full-body fantasy trading card illustration. a vast genie of crackling storm-cloud and lightning, arms folded, eyes like white arc-light, a tempest swirling around it. Heroic three-quarter pose, shot slightly from below, centered triangular composition. Painted in late-1990s fantasy box-art style: traditional oil on board, painterly realism in the Brandywine tradition, visible brushwork blended smooth. Dramatic single-source warm lighting (sunset gold or torchfire) cutting through cool atmospheric shadow, strong chiaroscuro, glowing rim light on edges of armor and scales. Rich saturated earthy palette — warm amber and ochre on the figure, cool teal and indigo in the haze behind. Lavish ornamentation: etched runes, gem inlays, filigreed armor, layered scale, woven cloth — every rivet visible. Atmospheric background of lunar wasteland dissolving into mist and ember-haze, tiny distant silhouettes implying scale. Mythic and noble in tone. No text, no logos, no watermarks, no UI overlay. Matte oil-paint finish, not digital-slick. Aspect 3:4 portrait. --ar 3:4 --style raw --stylize 400"
+  },
+  {
+    "id": 27,
+    "name": "Carrion Swarm",
+    "slug": "carrion-swarm",
+    "creature_family": "Aberration",
+    "schools": [
+      "swarm",
+      "plague"
+    ],
+    "tier": 1,
+    "hp": 55,
+    "attack": 50,
+    "defense": 40,
+    "sp_attack": 45,
+    "sp_defense": 40,
+    "speed": 60,
+    "abilities": [],
+    "flavor_text": "Ten thousand carrion beetles wearing the shape of a man. It came for the dead and stayed for the living.",
+    "is_legendary": false,
+    "is_mythical": false,
+    "art_prompt": "A young initiate Carrion Swarm, a Aberration of the swarm school, attuned also to the plague school, depicted as a single full-body fantasy trading card illustration. a roiling cloud of carrion beetles and stinging flies coalesced into a crude humanoid shape. Heroic three-quarter pose, shot slightly from below, centered triangular composition. Painted in late-1990s fantasy box-art style: traditional oil on board, painterly realism in the Brandywine tradition, visible brushwork blended smooth. Dramatic single-source warm lighting (sunset gold or torchfire) cutting through cool atmospheric shadow, strong chiaroscuro, glowing rim light on edges of armor and scales. Rich saturated earthy palette — warm amber and ochre on the figure, cool teal and indigo in the haze behind. Lavish ornamentation: etched runes, gem inlays, filigreed armor, layered scale, woven cloth — every rivet visible. Atmospheric background of sunken jungle ruin dissolving into mist and ember-haze, tiny distant silhouettes implying scale. Mythic and noble in tone. No text, no logos, no watermarks, no UI overlay. Matte oil-paint finish, not digital-slick. Aspect 3:4 portrait. --ar 3:4 --style raw --stylize 400"
+  },
+  {
+    "id": 28,
+    "name": "Stone Gargoyle",
+    "slug": "stone-gargoyle",
+    "creature_family": "Aberration",
+    "schools": [
+      "stone",
+      "iron"
+    ],
+    "tier": 2,
+    "hp": 80,
+    "attack": 75,
+    "defense": 95,
+    "sp_attack": 45,
+    "sp_defense": 50,
+    "speed": 55,
+    "abilities": [
+      "rough-skin"
+    ],
+    "flavor_text": "It perches as a statue for decades, patient as masonry, until the wrong thief climbs the wrong wall.",
+    "is_legendary": false,
+    "is_mythical": false,
+    "art_prompt": "A seasoned warrior Stone Gargoyle, a Aberration of the stone school, attuned also to the iron school, depicted as a single full-body fantasy trading card illustration. a crouched winged gargoyle of weathered grey stone, wings tucked, eyes flickering to life. Heroic three-quarter pose, shot slightly from below, centered triangular composition. Painted in late-1990s fantasy box-art style: traditional oil on board, painterly realism in the Brandywine tradition, visible brushwork blended smooth. Dramatic single-source warm lighting (sunset gold or torchfire) cutting through cool atmospheric shadow, strong chiaroscuro, glowing rim light on edges of armor and scales. Rich saturated earthy palette — warm amber and ochre on the figure, cool teal and indigo in the haze behind. Lavish ornamentation: etched runes, gem inlays, filigreed armor, layered scale, woven cloth — every rivet visible. Atmospheric background of frost-spire pass dissolving into mist and ember-haze, tiny distant silhouettes implying scale. Mythic and noble in tone. No text, no logos, no watermarks, no UI overlay. Matte oil-paint finish, not digital-slick. Aspect 3:4 portrait. --ar 3:4 --style raw --stylize 400"
+  },
+  {
+    "id": 29,
+    "name": "Iron Golem Sentinel",
+    "slug": "iron-golem-sentinel",
+    "creature_family": "Aberration",
+    "schools": [
+      "iron"
+    ],
+    "tier": 3,
+    "hp": 130,
+    "attack": 100,
+    "defense": 130,
+    "sp_attack": 50,
+    "sp_defense": 60,
+    "speed": 35,
+    "abilities": [
+      "sturdy",
+      "bulletproof"
+    ],
+    "flavor_text": "It has one order, carved into the rune-core in its chest, and it has kept it for six hundred years.",
+    "is_legendary": false,
+    "is_mythical": false,
+    "art_prompt": "An elite champion Iron Golem Sentinel, a Aberration of the iron school, depicted as a single full-body fantasy trading card illustration. a massive humanoid construct of riveted iron plates, a rune-lit core in its chest, glowing eye-slits. Heroic three-quarter pose, shot slightly from below, centered triangular composition. Painted in late-1990s fantasy box-art style: traditional oil on board, painterly realism in the Brandywine tradition, visible brushwork blended smooth. Dramatic single-source warm lighting (sunset gold or torchfire) cutting through cool atmospheric shadow, strong chiaroscuro, glowing rim light on edges of armor and scales. Rich saturated earthy palette — warm amber and ochre on the figure, cool teal and indigo in the haze behind. Lavish ornamentation: etched runes, gem inlays, filigreed armor, layered scale, woven cloth — every rivet visible. Atmospheric background of frost-spire pass dissolving into mist and ember-haze, tiny distant silhouettes implying scale. Mythic and noble in tone. No text, no logos, no watermarks, no UI overlay. Matte oil-paint finish, not digital-slick. Aspect 3:4 portrait. --ar 3:4 --style raw --stylize 400"
+  },
+  {
+    "id": 30,
+    "name": "Hex Hag",
+    "slug": "hex-hag",
+    "creature_family": "Aberration",
+    "schools": [
+      "shadow",
+      "plague"
+    ],
+    "tier": 2,
+    "hp": 70,
+    "attack": 65,
+    "defense": 55,
+    "sp_attack": 95,
+    "sp_defense": 60,
+    "speed": 55,
+    "abilities": [],
+    "flavor_text": "She trades in names, teeth, and firstborns, and her bargains are always, technically, honoured.",
+    "is_legendary": false,
+    "is_mythical": false,
+    "art_prompt": "A seasoned warrior Hex Hag, a Aberration of the shadow school, attuned also to the plague school, depicted as a single full-body fantasy trading card illustration. a hunched green-skinned hag in rags, clutching a bubbling charm, warts and crooked fingers, a sickly aura. Heroic three-quarter pose, shot slightly from below, centered triangular composition. Painted in late-1990s fantasy box-art style: traditional oil on board, painterly realism in the Brandywine tradition, visible brushwork blended smooth. Dramatic single-source warm lighting (sunset gold or torchfire) cutting through cool atmospheric shadow, strong chiaroscuro, glowing rim light on edges of armor and scales. Rich saturated earthy palette — warm amber and ochre on the figure, cool teal and indigo in the haze behind. Lavish ornamentation: etched runes, gem inlays, filigreed armor, layered scale, woven cloth — every rivet visible. Atmospheric background of mistwood hollow dissolving into mist and ember-haze, tiny distant silhouettes implying scale. Mythic and noble in tone. No text, no logos, no watermarks, no UI overlay. Matte oil-paint finish, not digital-slick. Aspect 3:4 portrait. --ar 3:4 --style raw --stylize 400"
+  },
+  {
+    "id": 31,
+    "name": "Glimmer Pixie",
+    "slug": "glimmer-pixie",
+    "creature_family": "Fey",
+    "schools": [
+      "radiant",
+      "sky"
+    ],
+    "tier": 1,
+    "hp": 38,
+    "attack": 45,
+    "defense": 35,
+    "sp_attack": 55,
+    "sp_defense": 45,
+    "speed": 75,
+    "abilities": [],
+    "flavor_text": "A thumb-sized spark of mischief and light. Helpful exactly as often as it is a menace.",
+    "is_legendary": false,
+    "is_mythical": false,
+    "art_prompt": "A young initiate Glimmer Pixie, a Fey of the radiant school, attuned also to the sky school, depicted as a single full-body fantasy trading card illustration. a tiny luminous pixie with dragonfly wings, trailing motes of golden light, a mischievous grin. Heroic three-quarter pose, shot slightly from below, centered triangular composition. Painted in late-1990s fantasy box-art style: traditional oil on board, painterly realism in the Brandywine tradition, visible brushwork blended smooth. Dramatic single-source warm lighting (sunset gold or torchfire) cutting through cool atmospheric shadow, strong chiaroscuro, glowing rim light on edges of armor and scales. Rich saturated earthy palette — warm amber and ochre on the figure, cool teal and indigo in the haze behind. Lavish ornamentation: etched runes, gem inlays, filigreed armor, layered scale, woven cloth — every rivet visible. Atmospheric background of mistwood hollow dissolving into mist and ember-haze, tiny distant silhouettes implying scale. Mythic and noble in tone. No text, no logos, no watermarks, no UI overlay. Matte oil-paint finish, not digital-slick. Aspect 3:4 portrait. --ar 3:4 --style raw --stylize 400"
+  },
+  {
+    "id": 32,
+    "name": "Seraph of Dawn",
+    "slug": "seraph-of-dawn",
+    "creature_family": "Fey",
+    "schools": [
+      "radiant"
+    ],
+    "tier": 4,
+    "hp": 115,
+    "attack": 105,
+    "defense": 95,
+    "sp_attack": 125,
+    "sp_defense": 95,
+    "speed": 95,
+    "abilities": [],
+    "flavor_text": "It does not hate the dark. It simply ends it, the way sunrise ends a long and terrible night.",
+    "is_legendary": true,
+    "is_mythical": false,
+    "art_prompt": "An ancient and dread Seraph of Dawn, a Fey of the radiant school, depicted as a single full-body fantasy trading card illustration. a towering armored angel with great feathered wings, a sword of pure light, a halo of gold, serene and terrible. Heroic three-quarter pose, shot slightly from below, centered triangular composition. Painted in late-1990s fantasy box-art style: traditional oil on board, painterly realism in the Brandywine tradition, visible brushwork blended smooth. Dramatic single-source warm lighting (sunset gold or torchfire) cutting through cool atmospheric shadow, strong chiaroscuro, glowing rim light on edges of armor and scales. Rich saturated earthy palette — warm amber and ochre on the figure, cool teal and indigo in the haze behind. Lavish ornamentation: etched runes, gem inlays, filigreed armor, layered scale, woven cloth — every rivet visible. Atmospheric background of lunar wasteland dissolving into mist and ember-haze, tiny distant silhouettes implying scale. Mythic and noble in tone. No text, no logos, no watermarks, no UI overlay. Matte oil-paint finish, not digital-slick. Aspect 3:4 portrait. --ar 3:4 --style raw --stylize 400"
+  }
+]

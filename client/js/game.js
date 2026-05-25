@@ -69,7 +69,7 @@ export const CHAMPIONS = {
 export function championSpriteUrl(champion) {
   const slug = CHAMPIONS[champion]?.sprite;
   if (!slug) return null;
-  return `/assets/champions/${slug}.webp`;
+  return `/client/assets/champions/${slug}.webp`;
 }
 
 // Backwards-compat alias (older import sites used championMascotUrl).
