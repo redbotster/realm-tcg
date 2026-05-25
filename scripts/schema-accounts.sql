@@ -169,3 +169,8 @@ create or replace view user_stats as
     ) m group by user_id) played on played.user_id = u.id
   left join (select winner_id as user_id, count(*)::int as cnt from matches where winner_id is not null group by winner_id) won on won.user_id = u.id
   left join (select user_id, count(*)::int as cnt from owned_cards group by user_id) owned on owned.user_id = u.id;
+
+-- Ranked ladder columns (also applied via supabase/migrations).
+alter table users add column if not exists rank_points  int default 0;
+alter table users add column if not exists rank_best    int default 0;
+alter table users add column if not exists ranked_season text;

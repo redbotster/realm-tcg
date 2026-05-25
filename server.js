@@ -21,6 +21,7 @@ const xpModule = require("./server-modules/xp");
 const quests = require("./server-modules/quests");
 const theme = require("./server-modules/theme");
 const champions = require("./server-modules/champions");
+const ranked = require("./server-modules/ranked");
 const story = require("./server-modules/story");
 const readingMode = require("./server-modules/reading-mode");
 const trading = require("./server-modules/trading");
@@ -213,6 +214,7 @@ if (SUPABASE_URL && SUPABASE_SERVICE_KEY) {
   analytics.mount(app);
   guestMigrate.mount(app, authSupabase);
   deckShare.mount(app, authSupabase, ensureBestiary);
+  ranked.mount(app, authSupabase, { ensureBestiary, buildDeck });
   friendChallenge.mount(app, authSupabase);
   mastery.mount(app, authSupabase);
   winstreak.mount(app, authSupabase, ensureBestiary);
