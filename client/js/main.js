@@ -319,6 +319,7 @@ function renderMenu() {
           <button class="mode-btn" id="mode-mp-match" disabled>Find online match</button>
           <button class="mode-btn" id="mode-mp-friend" disabled>Play vs friend (code)</button>
           <button class="mode-btn" id="mode-champion" disabled>Fight a Champion</button>
+          <button class="mode-btn" id="mode-ranked" disabled title="${currentUser ? "Climb the ranked ladder vs other players' decks" : "Sign in to play Ranked"}">🏆 Ranked Match</button>
           <button class="mode-btn story-launch" id="mode-story" disabled title="${currentUser ? "Pick a champion to begin Story Mode" : "Sign in to unlock Story Mode"}">📖 Story Mode</button>
           <button class="mode-btn" id="mode-trade" ${currentUser ? "" : "disabled"} title="${currentUser ? "Trade cards with other champions" : "Sign in to trade"}">🔄 Trade Cards</button>
           <button class="mode-btn puzzle-launch" id="mode-puzzle" title="Today's chess-style card puzzle">🧩 Daily Puzzle</button>
@@ -342,6 +343,7 @@ function renderMenu() {
     $("#mode-mp-match").disabled = false;
     $("#mode-mp-friend").disabled = false;
     $("#mode-champion").disabled = false;
+    if (currentUser) $("#mode-ranked").disabled = false;
     if (currentUser) $("#mode-story").disabled = false;
   }
   $$(".champion-card", menu).forEach((el) => {
@@ -356,6 +358,7 @@ function renderMenu() {
       $("#mode-mp-match").disabled = false;
       $("#mode-mp-friend").disabled = false;
       $("#mode-champion").disabled = false;
+    if (currentUser) $("#mode-ranked").disabled = false;
       if (currentUser) $("#mode-story").disabled = false;
 
       // QR auto-join: if we landed here via ?code=XXXXX, jump straight to
@@ -416,6 +419,7 @@ function renderMenu() {
         } catch {}
       }
       _gameOverFired = false;
+      _rankedMatch = false;
       state = createGame({
         playerDeck,
         aiDeck,
@@ -506,6 +510,7 @@ function renderMenu() {
   $("#mode-mp-match").addEventListener("click", () => startMultiplayer({ mode: "queue" }));
   $("#mode-mp-friend").addEventListener("click", () => startMultiplayer({ mode: "friend" }));
   $("#mode-champion").addEventListener("click", () => openChampionPicker());
+  $("#mode-ranked").addEventListener("click", () => startRankedMatch());
   $("#mode-story")?.addEventListener("click", () => story.openStoryHub({ currentUser }));
   $("#mode-trade")?.addEventListener("click", () => trading.openTradeMarket({ currentUser }));
   $("#mode-puzzle")?.addEventListener("click", () => puzzle.openPuzzle({ currentUser }));
@@ -853,6 +858,7 @@ async function startChampionFight(championId) {
     const playerDeck = await loadPlayerDeck();
     gameMode = "solo";
     _championId = championId;
+    _rankedMatch = false;
     _gameOverFired = false;
     state = createGame({
       playerDeck,
@@ -888,6 +894,47 @@ async function startChampionFight(championId) {
     setTimeout(() => flashVerdict(`${champion.name} accepts your challenge!`, "super"), 600);
   } catch (err) {
     alert("Couldn't start: " + (err.message || "unknown"));
+  }
+}
+
+// --- Ranked ladder (async PvP) -------------------------------------------
+let _rankedMatch = false;
+async function startRankedMatch() {
+  if (!chosenChampion) { flashVerdict("Pick a champion first", "weak"); return; }
+  flashVerdict("Finding a ranked opponent…", "super");
+  try {
+    const r = await fetch("/api/ranked/opponent");
+    if (r.status === 401) { flashVerdict("Sign in to play Ranked", "weak"); return; }
+    const opp = await r.json();
+    const aiDeck = opp.cards;
+    if (!Array.isArray(aiDeck) || aiDeck.length < 20) throw new Error("no opponent available yet — try again");
+    const playerDeck = await loadPlayerDeck();
+    gameMode = "solo";
+    _rankedMatch = true;
+    _championId = null;
+    _gameOverFired = false;
+    state = createGame({
+      playerDeck, aiDeck,
+      playerAbility: chosenChampion,
+      aiAbility: "lance",
+      firstPlayer: "player",
+    });
+    if (currentTheme?.type) state.themeType = currentTheme.type;
+    _prevHps = { player: null, ai: null };
+    _prevEnergy = null;
+    aiPersonality = "tactical";
+    aiDifficulty = "hard";
+    soloSessionId = null;
+    $("#menu").classList.add("hidden");
+    $("#arena").classList.remove("hidden");
+    document.body.classList.add("in-arena");
+    startBGM();
+    await openMulliganModal();
+    render();
+    setTimeout(() => flashVerdict(`⚔ Ranked: ${opp.name} accepts your challenge!`, "super"), 600);
+  } catch (err) {
+    _rankedMatch = false;
+    alert("Couldn't start ranked: " + (err.message || "unknown"));
   }
 }
 
@@ -2919,6 +2966,26 @@ function onGameOver() {
   _gameOverFired = true;
   stopBGM();
   stopTurnTimer();
+  // Ranked match → report the result and surface the rank change.
+  if (_rankedMatch) {
+    _rankedMatch = false;
+    const won = state.winner === "player";
+    fetch("/me/ranked/result", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ won }),
+    })
+      .then((r) => r.json())
+      .then((d) => {
+        if (d && typeof d.delta === "number") {
+          setTimeout(() => flashVerdict(
+            `🏆 Rank ${d.delta >= 0 ? "+" : ""}${d.delta} → ${d.tier.name} (${d.points})`,
+            d.delta >= 0 ? "super" : "weak",
+          ), 1300);
+        }
+      })
+      .catch(() => {});
+  }
   const wasFirstMatch = !!state._isFirstMatch;
   const isFirstWin = state.winner === "player" && !hasWonBefore();
   markHasPlayed();
