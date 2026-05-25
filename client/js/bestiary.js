@@ -33,16 +33,20 @@ export function close() {
 }
 
 function render(overlay, rows, owned, total) {
-  // Per-generation breakdown.
-  const byGen = new Map();
+  // Per-family completion breakdown (collection-completion meter).
+  const FAMILY_ORDER = ["Humanoid", "Dragon", "Undead", "Demon", "Beast", "Elemental", "Aberration", "Fey"];
+  const byFam = new Map();
   for (const r of rows) {
-    const g = r.generation || 0;
-    if (!byGen.has(g)) byGen.set(g, { count: 0, owned: 0 });
-    const b = byGen.get(g);
+    const f = r.creature_family || "Other";
+    if (!byFam.has(f)) byFam.set(f, { count: 0, owned: 0 });
+    const b = byFam.get(f);
     b.count++;
     if (r.quantity > 0) b.owned++;
   }
-  const gens = [...byGen.entries()].sort((a, b) => a[0] - b[0]);
+  const fams = [...byFam.entries()].sort((a, b) => {
+    const ia = FAMILY_ORDER.indexOf(a[0]), ib = FAMILY_ORDER.indexOf(b[0]);
+    return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib);
+  });
   const pct = Math.round((owned / total) * 1000) / 10;
 
   _allRows = rows;
@@ -61,9 +65,9 @@ function render(overlay, rows, owned, total) {
         <span class="pdx-search-count"></span>
       </div>
       <div class="pdx-genbar">
-        ${gens.map(([g, b]) => `
-          <div class="pdx-gen">
-            <span class="pdx-gen-label">Gen ${g}</span>
+        ${fams.map(([f, b]) => `
+          <div class="pdx-gen${b.owned === b.count ? " complete" : ""}">
+            <span class="pdx-gen-label">${f}${b.owned === b.count ? " ✓" : ""}</span>
             <div class="pdx-gen-bar"><div class="pdx-gen-fill" style="width:${(b.owned / b.count) * 100}%"></div></div>
             <span class="pdx-gen-count">${b.owned}/${b.count}</span>
           </div>

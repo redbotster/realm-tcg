@@ -186,7 +186,7 @@ function mount(app, supabase) {
     // All 1025 species in order (id, name, sprite, generation, types).
     const { data: all, error: e1 } = await supabase
       .from("bestiary")
-      .select("id, name, sprite_front, generation, types, is_legendary, is_mythical")
+      .select("id, name, sprite_front, generation, types, creature_family, tier, is_legendary, is_mythical")
       .order("id", { ascending: true });
     if (e1) return res.status(500).json({ error: e1.message });
     const { data: mine, error: e2 } = await supabase
