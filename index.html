@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <title>Pokémon TCG — 1v1 Battler with All 1,025 Pokémon</title>
+    <meta name="description" content="A 1v1 trading card battler with all 1,025 Pokémon. Build a 30-card deck, wield Legendary signature moves, and out-strategize your rival. Daily boss challenge, story mode, trading, multiplayer." />
+    <meta name="theme-color" content="#1a0518" />
+    <!-- Open Graph / Twitter card so every share looks pro. -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Pokémon TCG — 1v1 Battler with All 1,025 Pokémon" />
+    <meta property="og:description" content="Build a deck. Wield Legendary signature moves. Out-strategize your rival. Daily challenge, story mode, trading, online play." />
+    <meta property="og:image" content="https://pokemon-tcg-five-lime.vercel.app/og-card.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:url" content="https://pokemon-tcg-five-lime.vercel.app/" />
+    <meta property="og:site_name" content="Pokémon TCG" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Pokémon TCG — 1v1 Battler" />
+    <meta name="twitter:description" content="Build a deck. Wield Legendary signature moves. Out-strategize your rival." />
+    <meta name="twitter:image" content="https://pokemon-tcg-five-lime.vercel.app/og-card.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Press+Start+2P&display=swap"
+    />
+    <link rel="stylesheet" href="/client/css/cards.css" />
+    <link rel="stylesheet" href="/client/css/arena.css" />
+    <link rel="stylesheet" href="/client/css/deck-builder.css" />
+    <link rel="stylesheet" href="/client/css/story.css" />
+    <link rel="stylesheet" href="/client/css/reading-mode.css" />
+    <link rel="stylesheet" href="/client/css/trading.css" />
+
+    <!-- Vercel Analytics — pageviews + Web Vitals, zero-config on Vercel
+         deploys. Defer so it never blocks first paint. Local dev gets a
+         silent 404 on the script which is fine. -->
+    <script defer src="/_vercel/insights/script.js"></script>
+    <!-- QR generation for the "share room code" modal. Same library the
+         slop-computer baseline used. -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+  </head>
+  <body>
+    <div class="landscape-prompt">
+      Rotate your phone to landscape ⤺
+    </div>
+
+    <button id="mute-toggle" aria-label="Mute">🔊</button>
+
+    <section id="menu"></section>
+    <section id="arena" class="hidden"></section>
+
+    <!-- Socket.IO client (used by multiplayer.js). The slop-computer
+         auto-reload-on-disconnect is disabled in production because Vercel
+         frequently 400s WS upgrades, and reloading mid-passkey-flow breaks
+         registration. Multiplayer module creates its own socket lazily. -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      // Only auto-reload on file changes during local dev.
+      if (location.hostname === "localhost" || location.hostname.endsWith(".local")) {
+        const _devSocket = io({ reconnection: false });
+        _devSocket.on("reload", () => window.location.reload());
+      }
+    </script>
+
+    <!-- Production loads the esbuild-bundled + minified entry (≈180 KB
+         minified vs ≈330 KB of unbundled source). Local dev without
+         a build still works — server.js rewrites the script src on
+         the fly when /dist/main.bundle.js is missing. -->
+    <script type="module" src="/dist/main.bundle.js"></script>
+  </body>
+</html>
