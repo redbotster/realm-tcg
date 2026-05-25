@@ -455,7 +455,7 @@ function playSpellCard(state, side, handIndex, card, cost, { spellTarget = null 
 
     // -------- FREEZE --------------------------------------------------
     // Lock one enemy creature for 1 turn. Reuses the same status pipe
-    // paralyze/sleep use — battle.isLockedOut() recognises "freeze"
+    // stun/sleep use — battle.isLockedOut() recognises "freeze"
     // and tickStatus expires it after one tick.
     case "freeze": {
       const r = requireEnemyTarget(state, side, spellTarget, "freeze");
@@ -466,16 +466,16 @@ function playSpellCard(state, side, handIndex, card, cost, { spellTarget = null 
       return { ok: true, spell: card, effect: "freeze", targetSide: r.otherSide, targetSlot: spellTarget, targetName: r.enemy.card.name };
     }
 
-    // -------- PARALYZE -----------------------------------------------
+    // -------- STUN -----------------------------------------------
     // Same lockout shape as freeze, different status kind so the
     // animation + log read as paralysis. Both decrement via tickStatus.
-    case "paralyze": {
-      const r = requireEnemyTarget(state, side, spellTarget, "paralyze");
+    case "stun": {
+      const r = requireEnemyTarget(state, side, spellTarget, "stun");
       if (r.err) return r.err;
-      r.enemy.status = { kind: "paralyze", turnsLeft: 1 };
+      r.enemy.status = { kind: "stun", turnsLeft: 1 };
       consumeSpell(p, handIndex, card, cost);
-      log(state, `⚡ ${card.name}: ${r.enemy.card.name} is paralyzed!`, "status");
-      return { ok: true, spell: card, effect: "paralyze", targetSide: r.otherSide, targetSlot: spellTarget, targetName: r.enemy.card.name };
+      log(state, `⚡ ${card.name}: ${r.enemy.card.name} is stund!`, "status");
+      return { ok: true, spell: card, effect: "stun", targetSide: r.otherSide, targetSlot: spellTarget, targetName: r.enemy.card.name };
     }
 
     // -------- HEAL ----------------------------------------------------
@@ -629,7 +629,7 @@ function playSpellCard(state, side, handIndex, card, cost, { spellTarget = null 
     }
 
     // -------- CLEANSE (slice 6) --------------------------------------
-    // Counter to enemy disruption (freeze, paralyze, sleep, burn). The
+    // Counter to enemy disruption (freeze, stun, sleep, burn). The
     // cheap common-rarity equivalent of "wake up please". No-op on a
     // status-free ally but still consumes the card.
     case "cleanse": {
@@ -715,7 +715,7 @@ function playSpellCard(state, side, handIndex, card, cost, { spellTarget = null 
     // -------- BURN (slice 7) ----------------------------------------
     // Apply burn status — battle.tickStatus deals 2 damage at the end
     // of the burnt creature's own turn for `burnTurns` ticks. Different
-    // shape from Freeze/Paralyze: it's slow consistent damage, not a
+    // shape from Freeze/Stun: it's slow consistent damage, not a
     // hard lockout.
     case "burn": {
       const r = requireEnemyTarget(state, side, spellTarget, "burn");
@@ -787,20 +787,20 @@ function playSpellCard(state, side, handIndex, card, cost, { spellTarget = null 
       return { ok: true, spell: card, effect: "counter", targetSide: side, targetSlot: spellTarget, targetName: r.ally.card.name };
     }
 
-    // -------- CONFUSION (slice 8) ----------------------------------
-    // Apply "confuse" status. attack() rolls a 50% self-hit chance
+    // -------- CURSE (slice 8) ----------------------------------
+    // Apply "curse" status. attack() rolls a 50% self-hit chance
     // whenever an attacker has this status — the attack redirects to
     // the attacker themselves. The status ticks down at end of the
-    // confused player's turn (handled in battle.tickStatus via the
+    // cursed player's turn (handled in battle.tickStatus via the
     // generic non-burn branch).
-    case "confusion": {
-      const r = requireEnemyTarget(state, side, spellTarget, "confuse");
+    case "curse": {
+      const r = requireEnemyTarget(state, side, spellTarget, "curse");
       if (r.err) return r.err;
-      const turns = Math.max(1, card.confuseTurns || 2);
-      r.enemy.status = { kind: "confuse", turnsLeft: turns };
+      const turns = Math.max(1, card.curseTurns || 2);
+      r.enemy.status = { kind: "curse", turnsLeft: turns };
       consumeSpell(p, handIndex, card, cost);
-      log(state, `🌀 ${card.name}: ${r.enemy.card.name} is confused for ${turns} turns!`, "status");
-      return { ok: true, spell: card, effect: "confusion", targetSide: r.otherSide, targetSlot: spellTarget, targetName: r.enemy.card.name };
+      log(state, `🌀 ${card.name}: ${r.enemy.card.name} is cursed for ${turns} turns!`, "status");
+      return { ok: true, spell: card, effect: "curse", targetSide: r.otherSide, targetSlot: spellTarget, targetName: r.enemy.card.name };
     }
 
     // -------- STORM (slice 8) --------------------------------------
@@ -1057,22 +1057,22 @@ export function attack(
   if (!attackerInst) return { ok: false, reason: "no attacker" };
   if (attackerInst.summoningSickness) return { ok: false, reason: "summoning sickness" };
   if (attackerInst.attackedThisTurn) return { ok: false, reason: "already attacked" };
-  // Confusion (slice 8): 50% chance the attacker hits THEMSELVES this
+  // Curse (slice 8): 50% chance the attacker hits THEMSELVES this
   // strike. The check fires before the regular lockout / target / damage
-  // pipeline so a confused attacker who self-hits doesn't also burn
+  // pipeline so a cursed attacker who self-hits doesn't also burn
   // through ability cost or deal damage to the chosen target.
-  if (attackerInst.status?.kind === "confuse" && (rand() < 0.5)) {
+  if (attackerInst.status?.kind === "curse" && (rand() < 0.5)) {
     const baseAtk = attackerInst.card.cardAttack || 1;
     const selfDmg = Math.max(1, baseAtk);
     attackerInst.currentHp = Math.max(0, attackerInst.currentHp - selfDmg);
-    log(state, `🌀 ${attackerInst.card.name} is confused — hit itself for ${selfDmg}!`, "status");
+    log(state, `🌀 ${attackerInst.card.name} is cursed — hit itself for ${selfDmg}!`, "status");
     attackerInst.attackedThisTurn = true;
     if (attackerInst.currentHp <= 0) {
-      log(state, `${attackerInst.card.name} fainted in confusion!`, "ko");
+      log(state, `${attackerInst.card.name} fainted in curse!`, "ko");
       p.discard.push(attackerInst.card);
       p.field[fromSlot] = null;
     }
-    return { ok: true, damage: selfDmg, multiplier: 1, verdict: { text: "Confusion!", tone: "miss" }, target: "self", selfHit: true, abilityId, abilityName: "Confused" };
+    return { ok: true, damage: selfDmg, multiplier: 1, verdict: { text: "Curse!", tone: "miss" }, target: "self", selfHit: true, abilityId, abilityName: "Cursed" };
   }
   if (isLockedOut(attackerInst)) {
     log(state, `${attackerInst.card.name} can't move (${attackerInst.status.kind})!`, "status");
@@ -1276,7 +1276,7 @@ export function attack(
     // Status: ability-guaranteed status overrides the type-based random roll.
     let status = null;
     if (ability.status && defenderInst.currentHp > 0) {
-      const turnsLeft = ability.status === "burn" ? 2 : 1;
+      const turnsLeft = ability.status === "burn" || ability.status === "bleed" ? 2 : 1;
       status = { kind: ability.status, turnsLeft };
       defenderInst.status = status;
       log(state, `${defenderInst.card.name} suffered ${status.kind}!`, "status");
@@ -1290,12 +1290,12 @@ export function attack(
       }
     }
     // Static counter-passive: if the defender has Static and we made contact,
-    // 25% chance to paralyze the attacker.
+    // 25% chance to stun the attacker.
     if (damage > 0 && !attackerInst.status) {
       const back = staticTrigger(defenderInst.card, rand);
       if (back) {
         attackerInst.status = back;
-        log(state, `⚡ ${defenderInst.card.name}'s Static paralyzed ${attackerInst.card.name}!`, "status");
+        log(state, `⚡ ${defenderInst.card.name}'s Static stund ${attackerInst.card.name}!`, "status");
       }
     }
     // Field aura: Reshiram / Zekrom-style auto-apply status if attacker is
@@ -1516,7 +1516,7 @@ const POLICIES = {
 // it anyway would either fail at the engine or burn the card on
 // nothing.
 //
-// Offensive spells (freeze/paralyze/aoe) additionally require the AI
+// Offensive spells (freeze/stun/aoe) additionally require the AI
 // to have at least one creature on the field. Regression fix: without
 // this gate the AI sometimes spent all its energy on Freeze early in
 // the match before summoning a single attacker, leaving the attack
@@ -1528,7 +1528,7 @@ export function spellPlayable(card, ai, opp) {
   const oppHasField = opp?.field?.some((s) => s !== null) ?? false;
   switch (card.effect) {
     case "freeze":
-    case "paralyze":
+    case "stun":
     case "sleep-powder":
       return aiHasField && oppHasField;
     case "bolt":
@@ -1574,7 +1574,7 @@ export function spellPlayable(card, ai, opp) {
       // opponent has at least one attacker on the board, otherwise
       // skipping their turn doesn't deny them anything.
       return oppHasField;
-    case "confusion":
+    case "curse":
     case "burst":
     case "drain":
       return aiHasField && oppHasField;
@@ -1599,7 +1599,7 @@ export function spellPlayable(card, ai, opp) {
 // Pick the best target slot for a spell given the current board.
 // Returns a slot index for targeted spells, or null for AOE / unknown.
 // Strategy per effect:
-//   freeze/paralyze → highest effective-attack enemy (shut down their hitter)
+//   freeze/stun → highest effective-attack enemy (shut down their hitter)
 //   heal            → lowest HP fraction ally (most efficient heal)
 //   defender/evolve → highest base-attack ally (protect/boost the threat)
 //   aoe             → no target needed
@@ -1610,7 +1610,7 @@ function aiPickSpellTarget(state, side, card) {
   const allyField  = ai.field;
   switch (card.effect) {
     case "freeze":
-    case "paralyze":
+    case "stun":
     case "sleep-powder": {
       // Lock the enemy with the highest effective attack — disrupts
       // their biggest threat for a turn.
@@ -1690,8 +1690,8 @@ function aiPickSpellTarget(state, side, card) {
       }
       return best;
     }
-    case "confusion": {
-      // Same as freeze/paralyze — disable the strongest enemy threat.
+    case "curse": {
+      // Same as freeze/stun — disable the strongest enemy threat.
       let best = null, bestScore = -Infinity;
       for (let i = 0; i < enemyField.length; i++) {
         const e = enemyField[i];
@@ -1783,7 +1783,7 @@ export function scoreCardForSummon(ai, opp, card) {
     if (sig.onSummon) {
       if (/damage|hit|deal|strike|psychic|shock|hex|hydro|pulse|force|sight|sandstorm/.test(desc)) score += enemyCount * 5;
       if (/heal|restore|recover|moonlight|aurora|soft.?boiled|continent/.test(desc + " " + name)) score += damagedAllies * 5;
-      if (/sleep|paralyze|burn|curse|veil|kiss/.test(desc + " " + name)) score += enemyCount * 3;
+      if (/sleep|stun|burn|curse|veil|kiss/.test(desc + " " + name)) score += enemyCount * 3;
       if (/grants|buff|max hp|\+\d+\s*atk|geomancy|mimicry|charge/.test(desc + " " + name)) score += allyCount * 3;
     }
     if (sig.passive) score += 5;       // Multiscale / Iron Defense / etc.
@@ -2092,7 +2092,7 @@ async function aiTakeTurnInner(state, { rand, difficulty, onAction, personality 
     }
   }
 
-  // Before the attack loop: log a "still asleep / frozen / paralyzed"
+  // Before the attack loop: log a "still asleep / frozen / stund"
   // line for each locked-out creature. Otherwise a player who cast
   // Sleep Powder sees the AI's turn pass silently and can't tell the
   // disruption worked. Fires once per AI turn (outside the safety
@@ -2102,7 +2102,7 @@ async function aiTakeTurnInner(state, { rand, difficulty, onAction, personality 
     const k = inst.status?.kind || "lock";
     const phrase = k === "sleep"    ? "fast asleep"
                  : k === "freeze"   ? "frozen solid"
-                 : k === "paralyze" ? "paralyzed"
+                 : k === "stun" ? "stund"
                  : k;
     log(state, `${inst.card.name} is ${phrase} — can't move this turn!`, "status");
   }

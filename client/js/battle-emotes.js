@@ -105,7 +105,7 @@ export function spellResultToEvent(result) {
     case "counter":      return "spell-counter";
     case "stop-time":    return "spell-stop-time";
     // Slice 8:
-    case "confusion":    return "spell-confusion";
+    case "curse":    return "spell-curse";
     case "storm":        return "spell-storm";
     case "burst":        return "spell-burst";
     case "brave-strike": return "spell-brave-strike";

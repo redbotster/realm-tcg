@@ -157,7 +157,7 @@ const CHAPTERS = [
       phases: [
         {
           fromHpFraction: 1.0,
-          attackPattern: ["confusion", "psybeam", "recover"],
+          attackPattern: ["curse", "psybeam", "recover"],
           summonOnEntry: null,
         },
         {
@@ -170,7 +170,7 @@ const CHAPTERS = [
         },
       ],
       moves: {
-        confusion: { name: "Confusion", power: 1.0, target: "active", flavor: "A wave of psychic distortion." },
+        curse: { name: "Curse", power: 1.0, target: "active", flavor: "A wave of psychic distortion." },
         psybeam: { name: "Psybeam", power: 1.2, target: "active", flavor: "A focused beam of mental energy." },
         recover: { name: "Recover", power: 0, selfHeal: 6, flavor: "Mewtwo heals itself for 6 HP." },
         psystrike: { name: "Psystrike", power: 1.4, target: "active", flavor: "A physical pulse of pure psychic force." },

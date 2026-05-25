@@ -12,12 +12,12 @@
 //   ]
 
 const TYPE_SPECIALS = {
-  martial:  { name: "Crushing Blow",   energyCost: 1, damageMult: 1.4, status: null,     desc: "+40% damage" },
+  martial:  { name: "Crushing Blow",   energyCost: 1, damageMult: 1.4, status: "bleed",    desc: "+40% dmg, causes Bleed" },
   fire:     { name: "Inferno",         energyCost: 2, damageMult: 1.5, status: "burn",     desc: "+50% dmg, guaranteed Burn" },
   tide:     { name: "Tidal Crash",     energyCost: 2, damageMult: 1.5, status: null,       desc: "+50% damage" },
-  storm:    { name: "Thunderclap",     energyCost: 2, damageMult: 1.4, status: "paralyze", desc: "+40% dmg, guaranteed Stun" },
+  storm:    { name: "Thunderclap",     energyCost: 2, damageMult: 1.4, status: "stun", desc: "+40% dmg, guaranteed Stun" },
   verdant:  { name: "Thornlash",       energyCost: 1, damageMult: 1.3, status: null,       desc: "+30% damage, low cost" },
-  frost:    { name: "Glacial Burst",   energyCost: 2, damageMult: 1.4, status: "paralyze", desc: "+40% dmg, may Stun" },
+  frost:    { name: "Glacial Burst",   energyCost: 2, damageMult: 1.4, status: "stun", desc: "+40% dmg, may Stun" },
   brawl:    { name: "Flurry Strike",   energyCost: 2, damageMult: 1.7, status: null,       desc: "+70% raw damage" },
   plague:   { name: "Venom Bite",      energyCost: 1, damageMult: 1.1, status: "burn",     desc: "Light dmg, guaranteed Poison" },
   earth:    { name: "Seismic Slam",    energyCost: 2, damageMult: 1.5, status: null,       desc: "+50% damage" },

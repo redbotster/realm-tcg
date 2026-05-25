@@ -120,7 +120,7 @@ if (typeof document !== "undefined") {
 }
 
 const PASSIVE_DESCS = {
-  static: "Static — 25% chance to paralyze the attacker on contact.",
+  static: "Static — 25% chance to stun the attacker on contact.",
   levitate: "Levitate — immune to Ground attacks.",
   intimidate: "Intimidate — on summon, every enemy creature loses 1 ATK.",
   blaze: "Blaze — +1 ATK to Fire moves when below 1/3 HP.",

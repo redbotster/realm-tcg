@@ -22,10 +22,10 @@ const KNOWN_RARITIES = new Set(["common", "uncommon", "rare", "epic", "legendary
 test("SPELL_CARDS contains all 24 designed spells (slice 1-8)", () => {
   const effects = SPELL_CARDS.map((s) => s.effect).sort();
   assert.deepEqual(effects, [
-    "aoe", "bolt", "brave-strike", "burn", "burst", "cleanse", "confusion",
-    "counter", "defender", "drain", "evolve", "freeze", "heal", "mass-heal",
-    "paralyze", "phoenix", "power-strike", "refresh", "scout", "shield",
-    "sleep-powder", "stop-time", "storm", "surge",
+    "aoe", "bolt", "brave-strike", "burn", "burst", "cleanse", "counter",
+    "curse", "defender", "drain", "evolve", "freeze", "heal", "mass-heal",
+    "phoenix", "power-strike", "refresh", "scout", "shield", "sleep-powder",
+    "stop-time", "storm", "stun", "surge",
   ]);
 });
 
@@ -101,10 +101,10 @@ test("isSpellCard distinguishes spells from creature", () => {
 
 test("isActiveSpellEffect: all 24 designed effects are active in slice 8", () => {
   for (const e of [
-    "freeze", "paralyze", "heal", "defender", "evolve", "aoe",
+    "freeze", "stun", "heal", "defender", "evolve", "aoe",
     "bolt", "sleep-powder", "cleanse", "surge", "scout", "phoenix",
     "burn", "shield", "mass-heal", "power-strike", "counter", "stop-time",
-    "confusion", "storm", "burst", "brave-strike", "refresh", "drain",
+    "curse", "storm", "burst", "brave-strike", "refresh", "drain",
   ]) {
     assert.equal(isActiveSpellEffect(e), true, `${e} should be active`);
   }

@@ -1,4 +1,4 @@
-// Tests for status-effect mechanics — burn, paralyze, sleep.
+// Tests for status-effect mechanics — burn, stun, sleep.
 // These are central to gameplay (rollStatus, tickStatus, isLockedOut)
 // but had zero direct tests until now.
 
@@ -41,11 +41,11 @@ test("rollStatus: fire above threshold → no status", () => {
   assert.equal(status, null);
 });
 
-test("rollStatus: electric attacker has paralyze chance", () => {
+test("rollStatus: electric attacker has stun chance", () => {
   const attacker = mkCard(["storm"]);
   const defender = mkCard(["martial"]);
   const status = rollStatus(attacker, defender, () => 0.1);
-  assert.equal(status?.kind, "paralyze");
+  assert.equal(status?.kind, "stun");
 });
 
 test("rollStatus: psychic attacker has sleep chance", () => {
@@ -87,15 +87,36 @@ test("tickStatus: burn expires after its last tick", () => {
   assert.equal(card.status, undefined);  // deleted from instance
 });
 
-test("tickStatus: paralyze decrements without dealing damage", () => {
-  const card = mkInst(mkCard(), { status: { kind: "paralyze", turnsLeft: 2 } });
+test("tickStatus: bleed (Martial) deals 2 damage per tick like burn", () => {
+  const card = mkInst(mkCard(), { status: { kind: "bleed", turnsLeft: 2 } });
+  const r = tickStatus(card);
+  assert.equal(r.damage, 2);
+  assert.equal(r.expired, false);
+  assert.equal(card.status?.turnsLeft, 1);
+});
+
+test("tickStatus: bleed expires after its last tick", () => {
+  const card = mkInst(mkCard(), { status: { kind: "bleed", turnsLeft: 1 } });
+  const r = tickStatus(card);
+  assert.equal(r.damage, 2);
+  assert.equal(r.expired, true);
+  assert.equal(card.status, undefined);
+});
+
+test("isLockedOut: bleed does NOT lock the card (DoT, not a gate)", () => {
+  const card = mkInst(mkCard(), { status: { kind: "bleed", turnsLeft: 2 } });
+  assert.equal(isLockedOut(card), false);
+});
+
+test("tickStatus: stun decrements without dealing damage", () => {
+  const card = mkInst(mkCard(), { status: { kind: "stun", turnsLeft: 2 } });
   const r = tickStatus(card);
   assert.equal(r.damage, 0);
   assert.equal(card.status?.turnsLeft, 1);
 });
 
-test("tickStatus: paralyze expires", () => {
-  const card = mkInst(mkCard(), { status: { kind: "paralyze", turnsLeft: 1 } });
+test("tickStatus: stun expires", () => {
+  const card = mkInst(mkCard(), { status: { kind: "stun", turnsLeft: 1 } });
   const r = tickStatus(card);
   assert.equal(r.expired, true);
   assert.equal(card.status, undefined);
@@ -117,8 +138,8 @@ test("tickStatus: card with no status is a no-op", () => {
 
 // --- isLockedOut ------------------------------------------------------
 
-test("isLockedOut: paralyze locks the card", () => {
-  const card = mkInst(mkCard(), { status: { kind: "paralyze", turnsLeft: 1 } });
+test("isLockedOut: stun locks the card", () => {
+  const card = mkInst(mkCard(), { status: { kind: "stun", turnsLeft: 1 } });
   assert.equal(isLockedOut(card), true);
 });
 

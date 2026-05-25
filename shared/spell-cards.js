@@ -12,7 +12,7 @@
 //
 // Effects:
 //   freeze   — lock one enemy creature for 1 turn (no attack, no act)
-//   paralyze — lock one enemy creature for 1 turn (chained on `paralyze` status)
+//   stun — lock one enemy creature for 1 turn (chained on `stun` status)
 //   heal     — restore one of your creature to full HP
 //   defender — +5 max HP to one of yours AND must-be-attacked-first this match
 //   evolve   — +50% Max HP and +50% Attack to one of yours
@@ -38,7 +38,7 @@ const SPELL_BASE_ID = 10000;
 // + UI integration ships.
 const ACTIVE_EFFECTS = new Set([
   "freeze",       // slice 1: lock one enemy for 1 turn
-  "paralyze",     // slice 2: paralyze one enemy for 1 turn
+  "stun",     // slice 2: stun one enemy for 1 turn
   "heal",         // slice 2: restore one ally to full HP
   "defender",     // slice 2: +5 max HP + force opponents to target this ally
   "evolve",       // slice 2: +50% max HP and +50% attack on one ally
@@ -55,7 +55,7 @@ const ACTIVE_EFFECTS = new Set([
   "power-strike", // slice 7: +3 ATK to one ally's next attack (one-time)
   "counter",      // slice 7: reflect the next attack's damage back to attacker
   "stop-time",    // slice 7: opponent skips their next turn entirely
-  "confusion",    // slice 8: confuse status — 50% chance enemy hits itself
+  "curse",    // slice 8: curse status — 50% chance enemy hits itself
   "storm",        // slice 8: 2 dmg to EVERY creature on field (both sides)
   "burst",        // slice 8: 3 direct damage to one enemy (cheap Bolt)
   "brave-strike", // slice 8: ally takes 50% HP loss for a double-damage next attack
@@ -80,14 +80,14 @@ const SPELL_CARDS = [
   {
     id: SPELL_BASE_ID + 2,
     kind: "spell",
-    name: "Paralyze",
-    effect: "paralyze",
+    name: "Stun",
+    effect: "stun",
     target: "enemyField",
     types: ["storm"],
     glyph: "⚡",
     power: 2,
     rarity: "uncommon",
-    description: "Paralyze one enemy creature — it can't act on its next turn.",
+    description: "Stun one enemy creature — it can't act on its next turn.",
     flavor_text: "Static lock. Muscles refuse the call.",
   },
   {
@@ -315,15 +315,15 @@ const SPELL_CARDS = [
   {
     id: SPELL_BASE_ID + 19,
     kind: "spell",
-    name: "Confusion",
-    effect: "confusion",
+    name: "Curse",
+    effect: "curse",
     target: "enemyField",
     types: ["mind"],
     glyph: "🌀",
     power: 4,
     rarity: "rare",
-    confuseTurns: 2,
-    description: "Confuse one enemy — 50% chance they hit themselves next attack.",
+    curseTurns: 2,
+    description: "Curse one enemy — 50% chance they hit themselves next attack.",
     flavor_text: "Up is down. Left is right. The room spins.",
   },
   {
@@ -463,7 +463,7 @@ function spellToCard(spell) {
     massHealAmount:      spell.massHealAmount,
     powerStrikeBonus:    spell.powerStrikeBonus,
     // Slice 8 params:
-    confuseTurns:        spell.confuseTurns,
+    curseTurns:        spell.curseTurns,
     stormDamage:         spell.stormDamage,
     burstDamage:         spell.burstDamage,
     braveSelfDamageFrac: spell.braveSelfDamageFrac,

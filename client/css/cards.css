@@ -528,8 +528,10 @@ body.dragging-attack .champion-block.ai {
   letter-spacing: 1px;
 }
 .card-status.status-burn      { background: #EE8130; color: #fff; }
-.card-status.status-paralyze  { background: #F7D02C; color: #222; }
+.card-status.status-bleed     { background: #b3122b; color: #fff; }
+.card-status.status-stun  { background: #F7D02C; color: #222; }
 .card-status.status-sleep     { background: #735797; color: #fff; }
+.card-status.status-curse     { background: #4a3b66; color: #fff; }
 
 /* Floating status pictogram above the card so it's readable at a glance. */
 .card .status-icon {
@@ -553,13 +555,14 @@ body.dragging-attack .champion-block.ai {
   50%      { transform: translate(-50%, -3px) scale(1.18); filter: drop-shadow(0 0 8px #ff9c44) hue-rotate(8deg); }
 }
 .card .status-icon.kind-burn  { animation: burnFlicker 0.55s ease-in-out infinite; }
+.card .status-icon.kind-bleed { animation: burnFlicker 0.7s ease-in-out infinite; }
 @keyframes sparkBuzz {
   0%, 100% { transform: translate(-50%, 0)   scale(1); }
   25%      { transform: translate(-52%, -2px) scale(1.1); }
   50%      { transform: translate(-48%, 0)    scale(1.05); }
   75%      { transform: translate(-52%, -2px) scale(1.12); }
 }
-.card .status-icon.kind-paralyze { animation: sparkBuzz 0.3s linear infinite; }
+.card .status-icon.kind-stun { animation: sparkBuzz 0.3s linear infinite; }
 
 /* Compact: smaller cards for the field */
 .card.compact {

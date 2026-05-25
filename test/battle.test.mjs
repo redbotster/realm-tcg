@@ -69,10 +69,10 @@ test("rollStatus(fire) returns null when roll exceeds threshold", () => {
   assert.equal(rollStatus(fire, target, () => 0.99), null);
 });
 
-test("rollStatus(electric) applies paralyze", () => {
+test("rollStatus(electric) applies stun", () => {
   const elec = mkCard({ types: ["storm"] });
   const status = rollStatus(elec, mkCard(), () => 0.01);
-  assert.equal(status.kind, "paralyze");
+  assert.equal(status.kind, "stun");
 });
 
 test("rollStatus(psychic) applies sleep", () => {
@@ -98,9 +98,9 @@ test("burn ticks 2 damage per turn and expires after 2", () => {
   assert.equal(c.status, undefined);
 });
 
-test("paralyze locks out attacks, then expires", () => {
+test("stun locks out attacks, then expires", () => {
   const c = mkCard();
-  c.status = { kind: "paralyze", turnsLeft: 1 };
+  c.status = { kind: "stun", turnsLeft: 1 };
   assert.equal(isLockedOut(c), true);
   const r = tickStatus(c);
   assert.equal(r.expired, true);

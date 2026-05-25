@@ -139,7 +139,7 @@ test("Rhyperior Solid Rock resists super-effective", () => {
   assert.equal(sig.passive?.resistSuperEffective, true);
 });
 
-test("Lapras Frozen Wall paralyzes the attacker (does not cancel)", () => {
+test("Lapras Frozen Wall stuns the attacker (does not cancel)", () => {
   const sig = signatureFor({ id: 131 });
   assert.ok(sig);
   const state = mkState();
@@ -147,7 +147,7 @@ test("Lapras Frozen Wall paralyzes the attacker (does not cancel)", () => {
   const attacker = mkInst(mkCard({ id: 6, name: "Charizard" }));
   const cancelled = sig.onPreHit(state, "ai", lapras, attacker);
   assert.equal(cancelled, false, "should NOT cancel — just react");
-  assert.equal(attacker.status?.kind, "paralyze");
+  assert.equal(attacker.status?.kind, "stun");
 });
 
 test("Torterra Continent heals each ally on summon", () => {

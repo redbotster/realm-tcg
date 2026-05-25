@@ -180,10 +180,10 @@ test("Freeze → enemy attack attempt fails (engine refuses to attack while lock
 });
 
 // =====================================================================
-// Slice 2 — additional effects: Paralyze, Heal, Defender, Evolve, AOE
+// Slice 2 — additional effects: Stun, Heal, Defender, Evolve, AOE
 // =====================================================================
 
-const PARALYZE = spellToCard(SPELL_CARDS.find((s) => s.effect === "paralyze"));
+const STUN = spellToCard(SPELL_CARDS.find((s) => s.effect === "stun"));
 const HEAL     = spellToCard(SPELL_CARDS.find((s) => s.effect === "heal"));
 const DEFENDER = spellToCard(SPELL_CARDS.find((s) => s.effect === "defender"));
 const EVOLVE   = spellToCard(SPELL_CARDS.find((s) => s.effect === "evolve"));
@@ -205,17 +205,17 @@ function placeAlly(state, slot, card, currentHp = null) {
   };
 }
 
-// --- PARALYZE --------------------------------------------------------
+// --- STUN --------------------------------------------------------
 
-test("Paralyze applies paralyze status (locks enemy for 1 turn)", () => {
+test("Stun applies stun status (locks enemy for 1 turn)", () => {
   const enemy = creature(101);
-  const state = makeMatch({ playerHand: [PARALYZE], aiField: [enemy] });
+  const state = makeMatch({ playerHand: [STUN], aiField: [enemy] });
   const r = playCard(state, "player", 0, { spellTarget: 0 });
   assert.equal(r.ok, true);
   const t = state.players.ai.field[0];
-  assert.equal(t.status.kind, "paralyze");
+  assert.equal(t.status.kind, "stun");
   assert.equal(t.status.turnsLeft, 1);
-  assert.ok(isLockedOut(t), "paralyzed creature should be locked out");
+  assert.ok(isLockedOut(t), "stund creature should be locked out");
 });
 
 // --- HEAL ------------------------------------------------------------

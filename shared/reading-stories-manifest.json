@@ -329,8 +329,8 @@
     "voiceId": "FGY2WhTYpPnrIDTdsKH5",
     "generatedAt": "2026-05-24T16:10:02.043Z"
   },
-  "emotes/spell-confusion-1": {
-    "audioUrl": "https://bphnyyiwwcetryafgjof.supabase.co/storage/v1/object/public/tts-audio/emotes/spell-confusion-1.mp3",
+  "emotes/spell-curse-1": {
+    "audioUrl": "https://bphnyyiwwcetryafgjof.supabase.co/storage/v1/object/public/tts-audio/emotes/spell-curse-1.mp3",
     "voiceId": "cgSgspJ2msm6clMCkdW9",
     "generatedAt": "2026-05-25T01:15:43.957Z"
   },

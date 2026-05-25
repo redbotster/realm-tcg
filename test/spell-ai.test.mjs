@@ -2,7 +2,7 @@
 //
 // Slice 3 contract: the AI uses spells when their target is actually
 // satisfiable. It picks targets via aiPickSpellTarget:
-//   freeze/paralyze → strongest enemy (highest cardAttack + boost)
+//   freeze/stun → strongest enemy (highest cardAttack + boost)
 //   heal            → lowest HP fraction ally
 //   defender/evolve → highest base-attack ally
 //   aoe             → no target; only played when ≥2 enemies on board
@@ -17,7 +17,7 @@ import * as spellCards from "../shared/spell-cards.js";
 
 const { SPELL_CARDS, spellToCard } = spellCards.default ?? spellCards;
 const FREEZE   = spellToCard(SPELL_CARDS.find((s) => s.effect === "freeze"));
-const PARALYZE = spellToCard(SPELL_CARDS.find((s) => s.effect === "paralyze"));
+const STUN = spellToCard(SPELL_CARDS.find((s) => s.effect === "stun"));
 const HEAL     = spellToCard(SPELL_CARDS.find((s) => s.effect === "heal"));
 const DEFENDER = spellToCard(SPELL_CARDS.find((s) => s.effect === "defender"));
 const EVOLVE   = spellToCard(SPELL_CARDS.find((s) => s.effect === "evolve"));
@@ -166,9 +166,9 @@ test("AI AOE targeting (manual): no target needed", () => {
 // --- Skipping invalid spells -----------------------------------------
 
 test("AI hand-with-only-spells against empty board: no plays, no crashes", () => {
-  // No enemies → Freeze/Paralyze/AOE all unplayable. No allies → Heal/
+  // No enemies → Freeze/Stun/AOE all unplayable. No allies → Heal/
   // Defender/Evolve all unplayable. AI cleanly does nothing.
-  const state = makeMatch({ aiHand: [FREEZE, PARALYZE, AOE, HEAL, DEFENDER, EVOLVE] });
+  const state = makeMatch({ aiHand: [FREEZE, STUN, AOE, HEAL, DEFENDER, EVOLVE] });
   for (let i = 0; i < state.players.ai.hand.length; i++) {
     const r = playCard(state, "ai", i);
     // All should fail cleanly with a usable error string.
@@ -215,7 +215,7 @@ test("AI with [spell, creature] and no spell target: plays the creature", () => 
 // AI field, casting Freeze wasted the energy — the attack phase then
 // found no attackers and the AI silently passed. From the player's POV
 // the AI "didn't attack this turn", which read as a bug. The fix gates
-// offensive spells (freeze/paralyze/aoe) on the AI having ≥1 of its own
+// offensive spells (freeze/stun/aoe) on the AI having ≥1 of its own
 // creature already deployed.
 
 function fieldWith(...cards) {
@@ -241,10 +241,10 @@ test("spellPlayable(Freeze): requires AI to have own field AND enemy field", () 
   assert.equal(spellPlayable(FREEZE, aiField, oppField), true);
 });
 
-test("spellPlayable(Paralyze): same own-field-required gate as Freeze", () => {
+test("spellPlayable(Stun): same own-field-required gate as Freeze", () => {
   const aiNoField = { field: [null] };
   const oppField  = { field: fieldWith(creature(3)) };
-  assert.equal(spellPlayable(PARALYZE, aiNoField, oppField), false);
+  assert.equal(spellPlayable(STUN, aiNoField, oppField), false);
 });
 
 test("spellPlayable(AOE): needs AI field AND ≥2 enemies (4-energy spell)", () => {

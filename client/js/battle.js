@@ -65,7 +65,7 @@ export function rollStatus(attacker, defender, rand = Math.random) {
       if (rand() < 0.25) return { kind: "burn", turnsLeft: 2 };
       break;
     case "storm":
-      if (rand() < 0.25) return { kind: "paralyze", turnsLeft: 1 };
+      if (rand() < 0.25) return { kind: "stun", turnsLeft: 1 };
       break;
     case "mind":
       if (rand() < 0.2) return { kind: "sleep", turnsLeft: 1 };
@@ -79,17 +79,20 @@ export function rollStatus(attacker, defender, rand = Math.random) {
 export function tickStatus(card) {
   if (!card.status) return { damage: 0, expired: false };
   const s = card.status;
-  if (s.kind === "burn") {
+  if (s.kind === "burn" || s.kind === "bleed") {
+    // Burn (Fire) and Bleed (Martial) are both 2-damage-per-turn DoTs.
+    const verb = s.kind === "bleed" ? "bleeding" : "burning";
+    const fade = s.kind === "bleed" ? "Bleed fades" : "Burn fades";
     s.turnsLeft -= 1;
     if (s.turnsLeft <= 0) {
       delete card.status;
-      return { damage: 2, expired: true, message: "Burn fades" };
+      return { damage: 2, expired: true, message: fade };
     }
-    return { damage: 2, expired: false, message: `${card.name} is burning` };
+    return { damage: 2, expired: false, message: `${card.name} is ${verb}` };
   }
-  // Paralyze + sleep + freeze don't deal damage — they just gate the
+  // Stun + sleep + freeze don't deal damage — they just gate the
   // next attack. `freeze` is applied by the Freeze spell card (player
-  // chooses the target), unlike paralyze/sleep which roll on contact.
+  // chooses the target), unlike stun/sleep which roll on contact.
   s.turnsLeft -= 1;
   if (s.turnsLeft <= 0) {
     delete card.status;
@@ -102,5 +105,5 @@ export function tickStatus(card) {
 export function isLockedOut(card) {
   if (!card.status) return false;
   const k = card.status.kind;
-  return k === "paralyze" || k === "sleep" || k === "freeze";
+  return k === "stun" || k === "sleep" || k === "freeze";
 }

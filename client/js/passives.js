@@ -4,7 +4,7 @@
 // wires them into the battle pipeline.
 //
 // Effects implemented:
-//   static    — 25% chance to paralyze the attacker on contact
+//   static    — 25% chance to stun the attacker on contact
 //   levitate  — defender is immune to Ground attacks (0× multiplier)
 //   intimidate— on summon, every enemy field creature loses 1 ATK
 //   blaze     — Fire moves +1 ATK while attacker is below 1/3 HP
@@ -172,13 +172,13 @@ export const SIGNATURE_ABILITIES = {
   144: {
     // Articuno
     name: "Glacial Veil",
-    desc: "On summon, every enemy on the field is paralyzed for one turn.",
+    desc: "On summon, every enemy on the field is stund for one turn.",
     onSummon(state, side, inst) {
       const otherSide = side === "player" ? "ai" : "player";
       let n = 0;
       for (const enemy of state.players[otherSide].field) {
         if (!enemy) continue;
-        enemy.status = { kind: "paralyze", turnsLeft: 1 };
+        enemy.status = { kind: "stun", turnsLeft: 1 };
         n++;
       }
       if (n) state.log.push({ id: state.log.length + 1, text: `❄ Articuno froze ${n} foe${n === 1 ? "" : "s"}!`, kind: "status" });
@@ -389,8 +389,8 @@ export const SIGNATURE_ABILITIES = {
   644: {
     // Zekrom
     name: "Bolt Strike",
-    desc: "While on the field, your Electric creature attack with +1 ATK and apply Paralyze.",
-    fieldAura: { type: "storm", attackBonus: 1, statusOnHit: "paralyze" },
+    desc: "While on the field, your Electric creature attack with +1 ATK and apply Stun.",
+    fieldAura: { type: "storm", attackBonus: 1, statusOnHit: "stun" },
   },
   716: {
     // Xerneas
@@ -525,7 +525,7 @@ export const SIGNATURE_ABILITIES = {
   25: {
     // Pikachu — Thunder Shock: chip 2 damage to a random enemy.
     name: "Thunder Shock",
-    desc: "On summon, zaps a random enemy for 2 damage and may paralyze.",
+    desc: "On summon, zaps a random enemy for 2 damage and may stun.",
     onSummon(state, side, inst) {
       const otherSide = side === "player" ? "ai" : "player";
       const enemies = state.players[otherSide].field
@@ -535,8 +535,8 @@ export const SIGNATURE_ABILITIES = {
       const t = enemies[Math.floor(Math.random() * enemies.length)];
       t.c.currentHp = Math.max(0, t.c.currentHp - 2);
       if (Math.random() < 0.3) {
-        t.c.status = { kind: "paralyze", turnsLeft: 1 };
-        state.log.push({ id: state.log.length + 1, text: `⚡ Pikachu zapped ${t.c.card.name} for 2 — paralyzed!`, kind: "status" });
+        t.c.status = { kind: "stun", turnsLeft: 1 };
+        state.log.push({ id: state.log.length + 1, text: `⚡ Pikachu zapped ${t.c.card.name} for 2 — stund!`, kind: "status" });
       } else {
         state.log.push({ id: state.log.length + 1, text: `⚡ Pikachu zapped ${t.c.card.name} for 2.`, kind: "attack" });
       }
@@ -743,12 +743,12 @@ export const SIGNATURE_ABILITIES = {
   131: {
     // Lapras — Frozen Wall
     name: "Frozen Wall",
-    desc: "Taunts opponents. Whenever it's attacked, the attacker is paralyzed for 1 turn.",
+    desc: "Taunts opponents. Whenever it's attacked, the attacker is stund for 1 turn.",
     onPreHit(state, side, inst, attackerInst) {
-      // Apply a paralyze status to the attacker; do NOT block the hit.
+      // Apply a stun status to the attacker; do NOT block the hit.
       if (attackerInst && !attackerInst.status) {
-        attackerInst.status = { kind: "paralyze", turnsLeft: 1 };
-        state.log.push({ id: state.log.length + 1, text: `❄ Lapras' Frozen Wall paralyzed ${attackerInst.card.name}!`, kind: "status" });
+        attackerInst.status = { kind: "stun", turnsLeft: 1 };
+        state.log.push({ id: state.log.length + 1, text: `❄ Lapras' Frozen Wall stund ${attackerInst.card.name}!`, kind: "status" });
       }
       return false; // don't cancel
     },
@@ -873,7 +873,7 @@ export function levitateBlocks(attackerCard, defenderCard) {
 // triggers (25% on any landed hit), otherwise null.
 export function staticTrigger(defenderCard, rand) {
   if (!hasPassive(defenderCard, "static")) return null;
-  if (rand() < 0.25) return { kind: "paralyze", turnsLeft: 1 };
+  if (rand() < 0.25) return { kind: "stun", turnsLeft: 1 };
   return null;
 }
 

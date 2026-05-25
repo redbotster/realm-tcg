@@ -97,8 +97,10 @@ export function renderCard(card, { compact = false, instance = null } = {}) {
 function statusGlyph(kind) {
   if (kind === "sleep") return "💤";
   if (kind === "burn") return "🔥";
-  if (kind === "paralyze") return "⚡";
+  if (kind === "bleed") return "🩸";
+  if (kind === "stun") return "⚡";
   if (kind === "freeze") return "❄";
+  if (kind === "curse") return "🌑";
   return "✦";
 }
 
