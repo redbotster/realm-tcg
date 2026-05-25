@@ -11,9 +11,12 @@
 //   IMAGE_PROVIDER=replicate REPLICATE_API_TOKEN=... REPLICATE_MODEL=owner/model:ver \
 //                                                  node scripts/generate-art.js
 //   IMAGE_PROVIDER=openai   OPENAI_API_KEY=...     node scripts/generate-art.js
+//   IMAGE_PROVIDER=google   GOOGLE_API_KEY=...     node scripts/generate-art.js
+//     (Google Imagen via the AI Studio key; model via GOOGLE_IMAGE_MODEL,
+//      default imagen-3.0-generate-002 — set imagen-4.0-generate-001 for v4.)
 //
 // Flags:
-//   --provider <fal|replicate|openai>  override IMAGE_PROVIDER
+//   --provider <fal|replicate|openai|google>  override IMAGE_PROVIDER
 //   --style-ref <path|url>             reference image for style-locked gen
 //                                      (fal: image_url + strength; replicate:
 //                                      passed as `image`; openai: ignored)
@@ -149,7 +152,43 @@ async function openaiAdapter(prompt, opts) {
   return Buffer.from(b64, "base64"); // PNG bytes; saved as .webp (see note below)
 }
 
-const ADAPTERS = { fal: falAdapter, replicate: replicateAdapter, openai: openaiAdapter };
+async function googleAdapter(prompt, opts) {
+  // Google Imagen via the Generative Language API (AI Studio API key).
+  // Get a key at https://aistudio.google.com/apikey and set GOOGLE_API_KEY.
+  const key = process.env.GOOGLE_API_KEY || process.env.GEMINI_API_KEY;
+  if (!key) throw new Error("GOOGLE_API_KEY is not set");
+  if (opts.styleRef || opts.lora) {
+    console.warn("  (google/imagen adapter ignores --style-ref / --lora)");
+  }
+  const model = process.env.GOOGLE_IMAGE_MODEL || "imagen-3.0-generate-002";
+  const res = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/${model}:predict?key=${key}`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        instances: [{ prompt }],
+        parameters: {
+          sampleCount: 1,
+          aspectRatio: "3:4",          // portrait card art
+          personGeneration: "allow_all",
+        },
+      }),
+    },
+  );
+  if (!res.ok) throw new Error(`google ${res.status}: ${await res.text()}`);
+  const json = await res.json();
+  const b64 = json.predictions?.[0]?.bytesBase64Encoded;
+  if (!b64) throw new Error(`google returned no image: ${JSON.stringify(json).slice(0, 200)}`);
+  return Buffer.from(b64, "base64"); // PNG/JPEG bytes; saved as .webp (see note below)
+}
+
+const ADAPTERS = {
+  fal: falAdapter,
+  replicate: replicateAdapter,
+  openai: openaiAdapter,
+  google: googleAdapter,
+};
 
 // ---------------------------------------------------------------- supabase
 // Optional: update sprite_front with a cache-busting hash if creds are present.
