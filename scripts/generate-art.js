@@ -51,6 +51,8 @@ function parseArgs(argv) {
     else if (k === "--force") a.force = true;
     else if (k === "--concurrency") a.concurrency = parseInt(next(), 10);
     else if (k === "--dry-run") a.dryRun = true;
+    else if (k === "--upload") a.upload = true;
+    else if (k === "--bucket") a.bucket = next();
     else throw new Error(`Unknown flag: ${k}`);
   }
   a.provider = a.provider || process.env.IMAGE_PROVIDER || "fal";
@@ -160,7 +162,7 @@ async function googleAdapter(prompt, opts) {
   if (opts.styleRef || opts.lora) {
     console.warn("  (google/imagen adapter ignores --style-ref / --lora)");
   }
-  const model = process.env.GOOGLE_IMAGE_MODEL || "imagen-3.0-generate-002";
+  const model = process.env.GOOGLE_IMAGE_MODEL || "imagen-4.0-generate-001";
   const res = await fetch(
     `https://generativelanguage.googleapis.com/v1beta/models/${model}:predict?key=${key}`,
     {
@@ -199,9 +201,34 @@ function maybeSupabase() {
   return createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY, { auth: { persistSession: false } });
 }
 
-async function recordHash(supabase, id, hash) {
+// Ensure a public Storage bucket exists (idempotent). Lets the live site show
+// generated art immediately, with no redeploy.
+async function ensureBucket(supabase, bucket) {
+  const { data } = await supabase.storage.getBucket(bucket);
+  if (data) return;
+  const { error } = await supabase.storage.createBucket(bucket, {
+    public: true,
+    fileSizeLimit: "10MB",
+    allowedMimeTypes: ["image/webp", "image/png", "image/jpeg"],
+  });
+  if (error && !/already exists/i.test(error.message)) throw error;
+}
+
+// Upload bytes to Storage and return the public URL.
+async function uploadToStorage(supabase, bucket, id, bytes) {
+  const objectPath = `${id}.webp`;
+  const { error } = await supabase.storage
+    .from(bucket)
+    .upload(objectPath, bytes, { contentType: "image/webp", upsert: true });
+  if (error) throw error;
+  return supabase.storage.from(bucket).getPublicUrl(objectPath).data.publicUrl;
+}
+
+// Point the card's sprite_front at the new art (Storage public URL when
+// uploaded, otherwise the local /client path) with a cache-busting hash.
+async function updateSprite(supabase, id, url, hash) {
   if (!supabase) return;
-  const sprite_front = `/client/assets/creatures/${id}.webp?v=${hash.slice(0, 8)}`;
+  const sprite_front = `${url}?v=${hash.slice(0, 8)}`;
   const { error } = await supabase.from("bestiary").update({ sprite_front }).eq("id", id);
   if (error) console.warn(`  DB update failed for #${id}: ${error.message}`);
 }
@@ -233,11 +260,14 @@ async function main() {
   fs.mkdirSync(OUT_DIR, { recursive: true });
   const styleRef = loadStyleRef(ARGS.styleRef);
   const supabase = maybeSupabase();
+  const bucket = ARGS.bucket || process.env.STORAGE_BUCKET || "creatures";
+  const doUpload = ARGS.upload && !!supabase;
+  if (doUpload) await ensureBucket(supabase, bucket);
 
   console.log(
     `provider=${ARGS.provider} creatures=${work.length} concurrency=${ARGS.concurrency}` +
       `${styleRef ? " style-ref=on" : ""}${ARGS.lora ? ` lora=${ARGS.lora}` : ""}` +
-      `${ARGS.dryRun ? " [DRY RUN]" : ""}`,
+      `${doUpload ? ` upload->${bucket}` : ""}${ARGS.dryRun ? " [DRY RUN]" : ""}`,
   );
   if (work.length === 0) { console.log("Nothing to generate."); return; }
 
@@ -253,9 +283,11 @@ async function main() {
       const bytes = await adapter(c.art_prompt, { styleRef, lora: ARGS.lora });
       fs.writeFileSync(file, bytes);
       const hash = crypto.createHash("sha256").update(bytes).digest("hex");
-      await recordHash(supabase, c.id, hash);
+      let url = `/client/assets/creatures/${c.id}.webp`;
+      if (doUpload) url = await uploadToStorage(supabase, bucket, c.id, bytes);
+      await updateSprite(supabase, c.id, url, hash);
       done++;
-      console.log(`✓ #${c.id} ${c.name} (${(bytes.length / 1024) | 0} KB)`);
+      console.log(`✓ #${c.id} ${c.name} (${(bytes.length / 1024) | 0} KB)${doUpload ? " ↑uploaded" : ""}`);
     } catch (err) {
       failed++;
       console.error(`✗ #${c.id} ${c.name}: ${err.message}`);

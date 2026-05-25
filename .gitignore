@@ -9,3 +9,6 @@ scraper/cache
 
 # Build output (esbuild)
 dist/
+
+# Generated card art (hosted in Supabase Storage)
+client/assets/creatures/*.webp

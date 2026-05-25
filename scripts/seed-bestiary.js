@@ -56,6 +56,7 @@ function toRow(c) {
     height_m: null,
     weight_kg: null,
     flavor_text: c.flavor_text || null,
+    art_prompt: c.art_prompt || null,
     generation: c.generation ?? 1,
     is_legendary: !!c.is_legendary,
     is_mythical: !!c.is_mythical,

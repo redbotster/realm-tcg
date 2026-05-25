@@ -26,6 +26,7 @@ create table if not exists bestiary (
   sprite_back  text,
   cry_url      text,                       -- unused in original-IP build (no creature audio)
   flavor_text  text,
+  art_prompt   text,                        -- rich visual description fed to the art pipeline
   generation   int not null default 1,     -- legacy bucket; kept for collection/achievement code
   is_legendary boolean default false,
   is_mythical  boolean default false
