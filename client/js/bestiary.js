@@ -52,7 +52,7 @@ function render(overlay, rows, owned, total) {
         <div class="pdx-title">Bestiary</div>
         <div class="pdx-summary">
           <div class="pdx-pct">${pct.toFixed(1)}%</div>
-          <div class="pdx-count">${owned} / ${total} caught</div>
+          <div class="pdx-count">${owned} / ${total} collected</div>
         </div>
         <button class="pdx-x">✕</button>
       </header>

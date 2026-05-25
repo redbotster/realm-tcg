@@ -116,9 +116,16 @@ watcher.on("change", (p) => {
 const { SUPABASE_URL, SUPABASE_SERVICE_KEY } = process.env;
 let bestiary = []; // array of card objects, lazily loaded
 let _bestiaryPromise = null;
+let _bestiaryLoadedAt = 0;
+// Re-read the Bestiary from the DB at most this often, so regenerated art
+// (sprite_front updates from scripts/generate-art.js) appears without a
+// redeploy. Set BESTIARY_TTL_MS=0 to disable refresh (always cache).
+const BESTIARY_TTL_MS = Number(process.env.BESTIARY_TTL_MS ?? 120000);
 
-function loadBestiary() {
-  if (_bestiaryPromise) return _bestiaryPromise;
+function loadBestiary(force = false) {
+  const stale = BESTIARY_TTL_MS > 0 && Date.now() - _bestiaryLoadedAt > BESTIARY_TTL_MS;
+  if (_bestiaryPromise && !force && !stale) return _bestiaryPromise;
+  _bestiaryLoadedAt = Date.now(); // open the TTL window now to avoid stampede
   _bestiaryPromise = (async () => {
     if (!SUPABASE_URL || !SUPABASE_SERVICE_KEY) {
       console.warn(
@@ -282,9 +289,10 @@ app.get("/api/bestiary/all", async (_req, res) => {
       abilities: c.abilities || [],
       raw: c.raw,
     }));
-  // Cache for 10 minutes — the dex doesn't change at runtime, so even
-  // long-tab users don't need fresh data.
-  res.set("Cache-Control", "public, max-age=600");
+  // Short cache + revalidate: card art (sprite_front) CAN change at runtime
+  // when new art is generated, so we keep this brief and let the edge
+  // revalidate in the background rather than serving 10-minute-stale art.
+  res.set("Cache-Control", "public, max-age=30, stale-while-revalidate=300");
   res.json({ count: rows.length, rows });
 });
 
