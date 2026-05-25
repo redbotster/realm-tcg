@@ -1,4 +1,4 @@
-# Deploying creature TCG
+# Deploying Realm TCG
 
 This game is a long-lived Node + Socket.IO process with in-memory match state.
 Pick a host that gives you a persistent process — pure-serverless platforms
@@ -23,7 +23,7 @@ will drop ongoing matches when they cold-start or scale.
    | `SESSION_SECRET` | ✅ | 32+ random bytes hex; signs session cookies |
    | `RP_ID` | ✅ | Your domain hostname (e.g. `creature.example.com`) — **must match the URL users visit**, otherwise passkeys reject |
    | `ORIGIN` | ✅ | Full origin including scheme (e.g. `https://creature.example.com`) |
-   | `RP_NAME` | optional | Friendly label shown in the OS passkey UI; defaults to `creature TCG` |
+   | `RP_NAME` | optional | Friendly label shown in the OS passkey UI; defaults to `Realm TCG` |
    | `NODE_ENV` | optional | Set to `production` to silence the QR-code/LAN-IP banner |
    | `PORT` | optional | Honoured automatically; defaults to 3000 |
 
@@ -74,7 +74,7 @@ vercel env add ORIGIN production           # https://creature.example.com
 vercel deploy --prod
 ```
 
-`vercel.ts` at the repo root configures the project: it deploys `server.js`
+`vercel.json` at the repo root configures the project: it deploys `server.js`
 as a long-running Node function (Fluid Compute) and rewrites every request
 through it. The static client modules under `client/` are cached at the edge.
 
@@ -142,7 +142,7 @@ After deploy, run these against your live URL to catch the common breakages:
 ```bash
 # 1. Bestiary loaded?
 curl https://YOUR_HOST/api/bestiary/size
-# expect: {"size":1025}
+# expect: {"size":32}  (curated sample; grows as you extend the Bestiary)
 
 # 2. Auth probe responds?
 curl https://YOUR_HOST/auth/me
