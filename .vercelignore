@@ -13,3 +13,6 @@ scripts/capture-*.js
 *.log
 .DS_Store
 /tmp
+
+# Generated card art is served from Supabase Storage, not the deployment
+client/assets/creatures/*.webp
