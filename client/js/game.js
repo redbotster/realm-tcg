@@ -47,26 +47,29 @@ const nextInstanceId = () => `i${++_instanceCounter}`;
 
 // Six canonical Kanto-era human champions (gym leaders + champion). Each is
 // flavored to a creature type and grants a passive ability for that type.
-// The internal id ("pikachu" → renamed display to "Lt. Surge") is preserved
-// so users who already picked that ability don't break.
+// The internal id ("brock", "misty", "pikachu", …) is preserved as an opaque
+// ability key so existing saves/decks that reference it keep working; only the
+// player-facing identity (name/title/bio/portrait) is reskinned to original IP.
+// Each champion keeps its original mechanical passive — only the flavor changes.
 //
-// Portraits come from creature Showdown's open champion sprite collection
-// (https://play.creatureshowdown.com/sprites/champions). Used under fair-use
-// for this non-commercial fan project.
+// Portraits are original generated art (see scripts/generate-art.js); no
+// external sprite CDN is used. `sprite` stays null until art is produced.
 export const CHAMPIONS = {
-  brock:   { id: "brock",   name: "Brock",     bio: "+1 Defense to Rock/Ground",        portrait: "stone",     sprite: "brock" },
-  misty:   { id: "misty",   name: "Misty",     bio: "Water cards cost 1 less (min 1)",  portrait: "tide",    sprite: "misty" },
-  pikachu: { id: "pikachu", name: "Lt. Surge", bio: "+1 Attack to Electric creature",    portrait: "storm", sprite: "ltsurge" },
-  erika:   { id: "erika",   name: "Erika",     bio: "+1 HP to all Grass creature",       portrait: "verdant",    sprite: "erika" },
-  sabrina: { id: "sabrina", name: "Sabrina",   bio: "Psychic specials cost 1 less",     portrait: "mind",  sprite: "sabrina" },
-  lance:   { id: "lance",   name: "Lance",     bio: "+1 Attack to Dragon creature",      portrait: "wyrm",   sprite: "lance" },
+  brock:   { id: "brock",   name: "Thordak, the Stonewarden", title: "Dwarf Paladin",      bio: "+1 Defense to Stone & Earth allies",   portrait: "stone",   sprite: null },
+  misty:   { id: "misty",   name: "Lyralei, Tidecaller",      title: "Elf Mage",           bio: "Tide cards cost 1 less (min 1)",       portrait: "tide",    sprite: null },
+  pikachu: { id: "pikachu", name: "Zix the Sparkthief",       title: "Goblin Tinker",      bio: "+1 Attack to Storm allies",            portrait: "storm",   sprite: null },
+  erika:   { id: "erika",   name: "Sylvanis Greenmother",     title: "Wood Elf Druid",     bio: "Verdant allies regenerate +1 HP/turn", portrait: "verdant", sprite: null },
+  sabrina: { id: "sabrina", name: "Vael the Mindweaver",      title: "Human Arcanist",     bio: "Mind specials cost 1 less",            portrait: "mind",    sprite: null },
+  lance:   { id: "lance",   name: "Drakkonir Wyrmlord",       title: "Dragonborn Warlord", bio: "+1 Attack to Wyrm allies",             portrait: "wyrm",    sprite: null },
 };
 
-// creature Showdown CDN — humans, transparent PNG, ~96×96.
+// Champion portrait URL. Original generated art lives under
+// /assets/champions/<id>.webp once produced; null until then so the UI
+// falls back to the school-tinted portrait placeholder.
 export function championSpriteUrl(champion) {
   const slug = CHAMPIONS[champion]?.sprite;
   if (!slug) return null;
-  return `https://play.creatureshowdown.com/sprites/champions/${slug}.png`;
+  return `/assets/champions/${slug}.webp`;
 }
 
 // Backwards-compat alias (older import sites used championMascotUrl).
