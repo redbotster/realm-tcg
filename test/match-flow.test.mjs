@@ -6,7 +6,7 @@
 
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { createGame, playCard, attack, endTurn, mulliganHand, FIELD_SIZE, TRAINER_START_HP } from "../client/js/game.js";
+import { createGame, playCard, attack, endTurn, mulliganHand, FIELD_SIZE, CHAMPION_START_HP } from "../client/js/game.js";
 
 function deck(n, ofType = "normal", baseAttack = 5, baseHp = 10) {
   return Array.from({ length: n }, (_, i) => ({
@@ -19,8 +19,8 @@ function deck(n, ofType = "normal", baseAttack = 5, baseHp = 10) {
 test("createGame returns a state with two sides + initial recap counters", () => {
   const s = createGame({ playerDeck: deck(30), aiDeck: deck(30), firstPlayer: "player" });
   assert.equal(s.activePlayer, "player");
-  assert.equal(s.players.player.trainerHp, TRAINER_START_HP);
-  assert.equal(s.players.ai.trainerHp, TRAINER_START_HP);
+  assert.equal(s.players.player.championHp, CHAMPION_START_HP);
+  assert.equal(s.players.ai.championHp, CHAMPION_START_HP);
   assert.equal(s.players.player.field.length, FIELD_SIZE);
   assert.deepEqual(s.recap.player, { crits: 0, kos: 0, biggestHit: 0, biggestHitName: null, totalDamage: 0 });
 });
@@ -43,17 +43,17 @@ test("playCard rejects if energy insufficient", () => {
   assert.equal(r.ok, false);
 });
 
-test("attack with no defenders targets trainer + drops HP", () => {
+test("attack with no defenders targets champion + drops HP", () => {
   const s = createGame({ playerDeck: deck(30, "fire", 8, 10), aiDeck: deck(30, "grass"), firstPlayer: "player" });
   s.players.player.energy = 10;
   playCard(s, "player", 0);
   // Clear summoning sickness so the new card can attack this turn
   s.players.player.field.forEach((i) => { if (i) i.summoningSickness = false; });
-  const before = s.players.ai.trainerHp;
-  const r = attack(s, "player", 0, "trainer", { abilityId: "basic" });
+  const before = s.players.ai.championHp;
+  const r = attack(s, "player", 0, "champion", { abilityId: "basic" });
   assert.ok(r.ok, r.reason);
-  assert.ok(s.players.ai.trainerHp < before, "ai trainer hp decreased");
-  assert.equal(r.target, "trainer");
+  assert.ok(s.players.ai.championHp < before, "ai champion hp decreased");
+  assert.equal(r.target, "champion");
 });
 
 // Helper: drop an instance directly onto the AI side's field bypassing
@@ -112,14 +112,14 @@ test("endTurn flips activePlayer + refills energy on next turn", () => {
   assert.ok(s.players.player.maxEnergy > 0, "energy ramps each round");
 });
 
-test("trainer HP at 0 sets winner + over phase", () => {
+test("champion HP at 0 sets winner + over phase", () => {
   const s = createGame({ playerDeck: deck(30, "fire", 30, 10), aiDeck: deck(30), firstPlayer: "player" });
   s.players.player.energy = 10;
   playCard(s, "player", 0);
   s.players.player.field.forEach((i) => { if (i) i.summoningSickness = false; });
-  // Smash the AI trainer.
-  s.players.ai.trainerHp = 1;
-  attack(s, "player", 0, "trainer", { abilityId: "basic" });
+  // Smash the AI champion.
+  s.players.ai.championHp = 1;
+  attack(s, "player", 0, "champion", { abilityId: "basic" });
   assert.equal(s.winner, "player");
   assert.equal(s.phase, "over");
 });
@@ -163,7 +163,7 @@ test("attack on summoning-sick card is rejected", () => {
   s.players.player.energy = 10;
   playCard(s, "player", 0);
   // summoningSickness is true by default for non-flying types
-  const r = attack(s, "player", 0, "trainer", { abilityId: "basic" });
+  const r = attack(s, "player", 0, "champion", { abilityId: "basic" });
   assert.equal(r.ok, false);
   assert.match(r.reason || "", /sick/i);
 });
@@ -194,7 +194,7 @@ test("comeback mechanic kicks in once player drops below 25% HP", () => {
   let r = playCard(s, "player", 0);
   assert.equal(r.ok, false);
   // Drop HP to trigger comeback (< 25% of max).
-  s.players.player.trainerHp = 5; // < 7.5
+  s.players.player.championHp = 5; // < 7.5
   r = playCard(s, "player", 0);
   assert.ok(r.ok, `comeback should make 5-cost playable at 4 energy: ${r.reason}`);
 });

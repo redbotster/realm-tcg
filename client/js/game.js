@@ -9,12 +9,12 @@
 //     winner: null | "player" | "ai",
 //     log: [{ id, text, kind }],
 //     players: {
-//       player: { name, ability, trainerHp, energy, maxEnergy, deck, hand, field, discard },
+//       player: { name, ability, championHp, energy, maxEnergy, deck, hand, field, discard },
 //       ai:     { ... same shape ... }
 //     }
 //   }
 //
-// `field` is a sparse array of length 5 — null = empty slot. Each Pokémon on the
+// `field` is a sparse array of length 5 — null = empty slot. Each creature on the
 // field carries an `instanceId`, `currentHp`, `summoningSickness` (bool), and an
 // optional `status` ({ kind, turnsLeft }).
 
@@ -28,7 +28,7 @@ import {
 } from "./passives.js";
 import { defaultKit, useItem as _useItem } from "./items.js";
 // Evolution chain threshold — the server stamps `evolves_to_card`
-// directly on each card at pokedex-load time, so the engine doesn't
+// directly on each card at bestiary-load time, so the engine doesn't
 // need the full chain table at runtime. Just the KO threshold.
 import * as _evoModule from "../../shared/evolution-chains.js";
 const { EVOLUTION_KO_THRESHOLD } = _evoModule.default ?? _evoModule;
@@ -37,7 +37,7 @@ export const useItem = _useItem;
 
 export const FIELD_SIZE = 5;
 export const STARTING_HAND = 5;
-export const TRAINER_START_HP = 30;
+export const CHAMPION_START_HP = 30;
 export const MAX_ENERGY = 10;
 export const MAX_HAND = 10;
 export const TURN_DURATION_MS = 60_000; // each player has 60s per turn
@@ -45,32 +45,32 @@ export const TURN_DURATION_MS = 60_000; // each player has 60s per turn
 let _instanceCounter = 0;
 const nextInstanceId = () => `i${++_instanceCounter}`;
 
-// Six canonical Kanto-era human trainers (gym leaders + champion). Each is
-// flavored to a Pokémon type and grants a passive ability for that type.
+// Six canonical Kanto-era human champions (gym leaders + champion). Each is
+// flavored to a creature type and grants a passive ability for that type.
 // The internal id ("pikachu" → renamed display to "Lt. Surge") is preserved
 // so users who already picked that ability don't break.
 //
-// Portraits come from Pokémon Showdown's open trainer sprite collection
-// (https://play.pokemonshowdown.com/sprites/trainers). Used under fair-use
+// Portraits come from creature Showdown's open champion sprite collection
+// (https://play.creatureshowdown.com/sprites/champions). Used under fair-use
 // for this non-commercial fan project.
-export const TRAINERS = {
+export const CHAMPIONS = {
   brock:   { id: "brock",   name: "Brock",     bio: "+1 Defense to Rock/Ground",        portrait: "rock",     sprite: "brock" },
   misty:   { id: "misty",   name: "Misty",     bio: "Water cards cost 1 less (min 1)",  portrait: "water",    sprite: "misty" },
-  pikachu: { id: "pikachu", name: "Lt. Surge", bio: "+1 Attack to Electric Pokémon",    portrait: "electric", sprite: "ltsurge" },
-  erika:   { id: "erika",   name: "Erika",     bio: "+1 HP to all Grass Pokémon",       portrait: "grass",    sprite: "erika" },
+  pikachu: { id: "pikachu", name: "Lt. Surge", bio: "+1 Attack to Electric creature",    portrait: "electric", sprite: "ltsurge" },
+  erika:   { id: "erika",   name: "Erika",     bio: "+1 HP to all Grass creature",       portrait: "grass",    sprite: "erika" },
   sabrina: { id: "sabrina", name: "Sabrina",   bio: "Psychic specials cost 1 less",     portrait: "psychic",  sprite: "sabrina" },
-  lance:   { id: "lance",   name: "Lance",     bio: "+1 Attack to Dragon Pokémon",      portrait: "dragon",   sprite: "lance" },
+  lance:   { id: "lance",   name: "Lance",     bio: "+1 Attack to Dragon creature",      portrait: "dragon",   sprite: "lance" },
 };
 
-// Pokémon Showdown CDN — humans, transparent PNG, ~96×96.
-export function trainerSpriteUrl(trainer) {
-  const slug = TRAINERS[trainer]?.sprite;
+// creature Showdown CDN — humans, transparent PNG, ~96×96.
+export function championSpriteUrl(champion) {
+  const slug = CHAMPIONS[champion]?.sprite;
   if (!slug) return null;
-  return `https://play.pokemonshowdown.com/sprites/trainers/${slug}.png`;
+  return `https://play.creatureshowdown.com/sprites/champions/${slug}.png`;
 }
 
-// Backwards-compat alias (older import sites used trainerMascotUrl).
-export const trainerMascotUrl = trainerSpriteUrl;
+// Backwards-compat alias (older import sites used championMascotUrl).
+export const championMascotUrl = championSpriteUrl;
 
 function shuffle(arr, rand = Math.random) {
   const a = arr.slice();
@@ -104,7 +104,7 @@ function instantiate(card, playerState) {
   };
 }
 
-// Phase 2 spec mentions "Pokémon with the Quick trait can attack the turn
+// Phase 2 spec mentions "creature with the Quick trait can attack the turn
 // they're played." We don't have data for that in PokeAPI per-card, so for now
 // pure-Flying types act as the "Quick" set — fluffy + thematic. Easy to change.
 // Try to evolve an instance into its next form. Called after the
@@ -113,7 +113,7 @@ function instantiate(card, playerState) {
 // Rules:
 //   - The instance must have hit EVOLUTION_KO_THRESHOLD KOs this life.
 //   - The card must have `evolves_to_card` baked on it (server adds
-//     this at pokedex-load time so the engine doesn't need a
+//     this at bestiary-load time so the engine doesn't need a
 //     separate lookup table at runtime).
 //   - HP percentage carries over (so a 50%-HP Charmander becomes a
 //     50%-HP Charmeleon).
@@ -126,7 +126,7 @@ function tryEvolveInstance(state, side, instance) {
   if ((instance.kos || 0) < EVOLUTION_KO_THRESHOLD) return false;
   const evolved = instance.card?.evolves_to_card;
   if (!evolved) return false;
-  const oldName = instance.card?.name || "Pokémon";
+  const oldName = instance.card?.name || "creature";
   const oldMax = instance.maxHp || instance.card?.cardHp || 1;
   const hpFrac = Math.max(0.1, instance.currentHp / oldMax);
   const newMax = (evolved.cardHp || 1) + (instance.level || 0);
@@ -162,7 +162,7 @@ function comboBonusFor(playerState, card) {
   return Math.min(3, count - 1);
 }
 
-// Trainer ability effects applied at lookup time (no state mutation needed).
+// Champion ability effects applied at lookup time (no state mutation needed).
 function abilityModifiers(playerState, card) {
   const a = playerState.ability;
   let costMod = 0;
@@ -184,10 +184,10 @@ function abilityModifiers(playerState, card) {
   return { costMod, attackBonus, defenseBonus, hpBonus };
 }
 
-// Per-trainer adjustment to a special ability's energy cost. Lookup is by
+// Per-champion adjustment to a special ability's energy cost. Lookup is by
 // (playerState.ability, card type, ability id). Plus per-signature field
 // auras (e.g. Lucario's Aura Sphere reduces specials cost by 1).
-export function trainerAbilityCostMod(playerState, card, ability) {
+export function championAbilityCostMod(playerState, card, ability) {
   if (!playerState || !ability) return 0;
   let mod = 0;
   if (playerState.ability === "sabrina"
@@ -208,11 +208,11 @@ export function trainerAbilityCostMod(playerState, card, ability) {
 export function effectiveCost(playerState, card) {
   const { costMod } = abilityModifiers(playerState, card);
   let cost = (card.energyCost || 1) + costMod;
-  // Comeback mechanic: when you're below 25% trainer HP, every card
+  // Comeback mechanic: when you're below 25% champion HP, every card
   // play costs 1 less energy (floor 1). Last-Stand match modifier
   // raises the threshold to 40% so the comeback fires earlier.
-  if (playerState && playerState.trainerHp != null && playerState.maxTrainerHp != null) {
-    const ratio = playerState.trainerHp / playerState.maxTrainerHp;
+  if (playerState && playerState.championHp != null && playerState.maxChampionHp != null) {
+    const ratio = playerState.championHp / playerState.maxChampionHp;
     const threshold = playerState._comebackThreshold || 0.25;
     if (ratio > 0 && ratio < threshold) cost -= 1;
   }
@@ -226,9 +226,9 @@ export function createGame({
   aiAbility,
   rand = Math.random,
   firstPlayer,             // "player" | "ai" — if omitted, picked at random
-  aiTrainerHp,             // override AI side's starting HP (boss fights)
+  aiChampionHp,             // override AI side's starting HP (boss fights)
   aiName,                  // override AI's display name (boss name)
-  masteryById,             // { [pokemonId]: { level: 0..3 } } — player-side
+  masteryById,             // { [creatureId]: { level: 0..3 } } — player-side
                             // mastery snapshot. L3 cards get +1 ATK for the
                             // whole match (engine applies via cardAttack).
 } = {}) {
@@ -255,8 +255,8 @@ export function createGame({
     return {
       name,
       ability,
-      trainerHp: hpOverride || TRAINER_START_HP,
-      maxTrainerHp: hpOverride || TRAINER_START_HP,
+      championHp: hpOverride || CHAMPION_START_HP,
+      maxChampionHp: hpOverride || CHAMPION_START_HP,
       energy: 0,
       maxEnergy: 0,
       deck: shuffled,
@@ -275,7 +275,7 @@ export function createGame({
     log: [],
     players: {
       player: makePlayer("You", playerAbility || "brock", adjustedPlayerDeck),
-      ai:     makePlayer(aiName || "Rival", aiAbility || "pikachu", aiDeck, aiTrainerHp),
+      ai:     makePlayer(aiName || "Rival", aiAbility || "pikachu", aiDeck, aiChampionHp),
     },
     firstSide,
     // Per-match recap: aggregated stats we show in the game-over screen.
@@ -350,12 +350,12 @@ function beginTurn(state) {
       // style — so decking out is decisive instead of dragging on forever.
       p.fatigueTicks = (p.fatigueTicks || 0) + 1;
       const dmg = Math.min(8, p.fatigueTicks * 2);
-      log(state, `${p.name} is out of cards! Trainer takes ${dmg} fatigue.`, "warn");
-      p.trainerHp = Math.max(0, p.trainerHp - dmg);
+      log(state, `${p.name} is out of cards! Champion takes ${dmg} fatigue.`, "warn");
+      p.championHp = Math.max(0, p.championHp - dmg);
     }
   }
   // Stalemate damage moved out of beginTurn — it now fires symmetrically
-  // at endTurn so both trainers take it at the exact same instant. That
+  // at endTurn so both champions take it at the exact same instant. That
   // means a 1-HP-vs-1-HP situation actually resolves as a TIE instead
   // of whichever side happened to have their beginTurn run first.
   if (isFirstSecondMoverTurn) {
@@ -374,7 +374,7 @@ function beginTurn(state) {
     const sig = signatureFor(inst.card);
     if (sig?.onTurnStart) sig.onTurnStart(state, state.activePlayer, inst);
   }
-  // Erika's trainer ability: heal 1 HP per turn for every Grass Pokémon on
+  // Erika's champion ability: heal 1 HP per turn for every Grass creature on
   // the field. Tuned to make Grass decks feel sustainable.
   if (p.ability === "erika") {
     for (const inst of p.field) {
@@ -431,7 +431,7 @@ function consumeSpell(p, handIndex, card, cost) {
 
 function requireEnemyTarget(state, side, spellTarget, verb) {
   if (!Number.isInteger(spellTarget) || spellTarget < 0 || spellTarget >= FIELD_SIZE) {
-    return { err: { ok: false, reason: `Pick an enemy Pokémon to ${verb}` } };
+    return { err: { ok: false, reason: `Pick an enemy creature to ${verb}` } };
   }
   const otherSide = side === "player" ? "ai" : "player";
   const enemy = state.players[otherSide].field[spellTarget];
@@ -441,7 +441,7 @@ function requireEnemyTarget(state, side, spellTarget, verb) {
 
 function requireAllyTarget(state, side, spellTarget, verb) {
   if (!Number.isInteger(spellTarget) || spellTarget < 0 || spellTarget >= FIELD_SIZE) {
-    return { err: { ok: false, reason: `Pick one of your Pokémon to ${verb}` } };
+    return { err: { ok: false, reason: `Pick one of your creature to ${verb}` } };
   }
   const ally = state.players[side].field[spellTarget];
   if (!ally) return { err: { ok: false, reason: "That slot is empty" } };
@@ -454,7 +454,7 @@ function playSpellCard(state, side, handIndex, card, cost, { spellTarget = null 
   switch (card.effect) {
 
     // -------- FREEZE --------------------------------------------------
-    // Lock one enemy Pokémon for 1 turn. Reuses the same status pipe
+    // Lock one enemy creature for 1 turn. Reuses the same status pipe
     // paralyze/sleep use — battle.isLockedOut() recognises "freeze"
     // and tickStatus expires it after one tick.
     case "freeze": {
@@ -499,7 +499,7 @@ function playSpellCard(state, side, handIndex, card, cost, { spellTarget = null 
     // attack() routes incoming damage to it first. The marker lives on
     // the instance (not the card), so it travels with this specific
     // copy on the field and doesn't bleed to other instances of the
-    // same Pokémon. Stacking: a second Defender re-applies the bonus
+    // same creature. Stacking: a second Defender re-applies the bonus
     // (incremental, by design — you can pile guard on the same target).
     case "defender": {
       const r = requireAllyTarget(state, side, spellTarget, "defend");
@@ -517,7 +517,7 @@ function playSpellCard(state, side, handIndex, card, cost, { spellTarget = null 
     // -------- EVOLVE --------------------------------------------------
     // Tries to species-transform the target into its next evolution
     // form (Charmander → Charmeleon → Charizard). Falls back to a
-    // stat buff (+50% HP, +50% ATK) for Pokémon that have no chain
+    // stat buff (+50% HP, +50% ATK) for creature that have no chain
     // entry (Mewtwo, single-form rares, etc.), so the spell always
     // does SOMETHING good.
     case "evolve": {
@@ -542,7 +542,7 @@ function playSpellCard(state, side, handIndex, card, cost, { spellTarget = null 
       }
       // Fallback: no chain available → apply the original stat buff.
       // Restore kos to its pre-attempt value so we don't accidentally
-      // queue a future KO-triggered evolution for a Pokémon that
+      // queue a future KO-triggered evolution for a creature that
       // doesn't have one.
       r.ally.kos = 0;
       const hpMult  = card.evolveHpMult  || 1.5;
@@ -563,7 +563,7 @@ function playSpellCard(state, side, handIndex, card, cost, { spellTarget = null 
 
     // -------- AOE -----------------------------------------------------
     // Deal flat damage to every enemy on the field. No target picker
-    // (target=null). KO'd Pokémon land in the opponent's discard pile.
+    // (target=null). KO'd creature land in the opponent's discard pile.
     // Damage scaling is intentionally low (4 HP default) — most card
     // HPs are 3-10 so tier-1s die but tier-3+ survive the wipe.
     case "aoe": {
@@ -588,7 +588,7 @@ function playSpellCard(state, side, handIndex, card, cost, { spellTarget = null 
         return { ok: false, reason: "No enemies on the field to hit." };
       }
       consumeSpell(p, handIndex, card, cost);
-      log(state, `💥 ${card.name}: dealt ${dmg} to ${hits} enemy Pokémon${kos > 0 ? ` (${kos} KO)` : ""}.`, "status");
+      log(state, `💥 ${card.name}: dealt ${dmg} to ${hits} enemy creature${kos > 0 ? ` (${kos} KO)` : ""}.`, "status");
       return { ok: true, spell: card, effect: "aoe", targetSide: otherSide, damage: dmg, hits, kos };
     }
 
@@ -596,7 +596,7 @@ function playSpellCard(state, side, handIndex, card, cost, { spellTarget = null 
     // Direct damage to one enemy — bypasses combat math (no type
     // multiplier, no defender's defense). Useful as a finisher on
     // chip-damaged enemies the player can't quite KO with a normal
-    // attack. KO'd Pokémon move to the opponent's discard.
+    // attack. KO'd creature move to the opponent's discard.
     case "bolt": {
       const r = requireEnemyTarget(state, side, spellTarget, "strike");
       if (r.err) return r.err;
@@ -684,9 +684,9 @@ function playSpellCard(state, side, handIndex, card, cost, { spellTarget = null 
     }
 
     // -------- PHOENIX (slice 6) --------------------------------------
-    // Revive the most recently fainted Pokémon at full HP. Only Pokémon
+    // Revive the most recently fainted creature at full HP. Only creature
     // count (skips spell cards that landed in discard via consumeSpell).
-    // Summoning sickness applies so the revived Pokémon can't attack
+    // Summoning sickness applies so the revived creature can't attack
     // the turn it comes back — otherwise this would be too snowbally.
     case "phoenix": {
       let lastPokeIdx = -1;
@@ -694,7 +694,7 @@ function playSpellCard(state, side, handIndex, card, cost, { spellTarget = null 
         if (p.discard[i]?.kind !== "spell") { lastPokeIdx = i; break; }
       }
       if (lastPokeIdx === -1) {
-        return { ok: false, reason: "No fainted Pokémon to revive." };
+        return { ok: false, reason: "No fainted creature to revive." };
       }
       const emptyIdx = p.field.findIndex((s) => s === null);
       if (emptyIdx === -1) {
@@ -714,7 +714,7 @@ function playSpellCard(state, side, handIndex, card, cost, { spellTarget = null 
 
     // -------- BURN (slice 7) ----------------------------------------
     // Apply burn status — battle.tickStatus deals 2 damage at the end
-    // of the burnt Pokémon's own turn for `burnTurns` ticks. Different
+    // of the burnt creature's own turn for `burnTurns` ticks. Different
     // shape from Freeze/Paralyze: it's slow consistent damage, not a
     // hard lockout.
     case "burn": {
@@ -742,12 +742,12 @@ function playSpellCard(state, side, handIndex, card, cost, { spellTarget = null 
 
     // -------- MASS HEAL (slice 7) -----------------------------------
     // Heal every ally on field by `massHealAmount` HP, capped at each
-    // Pokémon's maxHp. No-target spell — fires the moment you pick it.
+    // creature's maxHp. No-target spell — fires the moment you pick it.
     case "mass-heal": {
       const amount = Math.max(1, card.massHealAmount || 3);
       const allies = p.field.filter((s) => s !== null);
       if (allies.length === 0) {
-        return { ok: false, reason: "No Pokémon on the field to heal." };
+        return { ok: false, reason: "No creature on the field to heal." };
       }
       let totalHealed = 0;
       for (const ally of allies) {
@@ -757,7 +757,7 @@ function playSpellCard(state, side, handIndex, card, cost, { spellTarget = null 
         totalHealed += ally.currentHp - before;
       }
       consumeSpell(p, handIndex, card, cost);
-      log(state, `💗 ${card.name}: restored ${totalHealed} HP across ${allies.length} Pokémon.`, "status");
+      log(state, `💗 ${card.name}: restored ${totalHealed} HP across ${allies.length} creature.`, "status");
       return { ok: true, spell: card, effect: "mass-heal", healed: totalHealed, allies: allies.length };
     }
 
@@ -804,7 +804,7 @@ function playSpellCard(state, side, handIndex, card, cost, { spellTarget = null 
     }
 
     // -------- STORM (slice 8) --------------------------------------
-    // Both-sides AOE. Hits every Pokémon on the field (yours + theirs)
+    // Both-sides AOE. Hits every creature on the field (yours + theirs)
     // for `stormDamage`. Risky but high-tempo: useful when your board
     // is healthier than theirs.
     case "storm": {
@@ -827,10 +827,10 @@ function playSpellCard(state, side, handIndex, card, cost, { spellTarget = null 
         }
       }
       if (totalHits === 0) {
-        return { ok: false, reason: "No Pokémon on the field to storm." };
+        return { ok: false, reason: "No creature on the field to storm." };
       }
       consumeSpell(p, handIndex, card, cost);
-      log(state, `⛈ ${card.name}: ${dmg} damage to ${totalHits} Pokémon (both sides)${totalKos > 0 ? ` — ${totalKos} KO` : ""}.`, "status");
+      log(state, `⛈ ${card.name}: ${dmg} damage to ${totalHits} creature (both sides)${totalKos > 0 ? ` — ${totalKos} KO` : ""}.`, "status");
       return { ok: true, spell: card, effect: "storm", damage: dmg, hits: totalHits, kos: totalKos };
     }
 
@@ -878,7 +878,7 @@ function playSpellCard(state, side, handIndex, card, cost, { spellTarget = null 
     case "refresh": {
       const amount = Math.max(1, card.refreshAmount || 2);
       const allies = p.field.filter((s) => s !== null);
-      if (allies.length === 0) return { ok: false, reason: "No Pokémon on the field to refresh." };
+      if (allies.length === 0) return { ok: false, reason: "No creature on the field to refresh." };
       let total = 0;
       for (const ally of allies) {
         const cap = ally.maxHp ?? ally.card.cardHp;
@@ -887,13 +887,13 @@ function playSpellCard(state, side, handIndex, card, cost, { spellTarget = null 
         total += ally.currentHp - before;
       }
       consumeSpell(p, handIndex, card, cost);
-      log(state, `🌿 ${card.name}: restored ${total} HP across ${allies.length} Pokémon.`, "status");
+      log(state, `🌿 ${card.name}: restored ${total} HP across ${allies.length} creature.`, "status");
       return { ok: true, spell: card, effect: "refresh", healed: total, allies: allies.length };
     }
 
     // -------- DRAIN (slice 8) --------------------------------------
     // Damage one enemy AND heal your lowest-HP ally by the same amount.
-    // If no allies on field, heals trainer HP instead.
+    // If no allies on field, heals champion HP instead.
     case "drain": {
       const r = requireEnemyTarget(state, side, spellTarget, "drain");
       if (r.err) return r.err;
@@ -921,11 +921,11 @@ function playSpellCard(state, side, handIndex, card, cost, { spellTarget = null 
         bestAlly.currentHp = Math.min(cap, bestAlly.currentHp + dealt);
         healed = bestAlly.currentHp - before;
       } else {
-        // No allies → heal trainer HP.
-        const maxTrainer = p.maxTrainerHp ?? 30;
-        const before = p.trainerHp;
-        p.trainerHp = Math.min(maxTrainer, p.trainerHp + dealt);
-        healed = p.trainerHp - before;
+        // No allies → heal champion HP.
+        const maxChampion = p.maxChampionHp ?? 30;
+        const before = p.championHp;
+        p.championHp = Math.min(maxChampion, p.championHp + dealt);
+        healed = p.championHp - before;
       }
       consumeSpell(p, handIndex, card, cost);
       log(state, `🦇 ${card.name}: drained ${dealt} HP from ${r.enemy.card.name}${healed > 0 ? `, restored ${healed} to your side` : ""}.`, kod ? "ko" : "status");
@@ -1036,7 +1036,7 @@ export function playCard(state, side, handIndex, { rand = Math.random, replaceSl
       if (healed > 0) log(state, `✨ ${card.name}'s Aurora restored ${healed} HP across the field.`, "summon");
     }
   }
-  // Per-Pokémon signature ability: onSummon hook.
+  // Per-creature signature ability: onSummon hook.
   const sig = signatureFor(card);
   if (sig?.onSummon) sig.onSummon(state, side, inst);
   return { ok: true, slot, instance: inst, sacrificed };
@@ -1081,8 +1081,8 @@ export function attack(
   }
 
   const ability = abilityById(attackerInst.card, abilityId);
-  // Sabrina's trainer ability discounts Psychic specials.
-  const costMod = trainerAbilityCostMod(p, attackerInst.card, ability);
+  // Sabrina's champion ability discounts Psychic specials.
+  const costMod = championAbilityCostMod(p, attackerInst.card, ability);
   const effectiveAbilityCost = Math.max(0, ability.energyCost + costMod);
   if (p.energy < effectiveAbilityCost) {
     return { ok: false, reason: `Need ${effectiveAbilityCost} energy for ${ability.name}` };
@@ -1090,8 +1090,8 @@ export function attack(
 
   const { attackBonus } = abilityModifiers(p, attackerInst.card);
 
-  // Target: "trainer" or a slot index on the opponent's field.
-  // If opponent has Pokémon on the field, must attack one of them (taunt-style).
+  // Target: "champion" or a slot index on the opponent's field.
+  // If opponent has creature on the field, must attack one of them (taunt-style).
   const hasField = o.field.some((s) => s != null);
   // Guardian: if any opposing card has the Guardian trait, the attacker
   // MUST target a Guardian first.
@@ -1102,15 +1102,15 @@ export function attack(
     // turned into a Defender by the spell. Same routing rule applies
     // to both: opponents must clear guardians/defenders first.
     .filter(({ inst }) => inst && (isGuardian(inst.card) || inst.isDefender));
-  if (guardians.length > 0 && target !== "trainer") {
+  if (guardians.length > 0 && target !== "champion") {
     if (!guardians.some((g) => g.slot === target)) {
       return { ok: false, reason: "Must attack a Guardian (🛡) first" };
     }
   }
 
   // Per-difficulty AI combat bonus (Hard adds +1 ATK and +8% crit).
-  // Hoisted here so BOTH the trainer-hit branch and the
-  // Pokémon-vs-Pokémon branch can read it. Set by aiTakeTurnInner
+  // Hoisted here so BOTH the champion-hit branch and the
+  // creature-vs-creature branch can read it. Set by aiTakeTurnInner
   // at the start of each AI turn.
   const aiDifficultyAtk =
     side === "ai" && state.aiCombatBonus
@@ -1122,17 +1122,17 @@ export function attack(
       : 0;
 
   let result;
-  if (target === "trainer") {
+  if (target === "champion") {
     if (hasField) {
-      return { ok: false, reason: "must attack opposing Pokémon first" };
+      return { ok: false, reason: "must attack opposing creature first" };
     }
     const comboBonus = comboBonusFor(p, attackerInst.card);
     const bossSideBonus = (side === "ai" && state.boss?.attackBonus) || 0;
     const base = attackerInst.card.cardAttack + attackBonus + (attackerInst.attackBoost || 0) + comboBonus + bossSideBonus + aiDifficultyAtk;
     const damage = Math.max(1, Math.round(base * (ability.damageMult || 1)));
-    o.trainerHp = Math.max(0, o.trainerHp - damage);
+    o.championHp = Math.max(0, o.championHp - damage);
     log(state, attackPhrase(attackerInst.card, ability, o.name, damage, 1, state.turn), "attack");
-    result = { damage, multiplier: 1, target: "trainer", abilityId, abilityName: ability.name };
+    result = { damage, multiplier: 1, target: "champion", abilityId, abilityName: ability.name };
   } else {
     const defenderSlot = target;
     const defenderInst = o.field[defenderSlot];
@@ -1164,7 +1164,7 @@ export function attack(
       (side === "ai" && state.boss?.ignoreDefense);
     // Boss-mode bonus: in story chapters, the boss's attacks get a flat
     // +attackBonus from active phase rules. (aiDifficultyAtk is hoisted
-    // above the trainer/Pokémon branch so it's in scope for both.)
+    // above the champion/creature branch so it's in scope for both.)
     const bossSideBonus = (side === "ai" && state.boss?.attackBonus) || 0;
     // Type-storm match modifier: cards of the rolled type get a flat
     // +N to abilityBonus when their primary type matches.
@@ -1241,7 +1241,7 @@ export function attack(
     defenderInst.currentHp = Math.max(0, defenderInst.currentHp - damage);
     // Counter (slice 7): if the defender was set to Counter the next
     // incoming attack, reflect the same damage back at the attacker
-    // (after their hit lands — both Pokémon take the damage).
+    // (after their hit lands — both creature take the damage).
     if (defenderInst.counterNext && damage > 0) {
       defenderInst.counterNext = false;
       const reflected = Math.min(attackerInst.currentHp, damage);
@@ -1350,9 +1350,9 @@ export function attack(
       result.knockedOut = true;
       if (state.recap) {
         state.recap[side].kos += 1;
-        // Per-Pokémon kill tracking for Card Mastery. The player-side
+        // Per-creature kill tracking for Card Mastery. The player-side
         // tally is posted to /me/mastery/bump at game-over.
-        const m = state.recap[side].kosByPokemonId = state.recap[side].kosByPokemonId || {};
+        const m = state.recap[side].kosByCreatureId = state.recap[side].kosByCreatureId || {};
         const attackerId = attackerInst.card?.id;
         if (attackerId) m[attackerId] = (m[attackerId] || 0) + 1;
       }
@@ -1360,7 +1360,7 @@ export function attack(
       const attackerSig = signatureFor(attackerInst.card);
       if (attackerSig?.onKill) attackerSig.onKill(state, side, attackerInst);
       // Level-up reward: the attacker grows +1 HP / +1 ATK for the rest of
-      // the match. Snowballs aggressive play and gives long-lived Pokémon a
+      // the match. Snowballs aggressive play and gives long-lived creature a
       // distinct identity ("Evolved x2"). Cap at +3 so it doesn't run away.
       const lvls = (attackerInst.level || 0) + 1;
       const cap = 3;
@@ -1397,7 +1397,7 @@ export function attack(
 
 function checkWinner(state) {
   for (const side of ["player", "ai"]) {
-    if (state.players[side].trainerHp <= 0) {
+    if (state.players[side].championHp <= 0) {
       state.winner = side === "player" ? "ai" : "player";
       state.phase = "over";
       log(state, `${state.players[state.winner].name} wins!`, "win");
@@ -1428,7 +1428,7 @@ export function endTurn(state) {
   // Reset attackedThisTurn flag on your own cards.
   for (const inst of p.field) if (inst) inst.attackedThisTurn = false;
 
-  // Match-length governor: starting turn 30, both trainers take the
+  // Match-length governor: starting turn 30, both champions take the
   // SAME damage at the SAME moment so the outcome is symmetric — if
   // both bars hit 0 on the same tick, the match resolves as a draw
   // (not "whoever's beginTurn ran first wins"). Schedule:
@@ -1437,15 +1437,15 @@ export function endTurn(state) {
   //   T38+    -3 (cap)
   if (state.turn >= 30) {
     const tick = Math.min(3, Math.floor((state.turn - 30) / 4) + 1);
-    state.players.player.trainerHp = Math.max(0, state.players.player.trainerHp - tick);
-    state.players.ai.trainerHp     = Math.max(0, state.players.ai.trainerHp     - tick);
-    log(state, `⏱ Stalemate (turn ${state.turn}): both trainers chip −${tick} HP simultaneously — end the match!`, "warn");
-    const playerOut = state.players.player.trainerHp <= 0;
-    const aiOut     = state.players.ai.trainerHp     <= 0;
+    state.players.player.championHp = Math.max(0, state.players.player.championHp - tick);
+    state.players.ai.championHp     = Math.max(0, state.players.ai.championHp     - tick);
+    log(state, `⏱ Stalemate (turn ${state.turn}): both champions chip −${tick} HP simultaneously — end the match!`, "warn");
+    const playerOut = state.players.player.championHp <= 0;
+    const aiOut     = state.players.ai.championHp     <= 0;
     if (playerOut && aiOut) {
       state.winner = "tie";
       state.phase = "over";
-      log(state, "Both trainers fell at the same instant — it's a draw!", "win");
+      log(state, "Both champions fell at the same instant — it's a draw!", "win");
       return;
     }
   }
@@ -1487,7 +1487,7 @@ import { basicAbility, specialAbility } from "./abilities.js";
 //   easy  → forgiving, lots of passes / skipped attacks for new players
 //   medium → competent opponent (was reported "too easy"). Now picks
 //             best-damage targets like Hard and never passes / never
-//             skips attacks. Pokémon selection stays on "smart" (a
+//             skips attacks. creature selection stays on "smart" (a
 //             lighter heuristic than Hard's signature-aware pick) so
 //             Medium still feels noticeably softer than Hard.
 //   hard  → fully optimal. Signature-aware pick, best-dmg targets, no
@@ -1517,7 +1517,7 @@ const POLICIES = {
 // nothing.
 //
 // Offensive spells (freeze/paralyze/aoe) additionally require the AI
-// to have at least one Pokémon on the field. Regression fix: without
+// to have at least one creature on the field. Regression fix: without
 // this gate the AI sometimes spent all its energy on Freeze early in
 // the match before summoning a single attacker, leaving the attack
 // phase with nothing to fire and making it look like "the AI didn't
@@ -1555,7 +1555,7 @@ export function spellPlayable(card, ai, opp) {
       // Card draw is wasted if the deck is empty OR hand is full.
       return (ai?.deck?.length ?? 0) > 0 && (ai?.hand?.length ?? 0) < 10;
     case "phoenix":
-      // Need a fainted Pokémon (in discard, non-spell) AND room on
+      // Need a fainted creature (in discard, non-spell) AND room on
       // the field to revive into.
       return ai?.discard?.some((c) => c?.kind !== "spell")
           && ai?.field?.some((s) => s === null);
@@ -1579,7 +1579,7 @@ export function spellPlayable(card, ai, opp) {
     case "drain":
       return aiHasField && oppHasField;
     case "storm":
-      // Worth it if THEIR board has more / equal Pokémon than ours
+      // Worth it if THEIR board has more / equal creature than ours
       // (otherwise we hurt ourselves net).
       return ((opp?.field?.filter((s) => s !== null).length || 0)
             >= (ai?.field?.filter((s) => s !== null).length || 0))
@@ -1731,7 +1731,7 @@ function chooseHandIndex(ai, policy, rand, state = null) {
   const candidates = ai.hand
     .map((c, idx) => ({ c, idx, cost: effectiveCost(ai, c) }))
     // A spell is a candidate only if it'd be useful given the board.
-    // A non-spell Pokémon is always a candidate (subject to the energy
+    // A non-spell creature is always a candidate (subject to the energy
     // gate below).
     .filter((x) => spellPlayable(x.c, ai, opp))
     .filter((x) => x.cost <= ai.energy);
@@ -1815,7 +1815,7 @@ function chooseTarget(state, attackerInst, policy, rand) {
     .map((inst, slot) => ({ inst, slot }))
     .filter(({ inst }) => inst != null);
 
-  if (fieldTargets.length === 0) return "trainer";
+  if (fieldTargets.length === 0) return "champion";
 
   // Guardian taunt — must attack guardians first.
   const guardians = fieldTargets.filter(({ inst }) => isGuardian(inst.card));
@@ -1867,8 +1867,8 @@ function applyBossPhaseChecks(state) {
   const rules = state.boss?.phaseRules;
   if (!rules || !rules.length) return;
   const ai = state.players.ai;
-  const max = state.boss.maxHp || ai.trainerHp || 30;
-  const frac = ai.trainerHp / max;
+  const max = state.boss.maxHp || ai.championHp || 30;
+  const frac = ai.championHp / max;
   for (const rule of rules) {
     if (rule.applied) continue;
     if (frac > rule.fromHpFraction) continue; // not yet crossed
@@ -1891,7 +1891,7 @@ function applyBossEffect(state, eff) {
       break;
     case "summon": {
       let n = 0;
-      for (const id of (eff.pokemonIds || [])) {
+      for (const id of (eff.creatureIds || [])) {
         const c = state.boss?.summonCards?.[id];
         if (c && ai.hand.length < MAX_HAND) { ai.hand.push(c); n++; }
       }
@@ -1914,7 +1914,7 @@ function applyBossEffect(state, eff) {
           log(state, `${inst.card.name} fainted!`, "ko");
         }
       }
-      if (hits) log(state, `💥 ${bossName}'s wave hit ${hits} of your Pokémon for ${dmg}!`, "boss-move");
+      if (hits) log(state, `💥 ${bossName}'s wave hit ${hits} of your creature for ${dmg}!`, "boss-move");
       break;
     }
     case "transform":
@@ -1979,7 +1979,7 @@ async function aiTakeTurnInner(state, { rand, difficulty, onAction, personality 
 
   // Item phase — opportunistic use of the AI's starter kit.
   if (ai.items?.length) {
-    // Revive: if we have a KO'd Pokémon and an open slot, bring it back.
+    // Revive: if we have a KO'd creature and an open slot, bring it back.
     {
       const item = ai.items.find((i) => i.id === "revive" && i.uses > 0);
       if (item && ai.energy >= 3 && ai.discard.length > 0 && ai.field.includes(null)) {
@@ -1987,7 +1987,7 @@ async function aiTakeTurnInner(state, { rand, difficulty, onAction, personality 
         if (r.ok && onAction) await onAction({ kind: "item", itemId: "revive" });
       }
     }
-    // Potion: heal a Pokémon below 50% HP (tactical/balanced).
+    // Potion: heal a creature below 50% HP (tactical/balanced).
     if (mood !== "aggressive") {
       const item = ai.items.find((i) => i.id === "potion" && i.uses > 0);
       if (item && ai.energy >= 1) {
@@ -2059,7 +2059,7 @@ async function aiTakeTurnInner(state, { rand, difficulty, onAction, personality 
       continue;
     }
 
-    // Pokémon summon — needs a field slot. If full, the smart
+    // creature summon — needs a field slot. If full, the smart
     // policies may sacrifice the weakest current board card to make
     // room; easier policies just stop summoning when the board is full.
     let replaceSlot = null;
@@ -2093,7 +2093,7 @@ async function aiTakeTurnInner(state, { rand, difficulty, onAction, personality 
   }
 
   // Before the attack loop: log a "still asleep / frozen / paralyzed"
-  // line for each locked-out Pokémon. Otherwise a player who cast
+  // line for each locked-out creature. Otherwise a player who cast
   // Sleep Powder sees the AI's turn pass silently and can't tell the
   // disruption worked. Fires once per AI turn (outside the safety
   // retry loop).
@@ -2164,7 +2164,7 @@ async function aiTakeTurnInner(state, { rand, difficulty, onAction, personality 
       if (canAfford) {
         if (policy.useSpecial === "smart") {
           // Hard: use special whenever it KOs the target or hits an SE matchup.
-          if (target !== "trainer") {
+          if (target !== "champion") {
             const t = state.players.player.field[target];
             if (t) {
               const basic = _computeDamage(attackerInst.card, t.card);

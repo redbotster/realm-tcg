@@ -35,11 +35,11 @@ const CHAPTERS = [
       { id: "4", speaker: "caterpie",  text: "\"Please help us,\" said Caterpie. \"He is too big and too loud. We are scared.\"" },
       { id: "5", speaker: "narrator",  text: "You take a deep breath. You smile at your friends. It is time to be brave. Time to battle!" },
     ],
-    enemyTrainerName: "Forest Tyrant",
+    enemyChampionName: "Forest Tyrant",
     enemyAbility: "erika",
     boss: {
       // Anchored on Beedrill (#15) but stats are bespoke.
-      anchorPokemonId: 15,
+      anchorCreatureId: 15,
       displayName: "Forest Tyrant Beedrill",
       types: ["bug", "poison"],
       maxHp: 55,
@@ -56,14 +56,14 @@ const CHAPTERS = [
           // Phase 2 — at 50% HP, summons swarm to defend itself
           fromHpFraction: 0.5,
           attackPattern: ["agility", "twin-needle", "swarm-strike"],
-          summonOnEntry: { pokemonIds: [13, 13], note: "Beedrill calls in a swarm!" },
+          summonOnEntry: { creatureIds: [13, 13], note: "Beedrill calls in a swarm!" },
         },
       ],
       moves: {
         sting: { name: "Poison Sting", power: 1.0, target: "active", flavor: "Beedrill jabs with a venomous barb." },
         "twin-needle": { name: "Twin Needle", power: 1.3, target: "active", flavor: "A double-strike of needles!" },
         agility: { name: "Agility", power: 0, selfBuff: "speed", flavor: "Beedrill blurs into motion — its next strike will hit harder." },
-        "swarm-strike": { name: "Swarm Strike", power: 1.4, target: "all", flavor: "The swarm descends on both trainers!" },
+        "swarm-strike": { name: "Swarm Strike", power: 1.4, target: "all", flavor: "The swarm descends on both champions!" },
       },
     },
     reward: { picks: 3, themeType: "bug", guaranteedLegendary: false },
@@ -87,10 +87,10 @@ const CHAPTERS = [
       { id: "4", speaker: "clefairy",  text: "\"Onix wants to play a game,\" said Clefairy. \"He wants to see if you are strong and brave.\"" },
       { id: "5", speaker: "narrator",  text: "You smile. You are ready. You can do this! Time to battle the rock friend!" },
     ],
-    enemyTrainerName: "The Old One",
+    enemyChampionName: "The Old One",
     enemyAbility: "brock",
     boss: {
-      anchorPokemonId: 95,
+      anchorCreatureId: 95,
       displayName: "Elder Onix",
       types: ["rock", "ground"],
       maxHp: 70,
@@ -99,7 +99,7 @@ const CHAPTERS = [
       // Mid-fight evolution: at 50% HP, transforms into Steelix.
       transformAt: 0.5,
       transformTo: {
-        anchorPokemonId: 208,
+        anchorCreatureId: 208,
         displayName: "Awakened Steelix",
         types: ["steel", "ground"],
         attackBonus: 3,
@@ -119,7 +119,7 @@ const CHAPTERS = [
         },
       ],
       moves: {
-        "rock-throw": { name: "Rock Throw", power: 1.0, target: "active", flavor: "A boulder is hurled at the active Pokémon." },
+        "rock-throw": { name: "Rock Throw", power: 1.0, target: "active", flavor: "A boulder is hurled at the active creature." },
         earthquake: { name: "Earthquake", power: 1.2, target: "all", flavor: "The cavern shakes — everyone takes the hit!" },
         "iron-tail": { name: "Iron Tail", power: 1.5, target: "active", flavor: "A devastating metallic strike." },
       },
@@ -141,14 +141,14 @@ const CHAPTERS = [
     readAlong: [
       { id: "1", speaker: "narrator", text: "Deep inside the big cave, the air feels funny. Like a tickle in your brain. Something special is in here." },
       { id: "2", speaker: "narrator", text: "In the middle of the room, you see Mewtwo. He is floating in the air. His eyes are closed." },
-      { id: "3", speaker: "mewtwo",   text: "\"Hello, little trainer,\" said Mewtwo. \"I have waited a long time to meet a brave friend like you.\"" },
+      { id: "3", speaker: "mewtwo",   text: "\"Hello, little champion,\" said Mewtwo. \"I have waited a long time to meet a brave friend like you.\"" },
       { id: "4", speaker: "mewtwo",   text: "\"Let us test our power,\" said Mewtwo. \"Show me what you have learned. Show me how kind and strong you are.\"" },
-      { id: "5", speaker: "narrator", text: "You stand tall. Your Pokémon stand with you. Get ready — the battle begins!" },
+      { id: "5", speaker: "narrator", text: "You stand tall. Your creature stand with you. Get ready — the battle begins!" },
     ],
-    enemyTrainerName: "Mewtwo",
+    enemyChampionName: "Mewtwo",
     enemyAbility: "sabrina",
     boss: {
-      anchorPokemonId: 150,
+      anchorCreatureId: 150,
       displayName: "Mewtwo",
       types: ["psychic"],
       maxHp: 80,
@@ -166,7 +166,7 @@ const CHAPTERS = [
           attackPattern: ["psystrike", "psystrike", "mind-crush"],
           ignoreDefense: true,
           attackBonus: 4,
-          summonOnEntry: { pokemonIds: [], note: "Mewtwo unleashes its true power — Psystrike awakened!" },
+          summonOnEntry: { creatureIds: [], note: "Mewtwo unleashes its true power — Psystrike awakened!" },
         },
       ],
       moves: {
@@ -174,7 +174,7 @@ const CHAPTERS = [
         psybeam: { name: "Psybeam", power: 1.2, target: "active", flavor: "A focused beam of mental energy." },
         recover: { name: "Recover", power: 0, selfHeal: 6, flavor: "Mewtwo heals itself for 6 HP." },
         psystrike: { name: "Psystrike", power: 1.4, target: "active", flavor: "A physical pulse of pure psychic force." },
-        "mind-crush": { name: "Mind Crush", power: 1.5, target: "all", flavor: "An overwhelming psychic detonation hits both trainers!" },
+        "mind-crush": { name: "Mind Crush", power: 1.5, target: "all", flavor: "An overwhelming psychic detonation hits both champions!" },
       },
     },
     reward: { picks: 4, themeType: "psychic", guaranteedLegendary: true },
@@ -189,7 +189,7 @@ const CHAPTERS = [
     intro_v1: [
       "Wind howls through the chamber's tall windows.",
       "Lance stands at the far end, his cape settling.",
-      "“You've come a long way, trainers. Show me what you've learned.”",
+      "“You've come a long way, champions. Show me what you've learned.”",
       "Behind him — Dragonite, eyes blazing. This is the final test.",
     ],
     readAlong: [
@@ -198,12 +198,12 @@ const CHAPTERS = [
       { id: "3", speaker: "lance",     text: "\"You made it!\" said Lance. \"You have come a very long way. You have read so many stories.\"" },
       { id: "4", speaker: "narrator",  text: "Behind Lance is a big, friendly Dragonite. Its wings go whoosh. Its eyes are kind but brave." },
       { id: "5", speaker: "lance",     text: "\"This is your last test,\" said Lance. \"Show me how much you have grown. We are all proud of you!\"" },
-      { id: "6", speaker: "narrator",  text: "You take a big breath. Your Pokémon are by your side. You can win — let the final battle begin!" },
+      { id: "6", speaker: "narrator",  text: "You take a big breath. Your creature are by your side. You can win — let the final battle begin!" },
     ],
-    enemyTrainerName: "Champion Lance",
+    enemyChampionName: "Champion Lance",
     enemyAbility: "lance",
     boss: {
-      anchorPokemonId: 149,
+      anchorCreatureId: 149,
       displayName: "Lance's Dragonite",
       types: ["dragon", "flying"],
       maxHp: 100,
@@ -219,7 +219,7 @@ const CHAPTERS = [
           fromHpFraction: 0.66,
           attackPattern: ["dragon-claw", "outrage", "thunder"],
           attackBonus: 2,
-          summonOnEntry: { pokemonIds: [148, 148], note: "Lance sends out his Dragonair pair!" },
+          summonOnEntry: { creatureIds: [148, 148], note: "Lance sends out his Dragonair pair!" },
         },
         {
           // Final phase — devastating AoE
@@ -227,7 +227,7 @@ const CHAPTERS = [
           attackPattern: ["outrage", "draco-meteor", "outrage"],
           attackBonus: 4,
           ignoreDefense: true,
-          summonOnEntry: { pokemonIds: [], note: "Dragonite enters a fury — its scales shimmer with rage!" },
+          summonOnEntry: { creatureIds: [], note: "Dragonite enters a fury — its scales shimmer with rage!" },
         },
       ],
       moves: {
@@ -235,7 +235,7 @@ const CHAPTERS = [
         "hyper-beam": { name: "Hyper Beam", power: 1.6, target: "active", flavor: "A devastating beam — needs recharge next turn.", recharge: true },
         outrage: { name: "Outrage", power: 1.5, target: "active", flavor: "Dragonite thrashes in pure rage." },
         thunder: { name: "Thunder", power: 1.3, target: "active", flavor: "A bolt from the sky." },
-        "draco-meteor": { name: "Draco Meteor", power: 1.7, target: "all", flavor: "Meteors crash on both trainers — devastating AoE!" },
+        "draco-meteor": { name: "Draco Meteor", power: 1.7, target: "all", flavor: "Meteors crash on both champions — devastating AoE!" },
       },
     },
     reward: { picks: 5, themeType: "dragon", guaranteedLegendary: true },

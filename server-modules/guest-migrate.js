@@ -18,26 +18,26 @@ const TOTAL_GRANT_CAP = 50;
 const VALID_CHAMPION_IDS = new Set(["lance", "cynthia", "steven", "red"]);
 
 async function bumpOwnedCards(supabase, userId, entries) {
-  // entries: [{ pokemonId, quantity }]. Idempotent within the cap —
+  // entries: [{ creatureId, quantity }]. Idempotent within the cap —
   // we read current quantity, raise by `quantity` clamped to the cap.
-  for (const { pokemonId, quantity } of entries) {
-    if (!Number.isFinite(pokemonId) || pokemonId <= 0) continue;
+  for (const { creatureId, quantity } of entries) {
+    if (!Number.isFinite(creatureId) || creatureId <= 0) continue;
     if (!Number.isFinite(quantity) || quantity <= 0) continue;
     const { data } = await supabase
       .from("owned_cards")
       .select("quantity")
       .eq("user_id", userId)
-      .eq("pokemon_id", pokemonId)
+      .eq("creature_id", creatureId)
       .maybeSingle();
     const cur = data?.quantity || 0;
     const next = Math.min(PER_CARD_CAP, cur + Math.min(PER_CARD_CAP, quantity));
     if (next === cur) continue;
     await supabase.from("owned_cards").upsert({
       user_id: userId,
-      pokemon_id: pokemonId,
+      creature_id: creatureId,
       quantity: next,
       acquired_at: new Date().toISOString(),
-    }, { onConflict: "user_id,pokemon_id" });
+    }, { onConflict: "user_id,creature_id" });
   }
 }
 
@@ -73,7 +73,7 @@ function sanitize(body) {
     if (!Number.isInteger(id) || id <= 0 || qty <= 0) continue;
     if (totalGrant + qty > TOTAL_GRANT_CAP) break;
     totalGrant += qty;
-    entries.push({ pokemonId: id, quantity: qty });
+    entries.push({ creatureId: id, quantity: qty });
     if (entries.length >= 100) break;
   }
   return {

@@ -1,4 +1,4 @@
-// Tests for trainer XP curve.
+// Tests for champion XP curve.
 
 const { test } = require("node:test");
 const assert = require("node:assert/strict");

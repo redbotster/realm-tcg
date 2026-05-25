@@ -1,4 +1,4 @@
-// Trainer XP — meta progression across matches.
+// Champion XP — meta progression across matches.
 //
 // Endpoints:
 //   GET  /me/xp        -> { xp, level, nextLevelAt, progress }
@@ -68,10 +68,10 @@ function mount(app, supabase) {
     if (!req.user) return res.status(401).json({ error: "Sign in required." });
     const { data } = await supabase
       .from("users")
-      .select("trainer_xp")
+      .select("champion_xp")
       .eq("id", req.user.id)
       .maybeSingle();
-    const xp = data?.trainer_xp || 0;
+    const xp = data?.champion_xp || 0;
     const level = levelFromXp(xp);
     const nextAt = nextLevelAt(xp);
     const prevAt = XP_THRESHOLDS[level - 1] || 0;
@@ -96,10 +96,10 @@ function mount(app, supabase) {
 
     const { data: cur } = await supabase
       .from("users")
-      .select("trainer_xp, match_win_streak, match_win_streak_best")
+      .select("champion_xp, match_win_streak, match_win_streak_best")
       .eq("id", req.user.id)
       .maybeSingle();
-    const before = cur?.trainer_xp || 0;
+    const before = cur?.champion_xp || 0;
     let newStreak = cur?.match_win_streak || 0;
     let bestStreak = cur?.match_win_streak_best || 0;
     if (won) {
@@ -122,7 +122,7 @@ function mount(app, supabase) {
     await supabase
       .from("users")
       .update({
-        trainer_xp: after,
+        champion_xp: after,
         match_win_streak: newStreak,
         match_win_streak_best: bestStreak,
       })

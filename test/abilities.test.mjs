@@ -13,7 +13,7 @@ function mkCard({ type = "normal", cardAttack = 6, hp = 100 } = {}) {
   };
 }
 
-test("every Pokémon gets a basic + special ability", () => {
+test("every creature gets a basic + special ability", () => {
   for (const type of ["normal","fire","water","electric","grass","psychic","dragon"]) {
     const card = mkCard({ type });
     const list = abilitiesFor(card);

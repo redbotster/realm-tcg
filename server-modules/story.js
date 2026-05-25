@@ -1,6 +1,6 @@
 // Story Mode (rebuilt) — runs the REGULAR 1v1 engine with a custom boss
 // loaded as the AI side, just like a champion fight. The boss has more
-// trainer HP, a curated themed deck, and a small set of "phase effects"
+// champion HP, a curated themed deck, and a small set of "phase effects"
 // the client applies at HP thresholds (heal, summon, attack buff, AoE).
 //
 // Routes:
@@ -21,30 +21,30 @@ const STORY_CHAPTER_IDS = CHAPTERS.map((c) => c.id);
 
 // Boss "anchor card" overrides — applied on top of the regular toCard()
 // output so the chapter's centerpiece feels like a boss, not a regular
-// tier-X mon. Keys are pokemon ids.
+// tier-X mon. Keys are creature ids.
 function bumpAnchorCard(card, chapter) {
-  const anchor = chapter.boss.anchorPokemonId;
+  const anchor = chapter.boss.anchorCreatureId;
   if (card.id !== anchor) return card;
   return {
     ...card,
     cardHp: Math.max(card.cardHp, Math.round(chapter.boss.maxHp / 4)),
     cardAttack: Math.max(card.cardAttack, chapter.boss.attack),
     // Brand it as legendary so it gets the holo treatment regardless of
-    // what the pokedex says about its rarity.
+    // what the bestiary says about its rarity.
     is_legendary: true,
   };
 }
 
 async function buildBossDeck(supabase, chapter) {
-  const anchor = chapter.boss.anchorPokemonId;
+  const anchor = chapter.boss.anchorCreatureId;
   // The 30-card boss deck: anchor card x2, plus thematic type-matched
   // support, plus filler.
   const typeFilter = chapter.boss.types;
-  const { data: anchorRow } = await supabase.from("pokemon").select("*").eq("id", anchor).maybeSingle();
+  const { data: anchorRow } = await supabase.from("bestiary").select("*").eq("id", anchor).maybeSingle();
   const anchorCard = anchorRow ? bumpAnchorCard(toCard(anchorRow), chapter) : null;
 
   let { data: pool } = await supabase
-    .from("pokemon")
+    .from("bestiary")
     .select("*")
     .overlaps("types", typeFilter)
     .order("hp", { ascending: false })
@@ -52,7 +52,7 @@ async function buildBossDeck(supabase, chapter) {
   pool = (pool || []).map(toCard);
   // Mix in some low-tier filler so the boss has cheap turn-1 plays.
   let { data: filler } = await supabase
-    .from("pokemon")
+    .from("bestiary")
     .select("*")
     .order("hp", { ascending: true })
     .limit(60);
@@ -83,7 +83,7 @@ async function buildBossDeck(supabase, chapter) {
   }
   // Pad with the regular deck builder if we somehow ran short.
   if (deck.length < 30) {
-    const { data: anything } = await supabase.from("pokemon").select("*").limit(60);
+    const { data: anything } = await supabase.from("bestiary").select("*").limit(60);
     const extras = (anything || []).map(toCard);
     while (deck.length < 30 && extras.length) deck.push(extras.shift());
   }
@@ -119,8 +119,8 @@ function summarisePhaseRules(chapter) {
     const r = { fromHpFraction: phase.fromHpFraction, effects: [] };
     if (phase.attackBonus) r.effects.push({ kind: "buff", amount: phase.attackBonus });
     if (phase.ignoreDefense) r.effects.push({ kind: "ignoreDef" });
-    if (phase.summonOnEntry?.pokemonIds?.length) {
-      r.effects.push({ kind: "summon", pokemonIds: phase.summonOnEntry.pokemonIds, note: phase.summonOnEntry.note });
+    if (phase.summonOnEntry?.creatureIds?.length) {
+      r.effects.push({ kind: "summon", creatureIds: phase.summonOnEntry.creatureIds, note: phase.summonOnEntry.note });
     }
     // Surface AoE if any move in the pattern targets "all"
     const hasAoe = (phase.attackPattern || []).some((mk) => chapter.boss.moves?.[mk]?.target === "all");
@@ -133,7 +133,7 @@ function summarisePhaseRules(chapter) {
       fromHpFraction: chapter.boss.transformAt || 0.5,
       effects: [{
         kind: "transform",
-        anchorPokemonId: chapter.boss.transformTo.anchorPokemonId,
+        anchorCreatureId: chapter.boss.transformTo.anchorCreatureId,
         displayName: chapter.boss.transformTo.displayName,
         attackBonus: chapter.boss.transformTo.attackBonus || 0,
         defenseBonus: chapter.boss.transformTo.defenseBonus || 0,
@@ -181,9 +181,9 @@ const store = require("./state-store");
 const STORY_MIN_DURATION_MS = 30 * 1000;
 const STORY_SESSION_TTL_SEC = 60 * 60;
 
-function mount(app, supabase, getPokedex) {
+function mount(app, supabase, getBestiary) {
   async function loadDex() {
-    const v = getPokedex();
+    const v = getBestiary();
     return v && typeof v.then === "function" ? await v : v;
   }
 
@@ -223,9 +223,9 @@ function mount(app, supabase, getPokedex) {
       intro: chapter.intro_v1 || chapter.intro || [],
       flavor: chapter.flavor,
       locale: chapter.locale,
-      enemyTrainerName: chapter.enemyTrainerName,
+      enemyChampionName: chapter.enemyChampionName,
       bossName: chapter.boss.displayName,
-      bossSpriteId: chapter.boss.anchorPokemonId,
+      bossSpriteId: chapter.boss.anchorCreatureId,
     });
   });
 
@@ -237,16 +237,16 @@ function mount(app, supabase, getPokedex) {
     if (!chapterUnlocked(chapter, progress)) return res.status(403).json({ error: "Chapter locked." });
     try {
       const deck = await buildBossDeck(supabase, chapter);
-      // Pre-fetch any pokémon the boss can summon during phases so the
+      // Pre-fetch any creature the boss can summon during phases so the
       // client doesn't have to round-trip mid-fight.
       const summonIds = new Set();
       for (const phase of chapter.boss.phases) {
-        for (const id of phase.summonOnEntry?.pokemonIds || []) summonIds.add(id);
+        for (const id of phase.summonOnEntry?.creatureIds || []) summonIds.add(id);
       }
-      if (chapter.boss.transformTo?.anchorPokemonId) summonIds.add(chapter.boss.transformTo.anchorPokemonId);
+      if (chapter.boss.transformTo?.anchorCreatureId) summonIds.add(chapter.boss.transformTo.anchorCreatureId);
       let summonCards = {};
       if (summonIds.size) {
-        const { data: rows } = await supabase.from("pokemon").select("*").in("id", [...summonIds]);
+        const { data: rows } = await supabase.from("bestiary").select("*").in("id", [...summonIds]);
         for (const r of rows || []) summonCards[r.id] = toCard(r);
       }
       // Hydrate readAlong sections with audioUrl from the TTS manifest
@@ -272,14 +272,14 @@ function mount(app, supabase, getPokedex) {
           //        (slice 5d). Client prefers this when present.
           intro: chapter.intro_v1 || chapter.intro || [],
           readAlong,
-          enemyTrainerName: chapter.enemyTrainerName,
+          enemyChampionName: chapter.enemyChampionName,
           enemyAbility: chapter.enemyAbility || "lance",
         },
         boss: {
           displayName: chapter.boss.displayName,
           maxHp: chapter.boss.maxHp,
           types: chapter.boss.types,
-          anchorPokemonId: chapter.boss.anchorPokemonId,
+          anchorCreatureId: chapter.boss.anchorCreatureId,
         },
         deck,
         phaseRules: summarisePhaseRules(chapter),
@@ -319,13 +319,13 @@ function mount(app, supabase, getPokedex) {
 
     const chapter = getChapter(session.chapterId);
     if (!chapter) return res.json({ reward: null, reason: "bad_chapter" });
-    const pokedex = await loadDex();
-    if (!pokedex?.length) return res.status(503).json({ error: "Pokédex not loaded." });
+    const bestiary = await loadDex();
+    if (!bestiary?.length) return res.status(503).json({ error: "Bestiary not loaded." });
 
     const cfg = chapter.reward || { picks: 3 };
-    let picks = rollPicks(pokedex, cfg.picks || 3, Math.random, { themeType: cfg.themeType, themeBias: 0.5 });
+    let picks = rollPicks(bestiary, cfg.picks || 3, Math.random, { themeType: cfg.themeType, themeBias: 0.5 });
     if (cfg.guaranteedLegendary && !picks.some((p) => p.is_legendary || p.is_mythical)) {
-      const rares = pokedex.filter((p) => p.is_legendary || p.is_mythical);
+      const rares = bestiary.filter((p) => p.is_legendary || p.is_mythical);
       if (rares.length) picks[picks.length - 1] = rares[Math.floor(Math.random() * rares.length)];
     }
     const offerId = await createOffer(req.user.id, picks);

@@ -20,11 +20,11 @@ async function main() {
   await page.goto(BASE, { waitUntil: "domcontentloaded", timeout: 15000 });
 
   // Wait for the menu to render.
-  await page.waitForSelector(".trainer-card", { timeout: 8000 });
+  await page.waitForSelector(".champion-card", { timeout: 8000 });
   console.log("✓ menu rendered");
 
-  // Pick the first trainer + start.
-  await page.click(".trainer-card");
+  // Pick the first champion + start.
+  await page.click(".champion-card");
   await page.click("#start-btn");
   console.log("→ starting match");
   // Mulligan: keep starting hand
@@ -43,7 +43,7 @@ async function main() {
     throw new Error(`expected 5 slots per side, got player=${playerSlots} ai=${aiSlots}`);
   console.log("✓ field slots correct");
 
-  // Trainer HP bars show 30/30 each.
+  // Champion HP bars show 30/30 each.
   const labels = await page.$$eval(".hp-text", (els) => els.map((e) => e.textContent.trim()));
   if (!labels.every((t) => t === "30/30"))
     throw new Error(`HP bars not 30/30: ${labels.join(", ")}`);
@@ -60,7 +60,7 @@ async function main() {
     () => document.querySelectorAll(".player-field .field-slot .card").length >= 1,
     { timeout: 5000 },
   );
-  console.log("✓ summoned a Pokémon onto the field");
+  console.log("✓ summoned a creature onto the field");
 
   // End turn, AI moves, then we get turn 2.
   await page.click("#end-turn-btn");

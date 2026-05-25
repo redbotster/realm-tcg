@@ -1,8 +1,8 @@
-// Spell cards — non-Pokémon cards that share the deck and trigger a
+// Spell cards — non-creature cards that share the deck and trigger a
 // one-shot effect when played, then go to discard. Mixed into the same
-// deck as Pokémon (no separate trainer-card pile), drop through the
+// deck as creature (no separate champion-card pile), drop through the
 // same rarity-based reward system, and play through engine.playCard()
-// just like Pokémon — the engine branches on `card.kind`.
+// just like creature — the engine branches on `card.kind`.
 //
 // Energy cost is derived from a card's `power` rating (higher power →
 // more energy). Rarity is hand-picked per card to fit the difficulty
@@ -11,9 +11,9 @@
 // board-wipe AOE).
 //
 // Effects:
-//   freeze   — lock one enemy Pokémon for 1 turn (no attack, no act)
-//   paralyze — lock one enemy Pokémon for 1 turn (chained on `paralyze` status)
-//   heal     — restore one of your Pokémon to full HP
+//   freeze   — lock one enemy creature for 1 turn (no attack, no act)
+//   paralyze — lock one enemy creature for 1 turn (chained on `paralyze` status)
+//   heal     — restore one of your creature to full HP
 //   defender — +5 max HP to one of yours AND must-be-attacked-first this match
 //   evolve   — +50% Max HP and +50% Attack to one of yours
 //   aoe      — deal `aoeDamage` to every enemy on the field
@@ -48,7 +48,7 @@ const ACTIVE_EFFECTS = new Set([
   "cleanse",      // slice 6: remove all status effects from one ally
   "surge",        // slice 6: gain +2 energy this turn (capped at max)
   "scout",        // slice 6: draw 2 cards from your deck
-  "phoenix",      // slice 6: revive most-recently-fainted Pokémon at full HP
+  "phoenix",      // slice 6: revive most-recently-fainted creature at full HP
   "burn",         // slice 7: apply burn status (2 dmg/turn for 3 turns)
   "shield",       // slice 7: block the next attack on one ally (one-time)
   "mass-heal",    // slice 7: heal every ally by 3 HP
@@ -56,7 +56,7 @@ const ACTIVE_EFFECTS = new Set([
   "counter",      // slice 7: reflect the next attack's damage back to attacker
   "stop-time",    // slice 7: opponent skips their next turn entirely
   "confusion",    // slice 8: confuse status — 50% chance enemy hits itself
-  "storm",        // slice 8: 2 dmg to EVERY Pokémon on field (both sides)
+  "storm",        // slice 8: 2 dmg to EVERY creature on field (both sides)
   "burst",        // slice 8: 3 direct damage to one enemy (cheap Bolt)
   "brave-strike", // slice 8: ally takes 50% HP loss for a double-damage next attack
   "refresh",      // slice 8: heal every ally by 2 HP (lighter Mass Heal)
@@ -74,7 +74,7 @@ const SPELL_CARDS = [
     glyph: "❄",
     power: 2,
     rarity: "uncommon",
-    description: "Freeze one enemy Pokémon — it can't act on its next turn.",
+    description: "Freeze one enemy creature — it can't act on its next turn.",
     flavor_text: "A glacial seal — nothing thaws in time.",
   },
   {
@@ -87,7 +87,7 @@ const SPELL_CARDS = [
     glyph: "⚡",
     power: 2,
     rarity: "uncommon",
-    description: "Paralyze one enemy Pokémon — it can't act on its next turn.",
+    description: "Paralyze one enemy creature — it can't act on its next turn.",
     flavor_text: "Static lock. Muscles refuse the call.",
   },
   {
@@ -100,7 +100,7 @@ const SPELL_CARDS = [
     glyph: "💚",
     power: 4,
     rarity: "uncommon",
-    description: "Restore one of your Pokémon to full HP.",
+    description: "Restore one of your creature to full HP.",
     flavor_text: "Verdant pulse — wounds close in seconds.",
   },
   {
@@ -114,7 +114,7 @@ const SPELL_CARDS = [
     power: 4,
     rarity: "rare",
     defenderHpBonus: 5,
-    description: "+5 max HP to one of your Pokémon and force opponents to attack it first.",
+    description: "+5 max HP to one of your creature and force opponents to attack it first.",
     flavor_text: "Steel will, drawn forward.",
   },
   {
@@ -129,7 +129,7 @@ const SPELL_CARDS = [
     rarity: "rare",
     evolveHpMult: 1.5,
     evolveAtkMult: 1.5,
-    description: "Evolve one of your Pokémon — +50% Max HP and +50% Attack.",
+    description: "Evolve one of your creature — +50% Max HP and +50% Attack.",
     flavor_text: "A surge of latent power, unsealed.",
   },
   {
@@ -143,7 +143,7 @@ const SPELL_CARDS = [
     power: 8,
     rarity: "epic",
     aoeDamage: 4,
-    description: "Deal 4 damage to every enemy Pokémon on the field.",
+    description: "Deal 4 damage to every enemy creature on the field.",
     flavor_text: "The earth itself answers your call.",
   },
   // --- Slice 6 -------------------------------------------------------
@@ -158,7 +158,7 @@ const SPELL_CARDS = [
     power: 4,
     rarity: "rare",
     boltDamage: 5,
-    description: "Deal 5 damage directly to one enemy Pokémon.",
+    description: "Deal 5 damage directly to one enemy creature.",
     flavor_text: "A spark of pure voltage, aimed.",
   },
   {
@@ -185,7 +185,7 @@ const SPELL_CARDS = [
     glyph: "✨",
     power: 2,
     rarity: "common",
-    description: "Remove all status effects from one of your Pokémon.",
+    description: "Remove all status effects from one of your creature.",
     flavor_text: "A soft light. The pain melts away.",
   },
   {
@@ -226,7 +226,7 @@ const SPELL_CARDS = [
     glyph: "🦅",
     power: 8,
     rarity: "legendary",
-    description: "Revive your most recently fainted Pokémon at full HP.",
+    description: "Revive your most recently fainted creature at full HP.",
     flavor_text: "From ashes, returning.",
   },
   // --- Slice 7 ------------------------------------------------------
@@ -254,7 +254,7 @@ const SPELL_CARDS = [
     glyph: "🛡",
     power: 4,
     rarity: "rare",
-    description: "Block the next attack on one of your Pokémon (one-time).",
+    description: "Block the next attack on one of your creature (one-time).",
     flavor_text: "An iron wall, raised in a heartbeat.",
   },
   {
@@ -268,7 +268,7 @@ const SPELL_CARDS = [
     power: 6,
     rarity: "rare",
     massHealAmount: 3,
-    description: "Restore 3 HP to every one of your Pokémon on the field.",
+    description: "Restore 3 HP to every one of your creature on the field.",
     flavor_text: "A soft wave washes across the team.",
   },
   {
@@ -295,7 +295,7 @@ const SPELL_CARDS = [
     glyph: "↩",
     power: 6,
     rarity: "epic",
-    description: "Reflect the next attack on one of your Pokémon back at the attacker.",
+    description: "Reflect the next attack on one of your creature back at the attacker.",
     flavor_text: "Mirror up. Whatever hits, hits back.",
   },
   {
@@ -337,7 +337,7 @@ const SPELL_CARDS = [
     power: 4,
     rarity: "uncommon",
     stormDamage: 2,
-    description: "A wild storm — 2 damage to every Pokémon on the field (both sides).",
+    description: "A wild storm — 2 damage to every creature on the field (both sides).",
     flavor_text: "No shelter. No mercy. Just rain and lightning.",
   },
   {
@@ -379,7 +379,7 @@ const SPELL_CARDS = [
     power: 4,
     rarity: "uncommon",
     refreshAmount: 2,
-    description: "A gentle breeze — heal every one of your Pokémon by 2 HP.",
+    description: "A gentle breeze — heal every one of your creature by 2 HP.",
     flavor_text: "New leaves, new strength.",
   },
   {
@@ -408,14 +408,14 @@ function energyCostFromPower(power) {
 }
 
 function tierFromSpellCost(cost) {
-  // Spells use the same tier ladder Pokémon use so the deck-builder's
+  // Spells use the same tier ladder creature use so the deck-builder's
   // tier-bucketed distribution can mix them in without special cases.
   // Spell cost 1→tier 1, 2→2, 3→3, 4→4. Caps at 5 just in case future
   // spells go higher.
   return Math.max(1, Math.min(5, cost));
 }
 
-// Inflate a spell def into the same shape Pokémon cards use — so any
+// Inflate a spell def into the same shape creature cards use — so any
 // part of the codebase that consumes `card.tier`, `card.energyCost`,
 // `card.rarity`, etc. works without branching on kind. The differences
 // (kind, effect, target, glyph, description, flavor_text) ride along.
@@ -472,8 +472,8 @@ function spellToCard(spell) {
   };
 }
 
-// All ACTIVE spell card objects shaped like Pokémon cards. The server
-// loader concatenates this onto the pokedex array on boot so drops +
+// All ACTIVE spell card objects shaped like creature cards. The server
+// loader concatenates this onto the bestiary array on boot so drops +
 // deck builds see them naturally. Inactive effects (still in
 // SPELL_CARDS but not in ACTIVE_EFFECTS) are filtered out so players
 // can't draw or pull a card the engine doesn't know how to resolve.

@@ -1,7 +1,7 @@
 // Daily Puzzle scenarios — Wordle-style fixed-board challenges.
 //
 // Every UTC day, every player faces the same scenario:
-//   - A small pre-built board (2-3 of your Pokémon vs 2-4 enemies)
+//   - A small pre-built board (2-3 of your creature vs 2-4 enemies)
 //   - Unlimited energy, no hand draws (this is a CHESS puzzle, not a
 //     deck-building exercise)
 //   - Goal: KO every enemy in `parMoves` moves or fewer
@@ -29,7 +29,7 @@ function dayNumberFor(dateKey) {
 
 // Each puzzle: { id, title, par, player: [{ id, hp, atk }], enemy: [...] }.
 // HP and attack on each instance are overrides — actual sprites + type
-// data come from the pokedex at render time.
+// data come from the bestiary at render time.
 const PUZZLES = [
   {
     id: "first-strike",
@@ -37,12 +37,12 @@ const PUZZLES = [
     par: 2,
     flavor: "Two attackers, two targets. Pick well.",
     player: [
-      { pokemonId: 6,   hp: 14, atk: 7 },   // Charizard
-      { pokemonId: 9,   hp: 14, atk: 6 },   // Blastoise
+      { creatureId: 6,   hp: 14, atk: 7 },   // Charizard
+      { creatureId: 9,   hp: 14, atk: 6 },   // Blastoise
     ],
     enemy: [
-      { pokemonId: 3,   hp: 8, atk: 5 },    // Venusaur (water-weak to fire)
-      { pokemonId: 95,  hp: 9, atk: 5 },    // Onix (rock — weak to water)
+      { creatureId: 3,   hp: 8, atk: 5 },    // Venusaur (water-weak to fire)
+      { creatureId: 95,  hp: 9, atk: 5 },    // Onix (rock — weak to water)
     ],
   },
   {
@@ -51,13 +51,13 @@ const PUZZLES = [
     par: 3,
     flavor: "Three enemies, three moves. Order matters.",
     player: [
-      { pokemonId: 25,  hp: 12, atk: 6 },   // Pikachu
-      { pokemonId: 65,  hp: 12, atk: 8 },   // Alakazam
+      { creatureId: 25,  hp: 12, atk: 6 },   // Pikachu
+      { creatureId: 65,  hp: 12, atk: 8 },   // Alakazam
     ],
     enemy: [
-      { pokemonId: 130, hp: 11, atk: 6 },   // Gyarados (water+flying — electric 4x)
-      { pokemonId: 68,  hp: 9, atk: 6 },    // Machamp (psychic 2x)
-      { pokemonId: 36,  hp: 8, atk: 4 },    // Clefable
+      { creatureId: 130, hp: 11, atk: 6 },   // Gyarados (water+flying — electric 4x)
+      { creatureId: 68,  hp: 9, atk: 6 },    // Machamp (psychic 2x)
+      { creatureId: 36,  hp: 8, atk: 4 },    // Clefable
     ],
   },
   {
@@ -66,14 +66,14 @@ const PUZZLES = [
     par: 3,
     flavor: "The wall must fall first.",
     player: [
-      { pokemonId: 6,   hp: 14, atk: 8 },
-      { pokemonId: 25,  hp: 10, atk: 7 },
-      { pokemonId: 65,  hp: 12, atk: 8 },
+      { creatureId: 6,   hp: 14, atk: 8 },
+      { creatureId: 25,  hp: 10, atk: 7 },
+      { creatureId: 65,  hp: 12, atk: 8 },
     ],
     enemy: [
-      { pokemonId: 143, hp: 14, atk: 5 },   // Snorlax (Guardian — must hit first)
-      { pokemonId: 94,  hp: 8,  atk: 6 },   // Gengar
-      { pokemonId: 130, hp: 10, atk: 6 },   // Gyarados
+      { creatureId: 143, hp: 14, atk: 5 },   // Snorlax (Guardian — must hit first)
+      { creatureId: 94,  hp: 8,  atk: 6 },   // Gengar
+      { creatureId: 130, hp: 10, atk: 6 },   // Gyarados
     ],
   },
   {
@@ -82,11 +82,11 @@ const PUZZLES = [
     par: 2,
     flavor: "Fire melts steel. Use it.",
     player: [
-      { pokemonId: 6,   hp: 16, atk: 9 },   // Charizard
+      { creatureId: 6,   hp: 16, atk: 9 },   // Charizard
     ],
     enemy: [
-      { pokemonId: 81,  hp: 8, atk: 4 },    // Magnemite (steel — fire 2x)
-      { pokemonId: 100, hp: 7, atk: 5 },    // Voltorb
+      { creatureId: 81,  hp: 8, atk: 4 },    // Magnemite (steel — fire 2x)
+      { creatureId: 100, hp: 7, atk: 5 },    // Voltorb
     ],
   },
   {
@@ -95,12 +95,12 @@ const PUZZLES = [
     par: 2,
     flavor: "Two-shot or be two-shot. Pick fast.",
     player: [
-      { pokemonId: 9,   hp: 12, atk: 7 },
-      { pokemonId: 144, hp: 10, atk: 8 },   // Articuno (ice)
+      { creatureId: 9,   hp: 12, atk: 7 },
+      { creatureId: 144, hp: 10, atk: 8 },   // Articuno (ice)
     ],
     enemy: [
-      { pokemonId: 149, hp: 13, atk: 7 },   // Dragonite (ice 4x)
-      { pokemonId: 130, hp: 9, atk: 6 },    // Gyarados
+      { creatureId: 149, hp: 13, atk: 7 },   // Dragonite (ice 4x)
+      { creatureId: 130, hp: 9, atk: 6 },    // Gyarados
     ],
   },
   {
@@ -109,13 +109,13 @@ const PUZZLES = [
     par: 3,
     flavor: "Three psychics, three threats, three moves.",
     player: [
-      { pokemonId: 65,  hp: 14, atk: 9 },
-      { pokemonId: 150, hp: 16, atk: 10 },  // Mewtwo
+      { creatureId: 65,  hp: 14, atk: 9 },
+      { creatureId: 150, hp: 16, atk: 10 },  // Mewtwo
     ],
     enemy: [
-      { pokemonId: 68,  hp: 11, atk: 6 },   // Machamp (psychic 2x)
-      { pokemonId: 24,  hp: 10, atk: 6 },   // Arbok (psychic 2x)
-      { pokemonId: 92,  hp: 8, atk: 5 },    // Gastly (psychic 2x but ghost)
+      { creatureId: 68,  hp: 11, atk: 6 },   // Machamp (psychic 2x)
+      { creatureId: 24,  hp: 10, atk: 6 },   // Arbok (psychic 2x)
+      { creatureId: 92,  hp: 8, atk: 5 },    // Gastly (psychic 2x but ghost)
     ],
   },
   {
@@ -124,14 +124,14 @@ const PUZZLES = [
     par: 4,
     flavor: "Many small foes. The bug net is wide.",
     player: [
-      { pokemonId: 6,   hp: 14, atk: 8 },
-      { pokemonId: 146, hp: 12, atk: 8 },   // Moltres
+      { creatureId: 6,   hp: 14, atk: 8 },
+      { creatureId: 146, hp: 12, atk: 8 },   // Moltres
     ],
     enemy: [
-      { pokemonId: 13,  hp: 6, atk: 3 },    // Weedle x4
-      { pokemonId: 13,  hp: 6, atk: 3 },
-      { pokemonId: 13,  hp: 6, atk: 3 },
-      { pokemonId: 13,  hp: 6, atk: 3 },
+      { creatureId: 13,  hp: 6, atk: 3 },    // Weedle x4
+      { creatureId: 13,  hp: 6, atk: 3 },
+      { creatureId: 13,  hp: 6, atk: 3 },
+      { creatureId: 13,  hp: 6, atk: 3 },
     ],
   },
 ];

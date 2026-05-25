@@ -1,4 +1,4 @@
-# Deploying Pokémon TCG
+# Deploying creature TCG
 
 This game is a long-lived Node + Socket.IO process with in-memory match state.
 Pick a host that gives you a persistent process — pure-serverless platforms
@@ -11,9 +11,9 @@ will drop ongoing matches when they cold-start or scale.
    psql "$SUPABASE_POSTGRES_URL" -f scripts/schema.sql
    psql "$SUPABASE_POSTGRES_URL" -f scripts/schema-accounts.sql
    ```
-2. The Pokédex seeded:
+2. The Bestiary seeded:
    ```bash
-   node scripts/seed-pokedex.js
+   node scripts/seed-bestiary.js
    ```
 3. These environment variables in the deployment target:
    | name | required | what it is |
@@ -21,9 +21,9 @@ will drop ongoing matches when they cold-start or scale.
    | `SUPABASE_URL` | ✅ | Project URL (`https://<ref>.supabase.co`) |
    | `SUPABASE_SERVICE_KEY` | ✅ | service_role JWT (server-only — never ship to browser) |
    | `SESSION_SECRET` | ✅ | 32+ random bytes hex; signs session cookies |
-   | `RP_ID` | ✅ | Your domain hostname (e.g. `pokemon.example.com`) — **must match the URL users visit**, otherwise passkeys reject |
-   | `ORIGIN` | ✅ | Full origin including scheme (e.g. `https://pokemon.example.com`) |
-   | `RP_NAME` | optional | Friendly label shown in the OS passkey UI; defaults to `Pokémon TCG` |
+   | `RP_ID` | ✅ | Your domain hostname (e.g. `creature.example.com`) — **must match the URL users visit**, otherwise passkeys reject |
+   | `ORIGIN` | ✅ | Full origin including scheme (e.g. `https://creature.example.com`) |
+   | `RP_NAME` | optional | Friendly label shown in the OS passkey UI; defaults to `creature TCG` |
    | `NODE_ENV` | optional | Set to `production` to silence the QR-code/LAN-IP banner |
    | `PORT` | optional | Honoured automatically; defaults to 3000 |
 
@@ -46,10 +46,10 @@ fly secrets set \
   SUPABASE_URL="https://<ref>.supabase.co" \
   SUPABASE_SERVICE_KEY="$SUPABASE_SERVICE_KEY" \
   SESSION_SECRET="$(node -e 'console.log(require(\"crypto\").randomBytes(32).toString(\"hex\"))')" \
-  RP_ID="pokemon.example.com" \
-  ORIGIN="https://pokemon.example.com"
+  RP_ID="creature.example.com" \
+  ORIGIN="https://creature.example.com"
 fly deploy
-fly certs add pokemon.example.com  # optional, for a custom domain
+fly certs add creature.example.com  # optional, for a custom domain
 ```
 
 The `Dockerfile` in this repo handles the rest. Fly will keep one VM running;
@@ -69,8 +69,8 @@ vercel link             # link the repo to a Vercel project
 vercel env add SUPABASE_URL production
 vercel env add SUPABASE_SERVICE_KEY production
 vercel env add SESSION_SECRET production
-vercel env add RP_ID production            # your apex domain, e.g. pokemon.example.com
-vercel env add ORIGIN production           # https://pokemon.example.com
+vercel env add RP_ID production            # your apex domain, e.g. creature.example.com
+vercel env add ORIGIN production           # https://creature.example.com
 vercel deploy --prod
 ```
 
@@ -101,12 +101,12 @@ The `Dockerfile` builds a self-contained image. Render and Railway will pick
 it up automatically. For a VPS:
 
 ```bash
-docker build -t pokemon-tcg .
-docker run -d --name pokemon-tcg \
+docker build -t creature-tcg .
+docker run -d --name creature-tcg \
   -p 80:3000 \
   --env-file .env.production \
   --restart unless-stopped \
-  pokemon-tcg
+  creature-tcg
 ```
 
 The slop-computer `pm2 start server.js` pattern also works on a plain Node
@@ -140,8 +140,8 @@ proven there's enough traffic to need it.
 After deploy, run these against your live URL to catch the common breakages:
 
 ```bash
-# 1. Pokédex loaded?
-curl https://YOUR_HOST/api/pokedex/size
+# 1. Bestiary loaded?
+curl https://YOUR_HOST/api/bestiary/size
 # expect: {"size":1025}
 
 # 2. Auth probe responds?

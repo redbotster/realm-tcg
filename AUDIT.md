@@ -1,4 +1,4 @@
-# pokemonbattle.xyz — Audit
+# creaturebattle.xyz — Audit
 
 End-to-end read of the codebase, sized against the 1M-user goal and the
 North Star metrics (D1 retention ≥ 40%, K-factor ≥ 0.6, time-to-first-win
@@ -32,7 +32,7 @@ no compression beyond Vercel defaults. Asset budget per the brief is 1.5 MB
   signatures keyed by national-dex id, each declaring optional `onSummon`,
   `onTurnStart`, `onKO`, `onKill`, `onPreHit`, `passive`, or `fieldAura`
   hooks. New signatures are pure data, no engine changes needed.
-- Items, trainer abilities, status effects, mulligan, fatigue ticks,
+- Items, champion abilities, status effects, mulligan, fatigue ticks,
   field auras, combo bonuses, theme-of-the-week, and crit chains are all
   composable inputs to one `computeDamage` function in `battle.js`.
 - Story chapters (`shared/story-chapters.js`) reuse the 1v1 engine
@@ -65,9 +65,9 @@ no compression beyond Vercel defaults. Asset budget per the brief is 1.5 MB
 ## 3. What's broken / fragile
 
 ### IP exposure — the existential risk
-- Every Pokémon name, sprite URL (PokeAPI/Showdown CDNs), and cry audio
-  is from Nintendo / The Pokémon Company. Trainer portraits, type
-  effectiveness chart, the word "Pokémon" itself.
+- Every creature name, sprite URL (PokeAPI/Showdown CDNs), and cry audio
+  is from Nintendo / The creature Company. Champion portraits, type
+  effectiveness chart, the word "creature" itself.
 - A hobby-scale project rarely draws action below ~10 k DAU. We will
   exceed that on any successful viral spike. The C&D will arrive long
   before 1 M users — and once issued, the brand is unusable forever.
@@ -80,7 +80,7 @@ Estimated path for a brand-new visitor right now:
 1. Land on the page                                       ~2 s
 2. Read landing copy / feature strip                      ~10 s
 3. Decide to play → "Sign in" passkey prompt              ~15-30 s
-4. Pick a trainer                                         ~10 s
+4. Pick a champion                                         ~10 s
 5. Click "Battle as X"                                    instant
 6. Wait for deck shuffle + VS cinematic                   ~3 s
 7. Mulligan modal (decide which cards to swap)            ~15 s
@@ -101,7 +101,7 @@ horizontal field rows.
 Zero instrumentation. PostHog / Plausible / GA / Vercel Analytics not
 wired. We cannot measure:
 - Land → tap-play conversion
-- Drop-off at sign-in vs trainer pick vs mulligan
+- Drop-off at sign-in vs champion pick vs mulligan
 - First-match win rate
 - D1/D7 retention
 - Share-button click-through

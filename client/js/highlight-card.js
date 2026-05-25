@@ -166,7 +166,7 @@ export async function generateHighlight({ state, currentUser, format = DEFAULT_F
   }
 
   // 7. Footer.
-  drawText(ctx, "play • pokemon TCG", {
+  drawText(ctx, "play • creature TCG", {
     x: W / 2, y: H - cfg.footerY,
     color: "rgba(255,255,255,0.55)",
     font: "italic 22px Inter, system-ui",
@@ -303,8 +303,8 @@ function badgesFor(state, won) {
   // image (no descriptions, 4-letter max colors).
   const my = state.recap?.player || {};
   const myKOs = state.players?.ai?.discard?.length || 0;
-  const myHpLeft = state.players?.player?.trainerHp || 0;
-  const maxHp = state.players?.player?.maxTrainerHp || 30;
+  const myHpLeft = state.players?.player?.championHp || 0;
+  const maxHp = state.players?.player?.maxChampionHp || 30;
   const out = [];
   if (won) {
     if (myHpLeft === maxHp) out.push({ label: "PERFECT", color: "#ffd166" });
@@ -340,7 +340,7 @@ export async function showHighlightShare({ state, currentUser } = {}) {
         <img class="hc-img" alt="Match highlight">
       </div>
       <div class="hc-actions">
-        <a class="primary"  href="#" download="pokemon-tcg-highlight.png">📥 Save image</a>
+        <a class="primary"  href="#" download="creature-tcg-highlight.png">📥 Save image</a>
         <button class="ghost" data-act="share">📤 Share…</button>
       </div>
     </div>`;
@@ -363,8 +363,8 @@ export async function showHighlightShare({ state, currentUser } = {}) {
       imgEl.src = currentUrl;
       dlEl.href = currentUrl;
       dlEl.download = format === "tiktok"
-        ? "pokemon-tcg-highlight-tiktok.png"
-        : "pokemon-tcg-highlight.png";
+        ? "creature-tcg-highlight-tiktok.png"
+        : "creature-tcg-highlight.png";
     } catch (err) {
       console.warn("[highlight] gen failed:", err);
     } finally {
@@ -388,14 +388,14 @@ export async function showHighlightShare({ state, currentUser } = {}) {
   overlay.querySelector("[data-act=share]")?.addEventListener("click", async () => {
     if (!currentBlob) return;
     try {
-      const file = new File([currentBlob], "pokemon-tcg-highlight.png", { type: "image/png" });
+      const file = new File([currentBlob], "creature-tcg-highlight.png", { type: "image/png" });
       if (navigator.canShare?.({ files: [file] })) {
         await navigator.share({
-          title: state.winner === "player" ? "I won my Pokémon TCG match!" : "Tough match in Pokémon TCG",
+          title: state.winner === "player" ? "I won my creature TCG match!" : "Tough match in creature TCG",
           files: [file],
         });
       } else if (navigator.share) {
-        await navigator.share({ title: "Pokémon TCG", url: location.origin });
+        await navigator.share({ title: "creature TCG", url: location.origin });
       }
     } catch {}
   });

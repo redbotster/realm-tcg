@@ -1,6 +1,6 @@
 // Two-browser-instance multiplayer smoke test:
-// - Player A registers, picks a trainer, clicks "Find online match"
-// - Player B registers, picks a trainer, clicks "Find online match"
+// - Player A registers, picks a champion, clicks "Find online match"
+// - Player B registers, picks a champion, clicks "Find online match"
 // - Server pairs them; both should see a fresh arena
 // - A plays a card, B sees the AI hand-size update
 // - A ends turn, B's banner says "Your move"
@@ -44,7 +44,7 @@ async function ready(page) {
   await page.click("#account-register-btn");
   // Vercel cold-starts can push registration past 15s — bump the budget.
   await page.waitForSelector("#account-logout-btn", { timeout: 25000 });
-  await page.click(".trainer-card");
+  await page.click(".champion-card");
 }
 
 async function main() {
@@ -94,7 +94,7 @@ async function main() {
     () => document.querySelectorAll(".player-field .field-slot .card").length >= 1,
     { timeout: 5000 },
   );
-  console.log("✓ first player summoned a Pokémon");
+  console.log("✓ first player summoned a creature");
 
   await second.page.waitForFunction(
     () => document.querySelectorAll(".ai-field .field-slot .card").length >= 1,
@@ -118,7 +118,7 @@ async function main() {
     () => document.querySelectorAll(".player-field .field-slot .card").length >= 1,
     { timeout: 5000 },
   );
-  console.log("✓ second player summoned a Pokémon");
+  console.log("✓ second player summoned a creature");
 
   await first.page.waitForFunction(
     () => document.querySelectorAll(".ai-field .field-slot .card").length >= 1,

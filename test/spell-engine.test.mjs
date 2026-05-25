@@ -1,5 +1,5 @@
 // Engine integration: playCard dispatches on kind="spell", Freeze applies
-// the freeze status, frozen Pokémon can't attack, status ticks down.
+// the freeze status, frozen creature can't attack, status ticks down.
 
 import { test } from "node:test";
 import assert from "node:assert/strict";
@@ -12,7 +12,7 @@ const { SPELL_CARDS, spellToCard } = spellCards.default ?? spellCards;
 const FREEZE = spellToCard(SPELL_CARDS.find((s) => s.effect === "freeze"));
 
 // Tiny test-card factory — mirrors the shape buildDeck produces.
-function pokemon(id, { hp = 8, atk = 4, cost = 1, types = ["normal"] } = {}) {
+function creature(id, { hp = 8, atk = 4, cost = 1, types = ["normal"] } = {}) {
   return {
     id, name: `P${id}`, kind: undefined, // explicitly NOT a spell
     types, energyCost: cost, cardHp: hp, cardAttack: atk,
@@ -48,7 +48,7 @@ function makeMatch({ playerHand = [], aiField = [], playerEnergy = 5 } = {}) {
     players: {
       player: {
         name: "Player", ability: "brock",
-        trainerHp: 30, maxTrainerHp: 30,
+        championHp: 30, maxChampionHp: 30,
         energy: playerEnergy, maxEnergy: 10,
         deck: [], hand: playerHand,
         field: [null, null, null, null, null],
@@ -56,7 +56,7 @@ function makeMatch({ playerHand = [], aiField = [], playerEnergy = 5 } = {}) {
       },
       ai: {
         name: "AI", ability: "brock",
-        trainerHp: 30, maxTrainerHp: 30,
+        championHp: 30, maxChampionHp: 30,
         energy: 5, maxEnergy: 10,
         deck: [], hand: [],
         field: aiField.map((c, i) => i < FIELD_SIZE && c ? makeInst(c) : null)
@@ -79,7 +79,7 @@ test("Freeze card has the shape playCard expects (kind=spell, effect=freeze)", (
 // --- playCard dispatch -----------------------------------------------
 
 test("playing Freeze applies the freeze status to the targeted enemy", () => {
-  const enemy = pokemon(50);
+  const enemy = creature(50);
   const state = makeMatch({ playerHand: [FREEZE], aiField: [enemy] });
   const result = playCard(state, "player", 0, { spellTarget: 0 });
   assert.equal(result.ok, true);
@@ -91,7 +91,7 @@ test("playing Freeze applies the freeze status to the targeted enemy", () => {
 });
 
 test("Freeze pays its energy cost AND removes the card from hand", () => {
-  const enemy = pokemon(51);
+  const enemy = creature(51);
   const state = makeMatch({ playerHand: [FREEZE], aiField: [enemy], playerEnergy: 3 });
   const before = state.players.player.energy;
   const result = playCard(state, "player", 0, { spellTarget: 0 });
@@ -103,7 +103,7 @@ test("Freeze pays its energy cost AND removes the card from hand", () => {
 });
 
 test("Freeze without a target slot returns a useful error (no crash, no consumption)", () => {
-  const enemy = pokemon(52);
+  const enemy = creature(52);
   const state = makeMatch({ playerHand: [FREEZE], aiField: [enemy] });
   const before = state.players.player.energy;
   const result = playCard(state, "player", 0, { /* no spellTarget */ });
@@ -115,7 +115,7 @@ test("Freeze without a target slot returns a useful error (no crash, no consumpt
 });
 
 test("Freeze on an empty slot is rejected", () => {
-  const enemy = pokemon(53);
+  const enemy = creature(53);
   // aiField slot 0 has an enemy; slot 1 is empty.
   const state = makeMatch({ playerHand: [FREEZE], aiField: [enemy] });
   const result = playCard(state, "player", 0, { spellTarget: 1 });
@@ -124,14 +124,14 @@ test("Freeze on an empty slot is rejected", () => {
 });
 
 test("Freeze rejects out-of-range target indices", () => {
-  const enemy = pokemon(54);
+  const enemy = creature(54);
   const state = makeMatch({ playerHand: [FREEZE], aiField: [enemy] });
   const result = playCard(state, "player", 0, { spellTarget: 99 });
   assert.equal(result.ok, false);
 });
 
 test("Freeze still respects the energy gate (insufficient energy = no play)", () => {
-  const enemy = pokemon(55);
+  const enemy = creature(55);
   const state = makeMatch({ playerHand: [FREEZE], aiField: [enemy], playerEnergy: 0 });
   const result = playCard(state, "player", 0, { spellTarget: 0 });
   assert.equal(result.ok, false);
@@ -142,8 +142,8 @@ test("Freeze still respects the energy gate (insufficient energy = no play)", ()
 
 // --- Freeze gates the enemy's attack ---------------------------------
 
-test("a frozen Pokémon is locked out (battle.isLockedOut returns true)", () => {
-  const frozen = { card: pokemon(60), status: { kind: "freeze", turnsLeft: 1 } };
+test("a frozen creature is locked out (battle.isLockedOut returns true)", () => {
+  const frozen = { card: creature(60), status: { kind: "freeze", turnsLeft: 1 } };
   assert.equal(isLockedOut(frozen), true);
 });
 
@@ -158,10 +158,10 @@ test("freeze decrements via tickStatus and expires when turnsLeft hits 0", () =>
 // --- Integration: full play loop -------------------------------------
 
 test("Freeze → enemy attack attempt fails (engine refuses to attack while locked)", () => {
-  // Set up: ai has a Pokémon on field, we freeze it, then end-turn-ish
+  // Set up: ai has a creature on field, we freeze it, then end-turn-ish
   // and try to have AI attack — should be refused.
-  const aiAtk = pokemon(70, { hp: 10, atk: 5 });
-  const playerDef = pokemon(71, { hp: 10, atk: 5 });
+  const aiAtk = creature(70, { hp: 10, atk: 5 });
+  const playerDef = creature(71, { hp: 10, atk: 5 });
   const state = makeMatch({ playerHand: [FREEZE], aiField: [aiAtk] });
   state.players.player.field[0] = makeInst(playerDef);
 
@@ -208,20 +208,20 @@ function placeAlly(state, slot, card, currentHp = null) {
 // --- PARALYZE --------------------------------------------------------
 
 test("Paralyze applies paralyze status (locks enemy for 1 turn)", () => {
-  const enemy = pokemon(101);
+  const enemy = creature(101);
   const state = makeMatch({ playerHand: [PARALYZE], aiField: [enemy] });
   const r = playCard(state, "player", 0, { spellTarget: 0 });
   assert.equal(r.ok, true);
   const t = state.players.ai.field[0];
   assert.equal(t.status.kind, "paralyze");
   assert.equal(t.status.turnsLeft, 1);
-  assert.ok(isLockedOut(t), "paralyzed pokémon should be locked out");
+  assert.ok(isLockedOut(t), "paralyzed creature should be locked out");
 });
 
 // --- HEAL ------------------------------------------------------------
 
 test("Heal restores an ally to full HP (capped at maxHp)", () => {
-  const ally = pokemon(102, { hp: 10 });
+  const ally = creature(102, { hp: 10 });
   const state = makeMatch({ playerHand: [HEAL] });
   placeAlly(state, 0, ally, 3); // 3/10 HP
   const r = playCard(state, "player", 0, { spellTarget: 0 });
@@ -233,7 +233,7 @@ test("Heal restores an ally to full HP (capped at maxHp)", () => {
 test("Heal on full-HP ally is a no-op (still consumes the spell)", () => {
   // Intentional: the user spent the card; they don't get to take it
   // back if they over-heal. Match the items/Potion contract.
-  const ally = pokemon(103, { hp: 8 });
+  const ally = creature(103, { hp: 8 });
   const state = makeMatch({ playerHand: [HEAL] });
   placeAlly(state, 0, ally, 8);
   const r = playCard(state, "player", 0, { spellTarget: 0 });
@@ -252,7 +252,7 @@ test("Heal rejects an empty ally slot", () => {
 // --- DEFENDER --------------------------------------------------------
 
 test("Defender boosts max HP and marks the instance as a Defender", () => {
-  const ally = pokemon(104, { hp: 8 });
+  const ally = creature(104, { hp: 8 });
   const state = makeMatch({ playerHand: [DEFENDER] });
   placeAlly(state, 0, ally, 8);
   const r = playCard(state, "player", 0, { spellTarget: 0 });
@@ -267,9 +267,9 @@ test("Defender pulls aggro — opponents must attack the Defender first", () => 
   // Two allies on the field. Spell-mark the second one as Defender.
   // Enemy tries to attack the unmarked one (slot 0) → engine refuses
   // with "must attack Guardian" reason.
-  const decoyAlly = pokemon(105, { hp: 6, atk: 3 });
-  const defAlly   = pokemon(106, { hp: 6, atk: 3 });
-  const enemy     = pokemon(107, { hp: 6, atk: 3 });
+  const decoyAlly = creature(105, { hp: 6, atk: 3 });
+  const defAlly   = creature(106, { hp: 6, atk: 3 });
+  const enemy     = creature(107, { hp: 6, atk: 3 });
   const state = makeMatch({ playerHand: [DEFENDER], aiField: [enemy] });
   placeAlly(state, 0, decoyAlly);
   placeAlly(state, 1, defAlly);
@@ -290,7 +290,7 @@ test("Defender pulls aggro — opponents must attack the Defender first", () => 
 // --- EVOLVE ----------------------------------------------------------
 
 test("Evolve multiplies max HP by 1.5 and adds attack boost (≥ +1)", () => {
-  const ally = pokemon(108, { hp: 8, atk: 4 });
+  const ally = creature(108, { hp: 8, atk: 4 });
   const state = makeMatch({ playerHand: [EVOLVE], playerEnergy: 5 });
   placeAlly(state, 0, ally, 8);
   const r = playCard(state, "player", 0, { spellTarget: 0 });
@@ -304,8 +304,8 @@ test("Evolve multiplies max HP by 1.5 and adds attack boost (≥ +1)", () => {
 test("Evolve heals proportionally (not just maxHp bump on paper)", () => {
   // If a 5/10 ally evolves to maxHp 15, currentHp should go to 10 — they
   // GAIN the hp delta (15-10 = +5). Avoids the bug where "max +50%"
-  // looks great on paper but the pokémon stays low-HP.
-  const ally = pokemon(109, { hp: 10, atk: 4 });
+  // looks great on paper but the creature stays low-HP.
+  const ally = creature(109, { hp: 10, atk: 4 });
   const state = makeMatch({ playerHand: [EVOLVE], playerEnergy: 5 });
   placeAlly(state, 0, ally, 5);
   playCard(state, "player", 0, { spellTarget: 0 });
@@ -317,9 +317,9 @@ test("Evolve heals proportionally (not just maxHp bump on paper)", () => {
 // --- AOE -------------------------------------------------------------
 
 test("AOE deals damage to every enemy on the field", () => {
-  const e1 = pokemon(120, { hp: 10 });
-  const e2 = pokemon(121, { hp: 10 });
-  const e3 = pokemon(122, { hp: 10 });
+  const e1 = creature(120, { hp: 10 });
+  const e2 = creature(121, { hp: 10 });
+  const e3 = creature(122, { hp: 10 });
   const state = makeMatch({ playerHand: [AOE], aiField: [e1, e2, e3], playerEnergy: 5 });
   const r = playCard(state, "player", 0, {});
   assert.equal(r.ok, true);
@@ -331,8 +331,8 @@ test("AOE deals damage to every enemy on the field", () => {
 });
 
 test("AOE KO's low-HP enemies and pushes their cards to discard", () => {
-  const lowHp = pokemon(123, { hp: 2 }); // ≤ AOE damage (4)
-  const tank  = pokemon(124, { hp: 10 });
+  const lowHp = creature(123, { hp: 2 }); // ≤ AOE damage (4)
+  const tank  = creature(124, { hp: 10 });
   const state = makeMatch({ playerHand: [AOE], aiField: [lowHp, tank], playerEnergy: 5 });
   const r = playCard(state, "player", 0, {});
   assert.equal(r.ok, true);
@@ -354,7 +354,7 @@ test("AOE on an empty enemy board is refused (no wasted card)", () => {
 test("AOE doesn't need a target slot (target = none)", () => {
   // Sanity check: passing a spellTarget to AOE should be ignored, not
   // rejected. The catalog says target=none.
-  const e = pokemon(125, { hp: 10 });
+  const e = creature(125, { hp: 10 });
   const state = makeMatch({ playerHand: [AOE], aiField: [e], playerEnergy: 5 });
   const r = playCard(state, "player", 0, { spellTarget: 999 }); // bogus
   assert.equal(r.ok, true);
@@ -375,7 +375,7 @@ const PHOENIX      = spellToCard(SPELL_CARDS.find((s) => s.effect === "phoenix")
 // --- BOLT ------------------------------------------------------------
 
 test("Bolt deals direct 5 damage to one enemy (bypasses combat math)", () => {
-  const enemy = pokemon(200, { hp: 8, atk: 1 });
+  const enemy = creature(200, { hp: 8, atk: 1 });
   const state = makeMatch({ playerHand: [BOLT], aiField: [enemy], playerEnergy: 5 });
   const r = playCard(state, "player", 0, { spellTarget: 0 });
   assert.equal(r.ok, true);
@@ -384,7 +384,7 @@ test("Bolt deals direct 5 damage to one enemy (bypasses combat math)", () => {
 });
 
 test("Bolt KO's enemies at ≤5 HP and moves them to discard", () => {
-  const lowHpEnemy = pokemon(201, { hp: 4 });
+  const lowHpEnemy = creature(201, { hp: 4 });
   const state = makeMatch({ playerHand: [BOLT], aiField: [lowHpEnemy], playerEnergy: 5 });
   const r = playCard(state, "player", 0, { spellTarget: 0 });
   assert.equal(r.ok, true);
@@ -402,20 +402,20 @@ test("Bolt rejects an empty slot target", () => {
 // --- SLEEP POWDER ----------------------------------------------------
 
 test("Sleep Powder applies sleep status for 2 turns (longer than Freeze)", () => {
-  const enemy = pokemon(210);
+  const enemy = creature(210);
   const state = makeMatch({ playerHand: [SLEEP_POWDER], aiField: [enemy], playerEnergy: 3 });
   const r = playCard(state, "player", 0, { spellTarget: 0 });
   assert.equal(r.ok, true);
   const t = state.players.ai.field[0];
   assert.equal(t.status.kind, "sleep");
   assert.equal(t.status.turnsLeft, 2);
-  assert.ok(isLockedOut(t), "sleeping pokémon locked out same as freeze");
+  assert.ok(isLockedOut(t), "sleeping creature locked out same as freeze");
 });
 
 // --- CLEANSE ---------------------------------------------------------
 
 test("Cleanse removes any status effect from one ally", () => {
-  const ally = pokemon(220);
+  const ally = creature(220);
   const state = makeMatch({ playerHand: [CLEANSE], playerEnergy: 3 });
   placeAlly(state, 0, ally, 5);
   // Pre-apply a freeze status — Cleanse should clear it.
@@ -427,7 +427,7 @@ test("Cleanse removes any status effect from one ally", () => {
 });
 
 test("Cleanse on a status-free ally still consumes the card", () => {
-  const ally = pokemon(221);
+  const ally = creature(221);
   const state = makeMatch({ playerHand: [CLEANSE], playerEnergy: 3 });
   placeAlly(state, 0, ally);
   const r = playCard(state, "player", 0, { spellTarget: 0 });
@@ -459,7 +459,7 @@ test("Surge respects max energy cap (no overflow)", () => {
 // --- SCOUT -----------------------------------------------------------
 
 test("Scout draws 2 cards from the deck into hand", () => {
-  const deckCards = [pokemon(230), pokemon(231), pokemon(232)];
+  const deckCards = [creature(230), creature(231), creature(232)];
   const state = makeMatch({ playerHand: [SCOUT], playerEnergy: 3 });
   state.players.player.deck = deckCards;
   const r = playCard(state, "player", 0);
@@ -471,7 +471,7 @@ test("Scout draws 2 cards from the deck into hand", () => {
 
 test("Scout draws fewer cards if deck runs out", () => {
   const state = makeMatch({ playerHand: [SCOUT], playerEnergy: 3 });
-  state.players.player.deck = [pokemon(240)];
+  state.players.player.deck = [creature(240)];
   const r = playCard(state, "player", 0);
   assert.equal(r.ok, true);
   assert.equal(r.drew, 1);
@@ -492,8 +492,8 @@ test("Scout fails cleanly when deck is empty AND hand is full", () => {
 
 // --- PHOENIX ---------------------------------------------------------
 
-test("Phoenix revives the most-recently-fainted Pokémon to an empty slot at full HP", () => {
-  const fallen = pokemon(250, { hp: 12, atk: 5 });
+test("Phoenix revives the most-recently-fainted creature to an empty slot at full HP", () => {
+  const fallen = creature(250, { hp: 12, atk: 5 });
   const state = makeMatch({ playerHand: [PHOENIX], playerEnergy: 5 });
   state.players.player.discard = [fallen];
   const r = playCard(state, "player", 0);
@@ -502,31 +502,31 @@ test("Phoenix revives the most-recently-fainted Pokémon to an empty slot at ful
   assert.ok(revived);
   assert.equal(revived.card.id, 250);
   assert.equal(revived.currentHp, revived.maxHp, "revived at full HP");
-  // The fallen Pokémon was lifted out of discard. The Phoenix card
+  // The fallen creature was lifted out of discard. The Phoenix card
   // itself then lands in discard via consumeSpell — so the discard
   // length is back to 1, but it's the spell card now, not the
-  // Pokémon. Check the contents, not the length.
+  // creature. Check the contents, not the length.
   assert.ok(!state.players.player.discard.some((c) => c.id === 250),
-    "fallen Pokémon should be lifted out of discard");
+    "fallen creature should be lifted out of discard");
   assert.ok(state.players.player.discard.some((c) => c.kind === "spell" && c.effect === "phoenix"),
     "the spent Phoenix card lands in discard");
 });
 
-test("Phoenix skips spell cards in discard — only revives Pokémon", () => {
-  const fallenPoke = pokemon(251);
+test("Phoenix skips spell cards in discard — only revives creature", () => {
+  const fallenPoke = creature(251);
   const spellInDiscard = { id: 99001, kind: "spell", name: "OldFreeze", effect: "freeze" };
   const state = makeMatch({ playerHand: [PHOENIX], playerEnergy: 5 });
   state.players.player.discard = [fallenPoke, spellInDiscard]; // spell is "more recent"
   const r = playCard(state, "player", 0);
   assert.equal(r.ok, true);
-  // The Pokémon was revived (not the spell).
+  // The creature was revived (not the spell).
   const revived = state.players.player.field.find((s) => s !== null);
   assert.equal(revived.card.id, 251);
   // Spell stays in discard untouched.
   assert.ok(state.players.player.discard.some((c) => c.id === 99001));
 });
 
-test("Phoenix fails when there are no fainted Pokémon", () => {
+test("Phoenix fails when there are no fainted creature", () => {
   const state = makeMatch({ playerHand: [PHOENIX], playerEnergy: 5 });
   state.players.player.discard = [];
   const r = playCard(state, "player", 0);
@@ -536,23 +536,23 @@ test("Phoenix fails when there are no fainted Pokémon", () => {
 
 test("Phoenix fails when the field is full (no room to revive)", () => {
   const state = makeMatch({ playerHand: [PHOENIX], playerEnergy: 5 });
-  state.players.player.discard = [pokemon(260)];
+  state.players.player.discard = [creature(260)];
   // Fill the field.
-  for (let i = 0; i < 5; i++) placeAlly(state, i, pokemon(261 + i));
+  for (let i = 0; i < 5; i++) placeAlly(state, i, creature(261 + i));
   const r = playCard(state, "player", 0);
   assert.equal(r.ok, false);
   assert.match(r.reason, /field is full/i);
 });
 
-test("Revived Pokémon comes back with summoning sickness (no instant attack)", () => {
+test("Revived creature comes back with summoning sickness (no instant attack)", () => {
   // Phoenix shouldn't snowball into "revive + attack same turn" combos.
-  const fallen = pokemon(270);
+  const fallen = creature(270);
   const state = makeMatch({ playerHand: [PHOENIX], playerEnergy: 5 });
   state.players.player.discard = [fallen];
   const r = playCard(state, "player", 0);
   assert.equal(r.ok, true);
   const revived = state.players.player.field.find((s) => s !== null);
-  assert.equal(revived.summoningSickness, true, "newly-revived Pokémon must wait a turn");
+  assert.equal(revived.summoningSickness, true, "newly-revived creature must wait a turn");
 });
 
 // =====================================================================
@@ -569,7 +569,7 @@ const STOP_TIME    = spellToCard(SPELL_CARDS.find((s) => s.effect === "stop-time
 // --- BURN ------------------------------------------------------------
 
 test("Burn applies burn status to one enemy for the designed turn count", () => {
-  const enemy = pokemon(300, { hp: 12 });
+  const enemy = creature(300, { hp: 12 });
   const state = makeMatch({ playerHand: [BURN], aiField: [enemy], playerEnergy: 3 });
   const r = playCard(state, "player", 0, { spellTarget: 0 });
   assert.equal(r.ok, true);
@@ -582,8 +582,8 @@ test("Burn applies burn status to one enemy for the designed turn count", () => 
 
 test("Shield marks an ally; the next incoming attack does 0 damage", () => {
   // Set up: AI attacker, player defender with shield.
-  const aiAttacker = pokemon(310, { atk: 8, hp: 10 });
-  const playerDef  = pokemon(311, { hp: 10 });
+  const aiAttacker = creature(310, { atk: 8, hp: 10 });
+  const playerDef  = creature(311, { hp: 10 });
   const state = makeMatch({ playerHand: [SHIELD], playerEnergy: 3 });
   placeAlly(state, 0, playerDef, 10);
   state.players.ai.field[0] = makeInst(aiAttacker);
@@ -606,8 +606,8 @@ test("Shield marks an ally; the next incoming attack does 0 damage", () => {
 });
 
 test("Shield only absorbs ONE attack — second attack lands normally", () => {
-  const aiAttacker = pokemon(312, { atk: 5, hp: 10 });
-  const playerDef  = pokemon(313, { hp: 20 });
+  const aiAttacker = creature(312, { atk: 5, hp: 10 });
+  const playerDef  = creature(313, { hp: 20 });
   const state = makeMatch({ playerHand: [SHIELD], playerEnergy: 3 });
   placeAlly(state, 0, playerDef, 20);
   state.players.ai.field[0] = makeInst(aiAttacker);
@@ -626,8 +626,8 @@ test("Shield only absorbs ONE attack — second attack lands normally", () => {
 // --- MASS HEAL -------------------------------------------------------
 
 test("Mass Heal restores HP to every ally on field (capped at max)", () => {
-  const a1 = pokemon(320, { hp: 10 });
-  const a2 = pokemon(321, { hp: 8 });
+  const a1 = creature(320, { hp: 10 });
+  const a2 = creature(321, { hp: 8 });
   const state = makeMatch({ playerHand: [MASS_HEAL], playerEnergy: 5 });
   placeAlly(state, 0, a1, 3);
   placeAlly(state, 1, a2, 1);
@@ -650,8 +650,8 @@ test("Mass Heal refuses when no allies are on the field", () => {
 // --- POWER STRIKE ----------------------------------------------------
 
 test("Power Strike marks ally; next attack hits for +bonus damage", () => {
-  const aiVictim = pokemon(330, { hp: 30 });
-  const myHitter = pokemon(331, { atk: 4, hp: 10 });
+  const aiVictim = creature(330, { hp: 30 });
+  const myHitter = creature(331, { atk: 4, hp: 10 });
   const state = makeMatch({ playerHand: [POWER_STRIKE], playerEnergy: 3 });
   placeAlly(state, 0, myHitter);
   state.players.ai.field[0] = makeInst(aiVictim);
@@ -675,8 +675,8 @@ test("Power Strike marks ally; next attack hits for +bonus damage", () => {
 // --- COUNTER ---------------------------------------------------------
 
 test("Counter reflects the next attack's damage back at the attacker", () => {
-  const aiAttacker = pokemon(340, { atk: 6, hp: 15 });
-  const myDefender = pokemon(341, { hp: 15 });
+  const aiAttacker = creature(340, { atk: 6, hp: 15 });
+  const myDefender = creature(341, { hp: 15 });
   const state = makeMatch({ playerHand: [COUNTER], playerEnergy: 3 });
   placeAlly(state, 0, myDefender);
   state.players.ai.field[0] = makeInst(aiAttacker);
@@ -705,7 +705,7 @@ test("Counter reflects the next attack's damage back at the attacker", () => {
 // --- STOP TIME -------------------------------------------------------
 
 test("Stop Time sets a skipNextTurn flag on the opposing player", () => {
-  const oppMon = pokemon(350);
+  const oppMon = creature(350);
   const state = makeMatch({ playerHand: [STOP_TIME], playerEnergy: 5 });
   state.players.ai.field[0] = makeInst(oppMon);
   const r = playCard(state, "player", 0);
@@ -721,12 +721,12 @@ test("Stop Time sets a skipNextTurn flag on the opposing player", () => {
 
 test("Stop Time: endTurn keeps the activePlayer on the caster after consuming the skip flag", async () => {
   const { playCard, endTurn } = await import("../client/js/game.js");
-  const e = pokemon(500, { hp: 12 });
+  const e = creature(500, { hp: 12 });
   const state = makeMatch({ playerHand: [STOP_TIME], playerEnergy: 6 });
   state.players.ai.field[0] = makeInst(e);
-  // Also need a player Pokémon on field so endTurn doesn't trigger
+  // Also need a player creature on field so endTurn doesn't trigger
   // the "no cards left" loss path.
-  placeAlly(state, 0, pokemon(501));
+  placeAlly(state, 0, creature(501));
 
   // Cast Stop Time — sets skipNextTurn on AI.
   const r = playCard(state, "player", 0);
@@ -768,12 +768,12 @@ test("aiTakeTurn no-ops on endTurn when control is no longer the AI's", async ()
     turn: 5, activePlayer: "ai", phase: "main", winner: null, log: [],
     players: {
       player: {
-        name: "P", ability: "brock", trainerHp: 30, maxTrainerHp: 30,
+        name: "P", ability: "brock", championHp: 30, maxChampionHp: 30,
         energy: 5, maxEnergy: 10, deck: [], hand: [],
         field: Array(FS).fill(null), discard: [],
       },
       ai: {
-        name: "AI", ability: "brock", trainerHp: 30, maxTrainerHp: 30,
+        name: "AI", ability: "brock", championHp: 30, maxChampionHp: 30,
         energy: 5, maxEnergy: 10, deck: [], hand: [],
         field: Array(FS).fill(null), discard: [],
       },

@@ -16,13 +16,13 @@ async function main() {
   page.on("pageerror", (err) => console.error("pageerror:", err.message));
 
   await page.goto(BASE, { waitUntil: "networkidle" });
-  await page.waitForSelector(".trainer-card");
+  await page.waitForSelector(".champion-card");
   // Let the holo sheen animation reach a flattering frame.
   await page.waitForTimeout(800);
   await page.screenshot({ path: path.join(OUT, "menu.png"), fullPage: false });
   console.log("✓ menu.png");
 
-  await page.click(".trainer-card");
+  await page.click(".champion-card");
   await page.waitForTimeout(200);
   await page.click("#start-btn");
   try { await page.waitForSelector(".mulligan-confirm", { timeout: 12000 }); await page.click(".mulligan-confirm"); } catch {}
@@ -48,7 +48,7 @@ async function main() {
   await page.waitForTimeout(300);
 
   // Turn 2: try another card if we can, then click our first attacker and
-  // attempt to attack either the enemy card or the trainer face.
+  // attempt to attack either the enemy card or the champion face.
   const stillPlayable = await page.$$(".card.type-:not(.unplayable)");
   // Click our field card to "select" it
   const myField = await page.$$(".player-field .field-slot .card");
@@ -58,12 +58,12 @@ async function main() {
     await page.screenshot({ path: path.join(OUT, "arena-attacker-selected.png") });
     console.log("✓ arena-attacker-selected.png");
 
-    // Try to click an AI card; if none, click the AI trainer block.
+    // Try to click an AI card; if none, click the AI champion block.
     const enemy = await page.$$(".ai-field .field-slot .card");
     if (enemy.length > 0) {
       await enemy[0].click();
     } else {
-      await page.click(".trainer-block.ai");
+      await page.click(".champion-block.ai");
     }
     // Capture mid-FX
     await page.waitForTimeout(450);

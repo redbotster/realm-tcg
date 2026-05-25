@@ -144,7 +144,7 @@ test("Type Storm (fire): fire attackers get +2 ATK, others unaffected", () => {
 test("Last Stand: comeback fires at 40% HP instead of 25%", () => {
   const s = createGame({ playerDeck: deck(30), aiDeck: deck(30), firstPlayer: "player" });
   // 35% HP — between 25% and 40%
-  s.players.player.trainerHp = Math.round(s.players.player.maxTrainerHp * 0.35);
+  s.players.player.championHp = Math.round(s.players.player.maxChampionHp * 0.35);
   // Without modifier: no discount (above 25%).
   const cardCost4 = { ...s.players.player.hand[0], energyCost: 4 };
   assert.equal(effectiveCost(s.players.player, cardCost4), 4, "no discount baseline");

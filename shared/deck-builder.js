@@ -4,7 +4,7 @@
 // JSON to the browser. Phase 3 will likely import this from socket handlers
 // as well, hence the `shared/` location.
 //
-// Card stats are derived from the raw Pokémon stats per spec:
+// Card stats are derived from the raw creature stats per spec:
 //   cardHp     = round(hp / 10)
 //   cardAttack = round((attack + sp_attack) / 30)
 //   tier from BST → energy cost
@@ -22,7 +22,7 @@ function tierFromBst(bst) {
   return TIERS[TIERS.length - 1];
 }
 
-// Player-facing rarity ladder. Every Pokémon classifies into exactly one
+// Player-facing rarity ladder. Every creature classifies into exactly one
 // of these — derived from the BST-based tier, plus the is_legendary /
 // is_mythical flags. This is the single source of truth for "how rare
 // is this card", used by drops, the collection UI, and the reward modal.
@@ -65,7 +65,7 @@ function toCard(row) {
     is_legendary: !!row.is_legendary,
     is_mythical: !!row.is_mythical,
     abilities: Array.isArray(row.abilities) ? row.abilities : [],
-    // raw stats (kept for trainer abilities + Phase 3 server validation)
+    // raw stats (kept for champion abilities + Phase 3 server validation)
     raw: {
       hp: row.hp,
       attack: row.attack,
@@ -87,7 +87,7 @@ function toCard(row) {
       ),
     ),
   };
-  // Every Pokémon ships with an explicit rarity so the drop / UI layers
+  // Every creature ships with an explicit rarity so the drop / UI layers
   // don't have to recompute it. Driven by BST tier + the legendary flags.
   card.rarity = rarityForCard(card);
   return card;
@@ -122,38 +122,38 @@ function pickOne(arr, rand) {
   return arr[Math.floor(rand() * arr.length)];
 }
 
-// Target distribution per 30-card Pokémon section.
+// Target distribution per 30-card creature section.
 const DEFAULT_DIST = { 1: 10, 2: 10, 3: 6, 4: 3, 5: 1 };
 
 // Default spell-card count appended to every deck. 10 spells in a
 // 40-card deck = ~25% chance per draw, enough disruption to feel
-// constantly available without crowding out the Pokémon mix.
+// constantly available without crowding out the creature mix.
 const DEFAULT_SPELL_COUNT = 10;
 
-// Build a 40-card deck: 30 Pokémon + 10 spell cards.
+// Build a 40-card deck: 30 creature + 10 spell cards.
 //
-// Pokémon section:
+// creature section:
 //   - mix of tiers per `distribution` (default DEFAULT_DIST)
-//   - no more than 2 copies of any single Pokémon (by id)
+//   - no more than 2 copies of any single creature (by id)
 //   - if a tier doesn't have enough variety we fall back to neighbouring tiers
 //
 // Spell section:
 //   - `spellCount` cards drawn from cards with kind === "spell"
 //   - sampled with replacement (10 of the same spell is allowed — slice 1
-//     only ships Freeze, so a deck during slice 1 is 30 Pokémon + 10 Freeze)
-//   - silently no-ops if the pokedex contains no spells (e.g. tests that
-//     use a synth dex of Pokémon only)
-function buildDeck(pokedex, { seed, distribution = DEFAULT_DIST, spellCount = DEFAULT_SPELL_COUNT } = {}) {
+//     only ships Freeze, so a deck during slice 1 is 30 creature + 10 Freeze)
+//   - silently no-ops if the bestiary contains no spells (e.g. tests that
+//     use a synth dex of creature only)
+function buildDeck(bestiary, { seed, distribution = DEFAULT_DIST, spellCount = DEFAULT_SPELL_COUNT } = {}) {
   const rand = rng(seed);
 
-  // Split pokedex into Pokémon (no kind, or kind="pokemon") and spells.
-  // The 30-slot Pokémon section must never accidentally include a spell.
-  const pokemonPool = pokedex.filter((c) => c.kind !== "spell");
-  const spellPool   = pokedex.filter((c) => c.kind === "spell");
+  // Split bestiary into creature (no kind, or kind="creature") and spells.
+  // The 30-slot creature section must never accidentally include a spell.
+  const creaturePool = bestiary.filter((c) => c.kind !== "spell");
+  const spellPool   = bestiary.filter((c) => c.kind === "spell");
 
-  // Bucket by tier — Pokémon only.
+  // Bucket by tier — creature only.
   const byTier = new Map();
-  for (const c of pokemonPool) {
+  for (const c of creaturePool) {
     if (!byTier.has(c.tier)) byTier.set(c.tier, []);
     byTier.get(c.tier).push(c);
   }

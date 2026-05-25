@@ -1,7 +1,7 @@
 const { chromium, devices } = require("playwright");
 const fs = require("fs");
 const path = require("path");
-const BASE = process.argv[2] || "https://pokemon-tcg-five-lime.vercel.app";
+const BASE = process.argv[2] || "https://creature-tcg-five-lime.vercel.app";
 const OUT = "/tmp/pkmn-screens";
 fs.mkdirSync(OUT, { recursive: true });
 (async () => {
@@ -16,7 +16,7 @@ fs.mkdirSync(OUT, { recursive: true });
   });
   const page = await ctx.newPage();
   await page.goto(BASE, { waitUntil: "domcontentloaded" });
-  await page.waitForSelector(".trainer-card");
+  await page.waitForSelector(".champion-card");
   await page.waitForTimeout(600);
   await page.screenshot({ path: path.join(OUT, "mobile-landscape-top.png") });
   // Scroll down to verify we can reach Start
@@ -33,7 +33,7 @@ fs.mkdirSync(OUT, { recursive: true });
   });
   const pp = await portraitCtx.newPage();
   await pp.goto(BASE, { waitUntil: "domcontentloaded" });
-  await pp.waitForSelector(".trainer-card");
+  await pp.waitForSelector(".champion-card");
   await pp.waitForTimeout(600);
   await pp.screenshot({ path: path.join(OUT, "mobile-portrait.png"), fullPage: true });
 

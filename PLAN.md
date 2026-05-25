@@ -1,4 +1,4 @@
-# pokemon-tcg — Plan toward 1M users (Pokémon kept as IP)
+# creature-tcg — Plan toward 1M users (creature kept as IP)
 
 **North Star (every phase exits against these):**
 - D1 retention ≥ 40%
@@ -10,7 +10,7 @@ exit. Anything that doesn't move D1, K, or time-to-first-win gets cut
 or deferred.
 
 **Confirmed scope:** the game stays a trading card game. **The IP
-rebrand is deferred for now** — Pokémon stays as the working IP. A
+rebrand is deferred for now** — creature stays as the working IP. A
 rebrand to original creatures will eventually happen; the registry
 layer (`client/js/registry.js`) is already in place so that swap is
 a one-flag flip when the time comes. The 1M number is the quality
@@ -18,7 +18,7 @@ bar we're building toward.
 
 ## Phase 1 decisions (approved 2026-05-17)
 
-1. **Art direction:** Pokémon stays. Cursed-cute remains the option
+1. **Art direction:** creature stays. Cursed-cute remains the option
    for a future flip if circumstances change; registry.js is in place
    to make that swap one-flag if it ever happens.
 2. **Analytics:** Vercel Analytics (zero-config). Free pageviews +
@@ -85,7 +85,7 @@ Exit: K-factor ≥ 0.3.
 - **Battle-pass-style 30-day seasons (free).** Themed cosmetic unlocks.
 - **Async PvP.** Snapshot every signed-in user's last 3 decks nightly;
   serve them as headless AI when no live player is queued.
-- **Comeback mechanic.** Below 25% trainer HP, your next card play
+- **Comeback mechanic.** Below 25% champion HP, your next card play
   costs −1 energy.
 - **Match-length governor.** Escalating fatigue past turn 12,
   shrinking max-field-size past turn 18. Target 2.5–4 min average.

@@ -18,7 +18,7 @@ let _decks = [];               // [{id, name, card_ids[], is_active}]
 let _activeDeckId = null;      // id of the user's currently-active deck (used in matches)
 let _editingDeckId = null;     // id of the deck the user is currently editing (or null = new)
 let _editingDeckName = "Main Deck";
-let _editorIds = [];           // current draft as a flat list of pokemon ids
+let _editorIds = [];           // current draft as a flat list of creature ids
 let _filter = { type: "all", tier: "all", search: "" };
 
 export async function open({ onClose }) {
@@ -74,7 +74,7 @@ async function shareDeckCode() {
     }
     // Best-effort native share too.
     if (navigator.share) {
-      navigator.share({ title: "My Pokémon TCG deck", url }).catch(() => {});
+      navigator.share({ title: "My creature TCG deck", url }).catch(() => {});
     }
   } catch (err) {
     alert("Couldn't build a deck code: " + (err.message || "unknown"));
@@ -198,7 +198,7 @@ function render() {
 
         <aside class="cb-deck">
           ${_decks.length > 3 ? `
-            <input type="search" class="cb-deck-search" placeholder="Search decks by name or Pokémon…" autocomplete="off">
+            <input type="search" class="cb-deck-search" placeholder="Search decks by name or creature…" autocomplete="off">
           ` : ""}
           <div class="cb-deck-switcher">
             <select class="cb-deck-select">
@@ -342,7 +342,7 @@ function render() {
   });
   overlay.querySelector(".cb-deck-delete")?.addEventListener("click", deleteCurrentDeck);
   // Deck search — filters the deck-select dropdown by deck name OR
-  // contained Pokémon name/type. Live filter via hidden options so
+  // contained creature name/type. Live filter via hidden options so
   // there's no full re-render mid-typing.
   const searchEl = overlay.querySelector(".cb-deck-search");
   if (searchEl) {
@@ -470,7 +470,7 @@ const PRESETS = [
     pref: (c) => 10 + Math.random() * 5,
   },
   {
-    id: "tank", label: "🛡 Defender", hint: "Steel / rock walls, plus tank Pokémon.",
+    id: "tank", label: "🛡 Defender", hint: "Steel / rock walls, plus tank creature.",
     pref: (c) => {
       const t = c.types || [];
       let s = 0;

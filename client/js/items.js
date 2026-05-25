@@ -8,7 +8,7 @@ export const ITEM_DEFS = {
   potion: {
     id: "potion",
     name: "Potion",
-    desc: "Heal one of your Pokémon for 4 HP.",
+    desc: "Heal one of your creature for 4 HP.",
     icon: "🧪",
     cost: 1,
     target: "ownField",
@@ -24,7 +24,7 @@ export const ITEM_DEFS = {
   switch: {
     id: "switch",
     name: "Switch",
-    desc: "Recall one of your Pokémon back to your hand.",
+    desc: "Recall one of your creature back to your hand.",
     icon: "🔄",
     cost: 0,
     target: "ownField",
@@ -32,7 +32,7 @@ export const ITEM_DEFS = {
   revive: {
     id: "revive",
     name: "Revive",
-    desc: "Bring back your most recently KO'd Pokémon at 50% HP.",
+    desc: "Bring back your most recently KO'd creature at 50% HP.",
     icon: "✨",
     cost: 3,
     target: "none",
@@ -81,7 +81,7 @@ export function useItem(state, side, itemId, target) {
   switch (itemId) {
     case "potion": {
       const inst = p.field[target];
-      if (!inst) return { ok: false, reason: "Pick a Pokémon" };
+      if (!inst) return { ok: false, reason: "Pick a creature" };
       const before = inst.currentHp;
       const cap = inst.maxHp ?? inst.card.cardHp;
       inst.currentHp = Math.min(cap, inst.currentHp + 4);
@@ -99,7 +99,7 @@ export function useItem(state, side, itemId, target) {
     }
     case "switch": {
       const inst = p.field[target];
-      if (!inst) return { ok: false, reason: "Pick a Pokémon" };
+      if (!inst) return { ok: false, reason: "Pick a creature" };
       p.field[target] = null;
       p.hand.push(inst.card);
       result.recalled = inst.card.name;
@@ -108,9 +108,9 @@ export function useItem(state, side, itemId, target) {
       break;
     }
     case "revive": {
-      // Bring back the most-recently-discarded Pokémon at 50% max HP.
+      // Bring back the most-recently-discarded creature at 50% max HP.
       const lastIdx = p.discard.length - 1;
-      if (lastIdx < 0) return { ok: false, reason: "No Pokémon to revive" };
+      if (lastIdx < 0) return { ok: false, reason: "No creature to revive" };
       const emptyIdx = p.field.findIndex((s) => s == null);
       if (emptyIdx < 0) return { ok: false, reason: "Field is full" };
       const card = p.discard.pop();

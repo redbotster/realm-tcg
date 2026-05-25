@@ -42,11 +42,11 @@ async function ensureOwnsAll(supabase, userId, cardIds) {
   const uniqueIds = [...counts.keys()];
   const { data: owned, error } = await supabase
     .from("owned_cards")
-    .select("pokemon_id, quantity")
+    .select("creature_id, quantity")
     .eq("user_id", userId)
-    .in("pokemon_id", uniqueIds);
+    .in("creature_id", uniqueIds);
   if (error) throw new Error(error.message);
-  const ownedMap = new Map(owned.map((o) => [o.pokemon_id, o.quantity]));
+  const ownedMap = new Map(owned.map((o) => [o.creature_id, o.quantity]));
   for (const [id, n] of counts) {
     const haveQty = ownedMap.get(id) || 0;
     if (haveQty < n) {
@@ -57,17 +57,17 @@ async function ensureOwnsAll(supabase, userId, cardIds) {
 }
 
 function mount(app, supabase) {
-  // GET /me/collection — joined with pokemon table for display
+  // GET /me/collection — joined with creature table for display
   app.get("/me/collection", async (req, res) => {
     if (!requireAuth(req, res)) return;
     const { data, error } = await supabase
       .from("owned_cards")
-      .select("pokemon_id, quantity, shiny_level, acquired_at, pokemon:pokemon_id(*)")
+      .select("creature_id, quantity, shiny_level, acquired_at, creature:creature_id(*)")
       .eq("user_id", req.user.id)
       .order("acquired_at", { ascending: false });
     if (error) return res.status(500).json({ error: error.message });
     const cards = data.map((row) => ({
-      ...toCard(row.pokemon),
+      ...toCard(row.creature),
       quantity: row.quantity,
       shinyLevel: row.shiny_level || 0,
       acquired_at: row.acquired_at,
@@ -180,21 +180,21 @@ function mount(app, supabase) {
     res.json({ ok: true });
   });
 
-  // Pokédex completion view — minimal data per row so the grid stays fast.
-  app.get("/me/pokedex", async (req, res) => {
+  // Bestiary completion view — minimal data per row so the grid stays fast.
+  app.get("/me/bestiary", async (req, res) => {
     if (!requireAuth(req, res)) return;
     // All 1025 species in order (id, name, sprite, generation, types).
     const { data: all, error: e1 } = await supabase
-      .from("pokemon")
+      .from("bestiary")
       .select("id, name, sprite_front, generation, types, is_legendary, is_mythical")
       .order("id", { ascending: true });
     if (e1) return res.status(500).json({ error: e1.message });
     const { data: mine, error: e2 } = await supabase
       .from("owned_cards")
-      .select("pokemon_id, quantity, shiny_level")
+      .select("creature_id, quantity, shiny_level")
       .eq("user_id", req.user.id);
     if (e2) return res.status(500).json({ error: e2.message });
-    const owned = new Map((mine || []).map((r) => [r.pokemon_id, r]));
+    const owned = new Map((mine || []).map((r) => [r.creature_id, r]));
     const total = all.length;
     let ownedCount = 0;
     const rows = all.map((p) => {
@@ -218,16 +218,16 @@ function mount(app, supabase) {
   // Upgrade a card by consuming 3 duplicate copies — increments shiny_level.
   // Each shiny level grants +1 max HP and +1 attack when that card is
   // instantiated in a match (see engine instantiate()).
-  app.post("/me/cards/:pokemonId/upgrade", async (req, res) => {
+  app.post("/me/cards/:creatureId/upgrade", async (req, res) => {
     if (!requireAuth(req, res)) return;
-    const pokemonId = Number(req.params.pokemonId);
-    if (!Number.isInteger(pokemonId)) return res.status(400).json({ error: "bad id" });
+    const creatureId = Number(req.params.creatureId);
+    if (!Number.isInteger(creatureId)) return res.status(400).json({ error: "bad id" });
 
     const { data: row, error } = await supabase
       .from("owned_cards")
       .select("quantity, shiny_level")
       .eq("user_id", req.user.id)
-      .eq("pokemon_id", pokemonId)
+      .eq("creature_id", creatureId)
       .maybeSingle();
     if (error) return res.status(500).json({ error: error.message });
     if (!row) return res.status(404).json({ error: "You don't own this card." });
@@ -240,7 +240,7 @@ function mount(app, supabase) {
       .from("owned_cards")
       .update({ quantity: Math.max(1, newQty + 1), shiny_level: newShiny })
       .eq("user_id", req.user.id)
-      .eq("pokemon_id", pokemonId);
+      .eq("creature_id", creatureId);
     // We keep 1 instance of the upgraded card after consuming 3 → so newQty + 1
     if (upErr) return res.status(500).json({ error: upErr.message });
     res.json({ ok: true, shinyLevel: newShiny, quantity: Math.max(1, newQty + 1) });
@@ -263,13 +263,13 @@ function mount(app, supabase) {
 
     const uniqueIds = [...new Set(deck.card_ids)];
     const [{ data: rows, error: pErr }, { data: shinies }] = await Promise.all([
-      supabase.from("pokemon").select("*").in("id", uniqueIds),
-      supabase.from("owned_cards").select("pokemon_id, shiny_level")
-        .eq("user_id", req.user.id).in("pokemon_id", uniqueIds),
+      supabase.from("bestiary").select("*").in("id", uniqueIds),
+      supabase.from("owned_cards").select("creature_id, shiny_level")
+        .eq("user_id", req.user.id).in("creature_id", uniqueIds),
     ]);
     if (pErr) return res.status(500).json({ error: pErr.message });
     const byId = new Map(rows.map((r) => [r.id, toCard(r)]));
-    const shinyMap = new Map((shinies || []).map((s) => [s.pokemon_id, s.shiny_level || 0]));
+    const shinyMap = new Map((shinies || []).map((s) => [s.creature_id, s.shiny_level || 0]));
     const cards = deck.card_ids.map((id) => {
       const c = byId.get(id);
       if (!c) return null;
@@ -277,7 +277,7 @@ function mount(app, supabase) {
     }).filter(Boolean);
     // Append the standard 10-spell section so saved decks have parity
     // with random `/api/deck` draws. The decks table only stores
-    // Pokémon card_ids (size 30) — spells are added here at hydration
+    // creature card_ids (size 30) — spells are added here at hydration
     // time, sampled with replacement from the active spell catalog.
     const { allSpellCards } = require("../shared/spell-cards");
     const { DEFAULT_SPELL_COUNT } = require("../shared/deck-builder");

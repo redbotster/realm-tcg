@@ -19,10 +19,10 @@ test("every puzzle declares id, title, par, player, enemy", () => {
   }
 });
 
-test("every unit has pokemonId, hp, atk", () => {
+test("every unit has creatureId, hp, atk", () => {
   for (const p of PUZZLES) {
     for (const u of [...p.player, ...p.enemy]) {
-      assert.ok(u.pokemonId > 0, `${p.id} unit missing pokemonId`);
+      assert.ok(u.creatureId > 0, `${p.id} unit missing creatureId`);
       assert.ok(u.hp > 0, `${p.id} unit hp must be > 0`);
       assert.ok(u.atk > 0, `${p.id} unit atk must be > 0`);
     }

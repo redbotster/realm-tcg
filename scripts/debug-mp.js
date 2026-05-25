@@ -1,5 +1,5 @@
 const { chromium } = require("playwright");
-const path = "/Users/kevinjones/pokemon-game/pokemon-tcg";
+const path = "/Users/kevinjones/creature-game/creature-tcg";
 process.chdir(path);
 (async () => {
   const browser = await chromium.launch({ headless: true });
@@ -14,7 +14,7 @@ process.chdir(path);
   page.on("pageerror", (e) => console.log("[pageerror]", e.message));
   page.on("console", (m) => { if (m.type() === "error") console.log("[browser err]", m.text()); });
   page.on("response", (r) => { if (r.url().includes("/auth") || r.url().includes("/api/mp")) console.log("[resp]", r.status(), r.url()); });
-  await page.goto("https://pokemon-tcg-five-lime.vercel.app/", { waitUntil: "domcontentloaded" });
+  await page.goto("https://creature-tcg-five-lime.vercel.app/", { waitUntil: "domcontentloaded" });
   await page.waitForSelector("#account-register-btn", { timeout: 8000 });
   console.log("→ click register");
   await page.click("#account-register-btn");

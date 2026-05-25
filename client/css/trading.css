@@ -79,7 +79,7 @@
 .offer-card.status-accepted { border-color: rgba(6,214,160,0.4); }
 .offer-card.status-cancelled { border-color: rgba(255,150,150,0.3); }
 .offer-card.status-expired { border-color: rgba(150,150,150,0.2); }
-.offer-trainer {
+.offer-champion {
   font-size: 12px;
   opacity: 0.7;
   letter-spacing: 1px;

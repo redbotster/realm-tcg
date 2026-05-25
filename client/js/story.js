@@ -102,19 +102,19 @@ function renderHub(chapters, progress) {
     b.addEventListener("click", () => startChapter(b.dataset.chapter)));
 }
 
-// Speaker → Pokédex ID for portraits. Mirrors the map in reading-mode.js
+// Speaker → Bestiary ID for portraits. Mirrors the map in reading-mode.js
 // — kept separate so each module has zero cross-import for what's a
 // tiny static table.
-const INTRO_SPEAKER_TO_POKEMON_ID = {
+const INTRO_SPEAKER_TO_CREATURE_ID = {
   narrator: null,
   pikachu: 25, squirtle: 7, bulbasaur: 1, charmander: 4,
   caterpie: 10, pidgey: 16, weedle: 13,
   snorlax: 143, jigglypuff: 39, clefairy: 35,
   beedrill: 15, mewtwo: 150, onix: 95,
-  lance: null, // human trainer — show a generic glyph instead
+  lance: null, // human champion — show a generic glyph instead
 };
-const POKEMON_SPRITE_URL = (id) =>
-  `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`;
+const CREATURE_SPRITE_URL = (id) =>
+  `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/creature/other/official-artwork/${id}.png`;
 
 // Read-along chapter intro: section-by-section with Read Aloud TTS.
 // Kid-friendly fallback to the legacy line-by-line `intro` array if no
@@ -143,8 +143,8 @@ function playReadAlong(chapter) {
     const renderSection = () => {
       const sec = sections[idx];
       const speaker = sec.speaker || "narrator";
-      const pokeId = INTRO_SPEAKER_TO_POKEMON_ID[speaker];
-      const sprite = pokeId ? POKEMON_SPRITE_URL(pokeId) : null;
+      const pokeId = INTRO_SPEAKER_TO_CREATURE_ID[speaker];
+      const sprite = pokeId ? CREATURE_SPRITE_URL(pokeId) : null;
       const speakerName = speaker === "narrator" ? "Story" : speaker.charAt(0).toUpperCase() + speaker.slice(1);
       const hasAudio = !!sec.audioUrl;
       const audioBtnHtml = hasAudio

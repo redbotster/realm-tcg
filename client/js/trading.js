@@ -6,7 +6,7 @@ import { flashVerdict } from "./animations.js";
 let _stage = null;
 let _tab = "market"; // market | mine | create | history
 let _collection = []; // cached on first open
-let _pokedex = [];
+let _bestiary = [];
 
 function escape(s) {
   return String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;" })[c]);
@@ -34,7 +34,7 @@ export async function openTradeMarket({ currentUser } = {}) {
   _stage.innerHTML = `<div class="trade-loading">Loading market…</div>`;
   await Promise.all([
     loadCollection(),
-    loadPokedexCache(),
+    loadBestiaryCache(),
   ]);
   await renderTab();
 }
@@ -49,11 +49,11 @@ async function loadCollection() {
   } catch {}
 }
 
-async function loadPokedexCache() {
-  if (_pokedex.length) return;
+async function loadBestiaryCache() {
+  if (_bestiary.length) return;
   try {
-    const r = await fetch("/api/deck"); // returns 30 random cards w/ pokedex shape — not full dex
-    // Better: use a dedicated endpoint. /api/pokedex/full would be the right
+    const r = await fetch("/api/deck"); // returns 30 random cards w/ bestiary shape — not full dex
+    // Better: use a dedicated endpoint. /api/bestiary/full would be the right
     // hook; for now we lazily build via existing endpoints. Skipped for v1
     // since the trade UI shows specific offers and pulls card metadata
     // through the server's offer decorator anyway.
@@ -112,7 +112,7 @@ function offerCard(offer, ownedById) {
   const canAccept = wantedOwned >= 1;
   return `
     <div class="offer-card">
-      <div class="offer-trainer">${escape(offer.offererName || "Trainer")}</div>
+      <div class="offer-champion">${escape(offer.offererName || "Champion")}</div>
       <div class="offer-swap">
         ${cardTile(offer.offered, "Offers")}
         <div class="swap-arrow">↔</div>
@@ -173,7 +173,7 @@ async function renderCreate(body) {
       <div class="trade-step">
         <div class="trade-step-num">2</div>
         <div class="trade-step-content">
-          <div class="trade-step-title">Pokémon you want (search any of the 1,025)</div>
+          <div class="trade-step-title">creature you want (search any of the 1,025)</div>
           <input type="search" class="trade-want-search" placeholder="Name or # (e.g. Charizard or 6)…" />
           <div class="trade-pick-grid" id="want-pick"></div>
         </div>
@@ -210,11 +210,11 @@ async function renderCreate(body) {
   async function refreshWantGrid() {
     const q = wantInput.value.trim().toLowerCase();
     if (q.length < 2) {
-      wantGrid.innerHTML = `<div class="trade-hint">Type to search the Pokédex…</div>`;
+      wantGrid.innerHTML = `<div class="trade-hint">Type to search the Bestiary…</div>`;
       return;
     }
     try {
-      const r = await fetch(`/api/pokedex/search?q=${encodeURIComponent(q)}`);
+      const r = await fetch(`/api/bestiary/search?q=${encodeURIComponent(q)}`);
       if (!r.ok) { wantGrid.innerHTML = `<div class="trade-hint">Search unavailable.</div>`; return; }
       const { results } = await r.json();
       if (!results?.length) { wantGrid.innerHTML = `<div class="trade-hint">No matches.</div>`; return; }
@@ -244,7 +244,7 @@ async function renderCreate(body) {
     const r = await fetch("/me/trades", {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ offeredPokemonId: chosenOffer.id, wantedPokemonId: chosenWant.id }),
+      body: JSON.stringify({ offeredCreatureId: chosenOffer.id, wantedCreatureId: chosenWant.id }),
     });
     const data = await r.json();
     if (!r.ok) { flashVerdict(data.error || "Couldn't create offer.", "weak"); return; }
@@ -289,7 +289,7 @@ function mineCard(o) {
   const mins = Math.floor((remaining % 3600000) / 60000);
   return `
     <div class="offer-card mine">
-      <div class="offer-trainer">Your offer · expires in ${hours}h ${mins}m</div>
+      <div class="offer-champion">Your offer · expires in ${hours}h ${mins}m</div>
       <div class="offer-swap">
         ${cardTile(o.offered, "Offering")}
         <div class="swap-arrow">↔</div>
@@ -323,12 +323,12 @@ async function renderHistory(body) {
 }
 
 function historyCard(o) {
-  const label = o.status === "accepted" ? `✓ Swapped with ${escape(o.accepterName || "Trainer")}`
+  const label = o.status === "accepted" ? `✓ Swapped with ${escape(o.accepterName || "Champion")}`
               : o.status === "cancelled" ? "✕ Cancelled"
               : "⌛ Expired";
   return `
     <div class="offer-card history status-${o.status}">
-      <div class="offer-trainer">${label}</div>
+      <div class="offer-champion">${label}</div>
       <div class="offer-swap">
         ${cardTile(o.offered, "Offered")}
         <div class="swap-arrow">↔</div>

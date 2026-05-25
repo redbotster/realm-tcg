@@ -37,10 +37,10 @@ let _pollHandle = null;
 let _statusHandle = null;
 
 function playerId() {
-  let id = localStorage.getItem("pokemon-tcg-player-id");
+  let id = localStorage.getItem("creature-tcg-player-id");
   if (!id) {
     id = (crypto.randomUUID && crypto.randomUUID()) || `g-${Math.random().toString(36).slice(2)}-${Date.now()}`;
-    localStorage.setItem("pokemon-tcg-player-id", id);
+    localStorage.setItem("creature-tcg-player-id", id);
   }
   return id;
 }
@@ -242,7 +242,7 @@ async function postAction(action, payload) {
 }
 
 export function playCard(handIndex, replaceSlot = null, spellTarget = null) {
-  // replaceSlot — only meaningful for Pokémon plays when the field is
+  // replaceSlot — only meaningful for creature plays when the field is
   //   full (the slot to sacrifice).
   // spellTarget — only meaningful for spell cards (the slot to target
   //   on the enemy or own field). The server forwards both to the

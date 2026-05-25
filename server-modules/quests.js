@@ -108,9 +108,9 @@ async function computeProgress(supabase, userId, dayKey) {
   };
 }
 
-function mount(app, supabase, getPokedex) {
+function mount(app, supabase, getBestiary) {
   async function loadDex() {
-    const v = getPokedex();
+    const v = getBestiary();
     return v && typeof v.then === "function" ? await v : v;
   }
 
@@ -140,14 +140,14 @@ function mount(app, supabase, getPokedex) {
 
   app.post("/me/quests/:id/claim", async (req, res) => {
     if (!req.user) return res.status(401).json({ error: "Sign in required." });
-    let pokedex;
+    let bestiary;
     try {
-      pokedex = await loadDex();
+      bestiary = await loadDex();
     } catch (err) {
       console.error("[quests] loadDex failed:", err);
-      return res.status(503).json({ error: `Pokédex unavailable: ${err.message || "unknown"}` });
+      return res.status(503).json({ error: `Bestiary unavailable: ${err.message || "unknown"}` });
     }
-    if (!pokedex?.length) return res.status(503).json({ error: "Pokédex not loaded." });
+    if (!bestiary?.length) return res.status(503).json({ error: "Bestiary not loaded." });
     const dayKey = todayKey();
     const quests = pickTwoQuests(req.user.id, dayKey);
     const q = quests.find((x) => x.id === req.params.id);
@@ -190,8 +190,8 @@ function mount(app, supabase, getPokedex) {
     // Roll picks and create an offer.
     let picks;
     try {
-      const eligible = pokedex.filter((c) => c.tier >= q.minTier);
-      picks = rewards.rollPicks(eligible.length >= q.rewardCount ? eligible : pokedex, q.rewardCount);
+      const eligible = bestiary.filter((c) => c.tier >= q.minTier);
+      picks = rewards.rollPicks(eligible.length >= q.rewardCount ? eligible : bestiary, q.rewardCount);
     } catch (err) {
       console.error("[quests] rollPicks threw:", err);
       return res.status(500).json({ error: "Couldn't roll a reward — try again." });

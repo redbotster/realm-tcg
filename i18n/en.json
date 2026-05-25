@@ -1,8 +1,8 @@
 {
   "menu": {
-    "title": "Pokémon TCG",
+    "title": "creature TCG",
     "tagline": "Build a 30-card deck. Wield Legendary signature moves. Out-strategize your rival.",
-    "chooseTrainer": "Choose a trainer to begin",
+    "chooseChampion": "Choose a champion to begin",
     "battleAs": "Battle as {name} ▸",
     "findOnline": "Find online match",
     "playFriend": "Play vs friend (code)",
@@ -13,7 +13,7 @@
     "howToPlay": "How to play",
     "soloDifficulty": "Solo vs. AI difficulty",
     "signInHint": "Sign in to unlock {feature}",
-    "pickTrainerHint": "Pick a trainer to begin {feature}"
+    "pickChampionHint": "Pick a champion to begin {feature}"
   },
   "difficulty": {
     "easy": "Easy",
@@ -59,7 +59,7 @@
     "moves": "Moves",
     "restart": "↺ Restart",
     "giveUp": "Give up",
-    "tapYourFirst": "Tap one of your Pokémon, then tap an enemy.",
+    "tapYourFirst": "Tap one of your creature, then tap an enemy.",
     "tapEnemy": "Tap an enemy to attack with {name}."
   },
   "share": {

@@ -1,4 +1,4 @@
-// Theme week — server picks a Pokémon type as "type of the week" via the
+// Theme week — server picks a creature type as "type of the week" via the
 // ISO week number, deterministically rotating through the 18 types. Cards
 // of that type get a small attack bonus during matches, and reward rolls
 // are biased toward that type (~30% extra chance per pick).

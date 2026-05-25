@@ -21,27 +21,27 @@ function mkDeck(n, override = {}) {
 
 // --- Boss-mode infrastructure -------------------------------------------
 
-test("createGame respects aiTrainerHp + aiName overrides (for boss fights)", () => {
+test("createGame respects aiChampionHp + aiName overrides (for boss fights)", () => {
   const state = createGame({
     playerDeck: mkDeck(30),
     aiDeck: mkDeck(30),
-    aiTrainerHp: 88,
+    aiChampionHp: 88,
     aiName: "Mewtwo",
     firstPlayer: "player",
   });
-  assert.equal(state.players.ai.trainerHp, 88);
-  assert.equal(state.players.ai.maxTrainerHp, 88);
+  assert.equal(state.players.ai.championHp, 88);
+  assert.equal(state.players.ai.maxChampionHp, 88);
   assert.equal(state.players.ai.name, "Mewtwo");
 });
 
-test("createGame without override defaults to TRAINER_START_HP=30", () => {
+test("createGame without override defaults to CHAMPION_START_HP=30", () => {
   const state = createGame({
     playerDeck: mkDeck(30),
     aiDeck: mkDeck(30),
     firstPlayer: "player",
   });
-  assert.equal(state.players.ai.trainerHp, 30);
-  assert.equal(state.players.player.trainerHp, 30);
+  assert.equal(state.players.ai.championHp, 30);
+  assert.equal(state.players.player.championHp, 30);
 });
 
 test("boss.attackBonus stacks onto AI attacks", () => {
@@ -49,7 +49,7 @@ test("boss.attackBonus stacks onto AI attacks", () => {
   const state = createGame({
     playerDeck: mkDeck(30, { cardHp: 20 }),
     aiDeck: mkDeck(30, { cardAttack: 3, cardHp: 10 }),
-    aiTrainerHp: 60,
+    aiChampionHp: 60,
     firstPlayer: "ai",
   });
   // Manually drop an AI card onto field + clear summoning sickness.
@@ -59,7 +59,7 @@ test("boss.attackBonus stacks onto AI attacks", () => {
   state.players.player.hand = [playerCard];
   state.players.ai.energy = 10;
   state.players.player.energy = 10;
-  // Player plays a defender so the AI has to attack a card (not trainer).
+  // Player plays a defender so the AI has to attack a card (not champion).
   state.activePlayer = "player";
   playCard(state, "player", 0);
   state.players.player.field[0].summoningSickness = false;
@@ -84,7 +84,7 @@ test("boss.ignoreDefense disables the defender's defense term", () => {
   const state = createGame({
     playerDeck: mkDeck(30),
     aiDeck: mkDeck(30),
-    aiTrainerHp: 60,
+    aiChampionHp: 60,
     firstPlayer: "ai",
   });
   // Put a heavy-defense defender on the player field.

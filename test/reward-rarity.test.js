@@ -1,7 +1,7 @@
 // Drop-rate / rarity-classification tests.
 //
 // Rules under test (see server-modules/rewards.js + shared/deck-builder.js):
-//   - Every Pokémon classifies into exactly one of:
+//   - Every creature classifies into exactly one of:
 //       common, uncommon, rare, epic, legendary
 //     Driven by BST tier + the is_legendary / is_mythical flags.
 //   - easy   + win → 0 picks   (handled at the route layer)
@@ -26,7 +26,7 @@ const {
 } = require("../server-modules/rewards");
 const { toCard } = require("../shared/deck-builder");
 
-// Tiny pokedex spanning all five rarities + a few flagged legendaries
+// Tiny bestiary spanning all five rarities + a few flagged legendaries
 // that happen to live in odd tier slots (defensive coverage: the
 // legendary flag must override the tier-derived rarity).
 function fixture() {
@@ -82,7 +82,7 @@ test("rarityForCard maps tiers 1-5 to common/uncommon/rare/epic/legendary", () =
   assert.equal(rarityForCard({ tier: 4 }), "epic");
   assert.equal(rarityForCard({ tier: 5 }), "legendary");
   // is_legendary / is_mythical override tier — keeps the player-facing
-  // ladder honest even when a flagged Pokémon sits in a low tier slot.
+  // ladder honest even when a flagged creature sits in a low tier slot.
   assert.equal(rarityForCard({ tier: 2, is_legendary: true }), "legendary");
   assert.equal(rarityForCard({ tier: 3, is_mythical: true }), "legendary");
   // Unknown tier falls through to common rather than throwing.
@@ -93,7 +93,7 @@ test("rarityForCard maps tiers 1-5 to common/uncommon/rare/epic/legendary", () =
 });
 
 test("toCard sets card.rarity to one of the five known values", () => {
-  // Every Pokémon ships through toCard, which writes an explicit
+  // Every creature ships through toCard, which writes an explicit
   // `rarity` field. Downstream consumers (UI, drop logic) read from this.
   const lowBst = { id: 1, name: "Caterpie", hp: 45, attack: 30, defense: 35, sp_attack: 20, sp_defense: 20, speed: 45 };
   const midBst = { id: 2, name: "Dragonair", hp: 61, attack: 84, defense: 65, sp_attack: 70, sp_defense: 70, speed: 70 };
@@ -109,7 +109,7 @@ test("toCard sets card.rarity to one of the five known values", () => {
   assert.ok(RARITIES.includes(c3.rarity));
 });
 
-test("every fixture pokémon classifies into exactly one rarity", () => {
+test("every fixture creature classifies into exactly one rarity", () => {
   // No "unknown" rarity leaks: every card returns one of the 5 known
   // values, never null/undefined.
   for (const p of fixture()) {

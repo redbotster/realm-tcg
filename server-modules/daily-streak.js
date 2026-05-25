@@ -27,11 +27,11 @@ function tierBoostForStreak(streak) {
   return { count: 1, minTier: 1 };
 }
 
-function mount(app, supabase, getPokedex) {
-  // getPokedex may return either the array directly or a Promise<Array>
+function mount(app, supabase, getBestiary) {
+  // getBestiary may return either the array directly or a Promise<Array>
   // (async ensure-loaded variant). Always await it before checking.
   async function loadDex() {
-    const v = getPokedex();
+    const v = getBestiary();
     return v && typeof v.then === "function" ? await v : v;
   }
 
@@ -61,9 +61,9 @@ function mount(app, supabase, getPokedex) {
 
   app.post("/me/streak/claim", async (req, res) => {
     if (!req.user) return res.status(401).json({ error: "Sign in required." });
-    const pokedex = await loadDex();
-    if (!pokedex || pokedex.length === 0) {
-      return res.status(503).json({ error: "Pokédex not loaded yet." });
+    const bestiary = await loadDex();
+    if (!bestiary || bestiary.length === 0) {
+      return res.status(503).json({ error: "Bestiary not loaded yet." });
     }
     const { data: u, error } = await supabase
       .from("users")
@@ -84,8 +84,8 @@ function mount(app, supabase, getPokedex) {
 
     const { count, minTier } = tierBoostForStreak(newStreak);
     // rollPicks doesn't natively bias by tier, so we filter.
-    const eligible = pokedex.filter((c) => c.tier >= minTier);
-    const picks = rollPicks(eligible.length >= count ? eligible : pokedex, count);
+    const eligible = bestiary.filter((c) => c.tier >= minTier);
+    const picks = rollPicks(eligible.length >= count ? eligible : bestiary, count);
     // createOffer is async (writes to Redis); must await so the JSON
     // response carries the resolved id, not a Promise that serializes
     // to "{}" and breaks the client's claim flow.

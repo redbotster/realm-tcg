@@ -7,7 +7,7 @@
 const enabled = (() => {
   // Honor a kill switch in localStorage so I can disable on demand
   // without touching server.
-  try { return localStorage.getItem("pokemon-tcg-analytics") !== "off"; } catch { return true; }
+  try { return localStorage.getItem("creature-tcg-analytics") !== "off"; } catch { return true; }
 })();
 
 // Anonymous, session-stable id so we can de-dupe pageviews without
@@ -16,10 +16,10 @@ let _anonId = null;
 function anonId() {
   if (_anonId) return _anonId;
   try {
-    _anonId = localStorage.getItem("pokemon-tcg-anon-id");
+    _anonId = localStorage.getItem("creature-tcg-anon-id");
     if (!_anonId) {
       _anonId = "a" + Math.random().toString(36).slice(2, 11);
-      localStorage.setItem("pokemon-tcg-anon-id", _anonId);
+      localStorage.setItem("creature-tcg-anon-id", _anonId);
     }
   } catch {
     _anonId = "a" + Math.random().toString(36).slice(2, 11);

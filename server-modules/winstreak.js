@@ -47,11 +47,11 @@ function crossedMilestone(prev, next) {
   return null;
 }
 
-function mount(app, supabase, getPokedex) {
+function mount(app, supabase, getBestiary) {
   // Late-bind rewards to avoid any future circular-require surprise.
   const rewards = require("./rewards");
   async function loadDex() {
-    const v = getPokedex();
+    const v = getBestiary();
     return v && typeof v.then === "function" ? await v : v;
   }
 
@@ -70,12 +70,12 @@ function mount(app, supabase, getPokedex) {
 
     let bonus = null;
     if (crossed) {
-      const pokedex = await loadDex();
-      if (pokedex?.length) {
+      const bestiary = await loadDex();
+      if (bestiary?.length) {
         try {
-          const picks = rewards.rollPicks(pokedex, crossed.bonusPicks);
+          const picks = rewards.rollPicks(bestiary, crossed.bonusPicks);
           if (crossed.guaranteedLegendary && !picks.some((p) => p.is_legendary || p.is_mythical)) {
-            const rares = pokedex.filter((p) => p.is_legendary || p.is_mythical);
+            const rares = bestiary.filter((p) => p.is_legendary || p.is_mythical);
             if (rares.length) picks[picks.length - 1] = rares[Math.floor(Math.random() * rares.length)];
           }
           const offerId = await rewards.createOffer(req.user.id, picks);

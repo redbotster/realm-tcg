@@ -16,8 +16,8 @@ test("normal ownedCards object passes through", () => {
   const r = sanitize({ ownedCards: { 6: 1, 25: 2 } });
   assert.equal(r.entries.length, 2);
   assert.deepEqual(
-    r.entries.sort((a, b) => a.pokemonId - b.pokemonId),
-    [{ pokemonId: 6, quantity: 1 }, { pokemonId: 25, quantity: 2 }],
+    r.entries.sort((a, b) => a.creatureId - b.creatureId),
+    [{ creatureId: 6, quantity: 1 }, { creatureId: 25, quantity: 2 }],
   );
 });
 
@@ -27,7 +27,7 @@ test("quantity > PER_CARD_CAP is clamped", () => {
 });
 
 test("total grant respects TOTAL_GRANT_CAP", () => {
-  // 20 different pokemon at PER_CARD_CAP (5 each) = 100 — exceeds cap.
+  // 20 different creature at PER_CARD_CAP (5 each) = 100 — exceeds cap.
   const owned = {};
   for (let i = 1; i <= 20; i++) owned[i] = PER_CARD_CAP;
   const r = sanitize({ ownedCards: owned });
@@ -35,16 +35,16 @@ test("total grant respects TOTAL_GRANT_CAP", () => {
   assert.ok(total <= TOTAL_GRANT_CAP, `total ${total} should be <= ${TOTAL_GRANT_CAP}`);
 });
 
-test("invalid pokemon ids are dropped", () => {
+test("invalid creature ids are dropped", () => {
   const r = sanitize({ ownedCards: { "abc": 1, "0": 2, "-1": 3, "6": 1 } });
   assert.equal(r.entries.length, 1);
-  assert.equal(r.entries[0].pokemonId, 6);
+  assert.equal(r.entries[0].creatureId, 6);
 });
 
 test("quantity <= 0 is dropped", () => {
   const r = sanitize({ ownedCards: { 6: 0, 7: -1, 8: 1 } });
   assert.equal(r.entries.length, 1);
-  assert.equal(r.entries[0].pokemonId, 8);
+  assert.equal(r.entries[0].creatureId, 8);
 });
 
 test("non-array storyProgress becomes empty", () => {

@@ -1,8 +1,8 @@
-// Shareable deck codes. A 30-card deck is just 30 pokemon ids (1..1025),
+// Shareable deck codes. A 30-card deck is just 30 creature ids (1..1025),
 // so we pack each id as a fixed 12-bit value (4096 > 1025), giving:
 //   30 ids × 12 bits = 360 bits = 45 bytes
 // Encoded as base64url that's ~60 characters — short enough to live
-// in a URL: pokemonbattle.xyz/d/<code>
+// in a URL: creaturebattle.xyz/d/<code>
 //
 // Format:
 //   byte 0       : version (currently 1)

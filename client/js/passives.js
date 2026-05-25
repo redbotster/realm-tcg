@@ -1,17 +1,17 @@
-// Canonical Pokémon passive abilities pulled from PokeAPI's `abilities`
-// field on each Pokémon row. Most abilities have flavor only; this module
+// Canonical creature passive abilities pulled from PokeAPI's `abilities`
+// field on each creature row. Most abilities have flavor only; this module
 // picks a handful with mechanical effects we can implement cleanly and
 // wires them into the battle pipeline.
 //
 // Effects implemented:
 //   static    — 25% chance to paralyze the attacker on contact
 //   levitate  — defender is immune to Ground attacks (0× multiplier)
-//   intimidate— on summon, every enemy field Pokémon loses 1 ATK
+//   intimidate— on summon, every enemy field creature loses 1 ATK
 //   blaze     — Fire moves +1 ATK while attacker is below 1/3 HP
 //   torrent   — Water moves +1 ATK while attacker is below 1/3 HP
 //   overgrow  — Grass moves +1 ATK while attacker is below 1/3 HP
 //
-// Each Pokémon row has card.abilities[]; we check membership.
+// Each creature row has card.abilities[]; we check membership.
 
 export function hasPassive(card, abilityName) {
   return Array.isArray(card.abilities) && card.abilities.includes(abilityName);
@@ -52,7 +52,7 @@ export function isGuardian(card) {
   return false;
 }
 
-// Entrance ability — fires once when a Pokémon is summoned to the field.
+// Entrance ability — fires once when a creature is summoned to the field.
 // Returns { kind, ... } describing the effect for the caller to apply, OR
 // null if no entrance ability applies.
 export function entranceAbility(card) {
@@ -60,7 +60,7 @@ export function entranceAbility(card) {
     return {
       kind: "roar",
       name: "Roar",
-      desc: "Deals 2 damage to every enemy field Pokémon.",
+      desc: "Deals 2 damage to every enemy field creature.",
       damage: 2,
     };
   }
@@ -68,7 +68,7 @@ export function entranceAbility(card) {
     return {
       kind: "aurora",
       name: "Aurora",
-      desc: "Heals 3 HP on every allied field Pokémon.",
+      desc: "Heals 3 HP on every allied field creature.",
       heal: 3,
     };
   }
@@ -76,14 +76,14 @@ export function entranceAbility(card) {
 }
 
 // --- Signature abilities ---------------------------------------------------
-// Per-Pokémon flavor that overrides or augments the generic Roar/Aurora.
+// Per-creature flavor that overrides or augments the generic Roar/Aurora.
 // Each entry defines optional hook points the engine wires into game.js.
 //
 // Hook shapes:
 //   onSummon(state, side, inst)     — at end of playCard
 //   onTurnStart(state, side, inst)  — at start of this player's turn,
-//                                     for each field Pokémon they own
-//   onKO(state, side, inst)         — when this Pokémon would faint;
+//                                     for each field creature they own
+//   onKO(state, side, inst)         — when this creature would faint;
 //                                     return true to cancel the KO
 //   passive                         — descriptor used elsewhere (e.g.
 //                                     `ignoreDefense` flag read in attack)
@@ -208,13 +208,13 @@ export const SIGNATURE_ABILITIES = {
   382: {
     // Kyogre
     name: "Drizzle",
-    desc: "While on the field, your Water Pokémon attack with +1 ATK.",
+    desc: "While on the field, your Water creature attack with +1 ATK.",
     fieldAura: { type: "water", attackBonus: 1 },
   },
   383: {
     // Groudon
     name: "Drought",
-    desc: "While on the field, enemy Water Pokémon lose 1 ATK on their attacks.",
+    desc: "While on the field, enemy Water creature lose 1 ATK on their attacks.",
     fieldAura: { enemyType: "water", attackPenalty: 1 },
   },
   483: {
@@ -250,7 +250,7 @@ export const SIGNATURE_ABILITIES = {
   493: {
     // Arceus
     name: "Judgment",
-    desc: "On summon, all your Pokémon are healed to full HP.",
+    desc: "On summon, all your creature are healed to full HP.",
     onSummon(state, side, inst) {
       let healed = 0;
       for (const ally of state.players[side].field) {
@@ -383,13 +383,13 @@ export const SIGNATURE_ABILITIES = {
   643: {
     // Reshiram
     name: "Blue Flare",
-    desc: "While on the field, your Fire Pokémon attack with +1 ATK and apply Burn.",
+    desc: "While on the field, your Fire creature attack with +1 ATK and apply Burn.",
     fieldAura: { type: "fire", attackBonus: 1, statusOnHit: "burn" },
   },
   644: {
     // Zekrom
     name: "Bolt Strike",
-    desc: "While on the field, your Electric Pokémon attack with +1 ATK and apply Paralyze.",
+    desc: "While on the field, your Electric creature attack with +1 ATK and apply Paralyze.",
     fieldAura: { type: "electric", attackBonus: 1, statusOnHit: "paralyze" },
   },
   716: {
@@ -651,7 +651,7 @@ export const SIGNATURE_ABILITIES = {
   254: {
     // Sceptree (Sceptile) — Overgrow: Grass aura
     name: "Leaf Storm",
-    desc: "While on the field, your Grass Pokémon attack with +1 ATK and apply burn 25%.",
+    desc: "While on the field, your Grass creature attack with +1 ATK and apply burn 25%.",
     fieldAura: { type: "grass", attackBonus: 1, statusOnHit: "burn" },
   },
 
@@ -877,7 +877,7 @@ export function staticTrigger(defenderCard, rand) {
   return null;
 }
 
-// Intimidate (called from playCard at summon): every opposing field Pokémon
+// Intimidate (called from playCard at summon): every opposing field creature
 // loses 1 attack permanently (capped so it doesn't go negative).
 export function intimidateOnSummon(state, summoningSide) {
   const card = state.players[summoningSide].field

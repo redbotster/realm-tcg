@@ -1,14 +1,14 @@
-// Pokémon evolution chains — pre-evolved → next form mapping.
+// creature evolution chains — pre-evolved → next form mapping.
 //
 // Hand-curated for the most iconic Gen-1 chains (kid favorites + the
 // classic "watch your starter grow up" moments). Each entry maps a
-// Pokédex id to the id of its next evolved form. Final forms have NO
+// Bestiary id to the id of its next evolved form. Final forms have NO
 // entry — looking them up returns null and the engine no-ops.
 //
 // Why static + Gen-1 only: PokeAPI's evolution-chain endpoint requires
 // a multi-step lookup per species (~1300 species → ~600 chain trees)
 // and the data shape covers level requirements, items, friendship, etc.
-// — overkill for an in-match "your Pokémon grew up" moment. The most
+// — overkill for an in-match "your creature grew up" moment. The most
 // commonly-played Gen-1 chains cover 90% of the joy with zero DB work.
 // Later slices can extend this map with more generations or load from
 // a JSON file.
@@ -146,8 +146,8 @@ const EVOLVES_TO = {
 // accomplishment.
 const EVOLUTION_KO_THRESHOLD = 2;
 
-function evolutionFor(pokemonId) {
-  return EVOLVES_TO[pokemonId] || null;
+function evolutionFor(creatureId) {
+  return EVOLVES_TO[creatureId] || null;
 }
 
 function hasEvolution(card) {
@@ -155,7 +155,7 @@ function hasEvolution(card) {
 }
 
 // All ids that appear as a "from" in the chain — useful for tests
-// (e.g. confirming the table doesn't reference a missing pokémon).
+// (e.g. confirming the table doesn't reference a missing creature).
 function evolvingFromIds() {
   return Object.keys(EVOLVES_TO).map(Number);
 }

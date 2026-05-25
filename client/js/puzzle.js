@@ -2,7 +2,7 @@
 // to assign attacks and tries to clear every enemy in `par` moves.
 //
 // No energy, no card draws — this is a puzzle, not a deck-building loop.
-// Each "move" is one attack by one of your Pokémon. They have a single
+// Each "move" is one attack by one of your creature. They have a single
 // attack per puzzle (no repeats). Damage uses the same computeDamage
 // pipeline as the main game so type matchups carry over.
 
@@ -179,7 +179,7 @@ function renderBoard() {
       const idx = Number(el.dataset.slot);
       if (s.enemy[idx].hp <= 0) return;
       if (s.selectedSlot == null) {
-        flashVerdict("Tap one of your Pokémon first.", "weak");
+        flashVerdict("Tap one of your creature first.", "weak");
         return;
       }
       attackEnemy(s.selectedSlot, idx);
@@ -215,8 +215,8 @@ function puzzleHint(s) {
   const availableAttackers = s.player.filter((p) => !p.used && p.hp > 0).length;
   if (aliveEnemies === 0) return "✅ All enemies down. Result locked in…";
   if (availableAttackers === 0) return "❌ Out of attackers.";
-  if (s.selectedSlot != null) return `Tap an enemy to attack with ${escape(s.player[s.selectedSlot].card?.name || "your Pokémon")}.`;
-  return "Tap one of your Pokémon, then tap an enemy.";
+  if (s.selectedSlot != null) return `Tap an enemy to attack with ${escape(s.player[s.selectedSlot].card?.name || "your creature")}.`;
+  return "Tap one of your creature, then tap an enemy.";
 }
 
 async function attackEnemy(playerSlot, enemySlot) {
@@ -322,8 +322,8 @@ function renderPostGame(payload, result, currentUser, fromReplay = false, localO
       // Reconstruct locally for replay / anonymous paths.
       const url = `${location.origin}/?puzzle=${dayNumber}`;
       const text = solved
-        ? `Pokémon TCG Puzzle #${dayNumber} · "${puzzle.title || ""}"\n${starsFor({ solved, movesUsed: moves, par })}  ✅ Cleared in ${moves}/${par} ${moves === 1 ? "move" : "moves"}\nplay: ${url}`
-        : `Pokémon TCG Puzzle #${dayNumber} · "${puzzle.title || ""}"\n${starsFor({ solved, movesUsed: moves, par })}  ❌ Defeated after ${moves} ${moves === 1 ? "move" : "moves"}\nplay: ${url}`;
+        ? `creature TCG Puzzle #${dayNumber} · "${puzzle.title || ""}"\n${starsFor({ solved, movesUsed: moves, par })}  ✅ Cleared in ${moves}/${par} ${moves === 1 ? "move" : "moves"}\nplay: ${url}`
+        : `creature TCG Puzzle #${dayNumber} · "${puzzle.title || ""}"\n${starsFor({ solved, movesUsed: moves, par })}  ❌ Defeated after ${moves} ${moves === 1 ? "move" : "moves"}\nplay: ${url}`;
       showDailyShare({ shareText: text, shareUrl: url, dayNumber, stars: "", bossName: puzzle.title });
     }
   });
@@ -354,7 +354,7 @@ async function openLeaderboard() {
       <h2>Puzzle #${data.dayNumber} Leaderboard</h2>
       ${!data.rows.length
         ? `<p class="lb-empty">No one has tried today's puzzle yet — be the first!</p>`
-        : `<table class="lb-table"><thead><tr><th>#</th><th>Trainer</th><th>Result</th><th>Moves</th></tr></thead>
+        : `<table class="lb-table"><thead><tr><th>#</th><th>Champion</th><th>Result</th><th>Moves</th></tr></thead>
             <tbody>${data.rows.map((r) => `
               <tr class="${r.isYou ? "is-you" : ""}">
                 <td>${r.rank}</td>

@@ -108,21 +108,21 @@ watcher.on("change", (p) => {
   io.emit("reload");
 });
 
-// --- Pokédex cache + deck endpoint -----------------------------------------
+// --- Bestiary cache + deck endpoint -----------------------------------------
 //
 // Phase 2 (single-player) keeps all gameplay state in the browser. The server
-// is just a static host + a card-data API. We load the full Pokédex into
+// is just a static host + a card-data API. We load the full Bestiary into
 // memory on boot so deck draws don't hit Supabase per-request.
 const { SUPABASE_URL, SUPABASE_SERVICE_KEY } = process.env;
-let pokedex = []; // array of card objects, lazily loaded
-let _pokedexPromise = null;
+let bestiary = []; // array of card objects, lazily loaded
+let _bestiaryPromise = null;
 
-function loadPokedex() {
-  if (_pokedexPromise) return _pokedexPromise;
-  _pokedexPromise = (async () => {
+function loadBestiary() {
+  if (_bestiaryPromise) return _bestiaryPromise;
+  _bestiaryPromise = (async () => {
     if (!SUPABASE_URL || !SUPABASE_SERVICE_KEY) {
       console.warn(
-        "[pokedex] SUPABASE_URL/SUPABASE_SERVICE_KEY missing — /api/deck will 503.",
+        "[bestiary] SUPABASE_URL/SUPABASE_SERVICE_KEY missing — /api/deck will 503.",
       );
       return;
     }
@@ -134,14 +134,14 @@ function loadPokedex() {
     let from = 0;
     while (true) {
       const { data, error } = await sb
-        .from("pokemon")
+        .from("bestiary")
         .select("*")
         .order("id", { ascending: true })
         .range(from, from + PAGE - 1);
       if (error) {
-        console.error("[pokedex] supabase error:", error.message);
+        console.error("[bestiary] supabase error:", error.message);
         // Reset so the next request can retry
-        _pokedexPromise = null;
+        _bestiaryPromise = null;
         return;
       }
       if (!data || data.length === 0) break;
@@ -149,15 +149,15 @@ function loadPokedex() {
       if (data.length < PAGE) break;
       from += PAGE;
     }
-    pokedex = all.map(toCard);
+    bestiary = all.map(toCard);
     // Bake the evolution-target card data onto each card so the engine
-    // can transform a Pokémon mid-match without needing a separate
-    // pokedex lookup. The chain table is static (shared/evolution-
+    // can transform a creature mid-match without needing a separate
+    // bestiary lookup. The chain table is static (shared/evolution-
     // chains.js) so this pass is O(n) over the dex on first load.
     {
       const { evolutionFor } = require("./shared/evolution-chains");
-      const byId = new Map(pokedex.map((c) => [c.id, c]));
-      for (const c of pokedex) {
+      const byId = new Map(bestiary.map((c) => [c.id, c]));
+      for (const c of bestiary) {
         const nextId = evolutionFor(c.id);
         if (nextId && byId.has(nextId)) {
           c.evolves_to_card = byId.get(nextId);
@@ -165,19 +165,19 @@ function loadPokedex() {
       }
     }
     // Append all active spell cards so drops + deck-builder see them
-    // alongside Pokémon. allSpellCards() only returns spells whose
+    // alongside creature. allSpellCards() only returns spells whose
     // engine effect is wired (see ACTIVE_EFFECTS in shared/spell-cards
     // — slice 1 = Freeze only).
     const { allSpellCards } = require("./shared/spell-cards");
     const spells = allSpellCards();
-    pokedex.push(...spells);
-    console.log(`[pokedex] loaded ${pokedex.length - spells.length} Pokémon + ${spells.length} spell card(s)`);
+    bestiary.push(...spells);
+    console.log(`[bestiary] loaded ${bestiary.length - spells.length} creature + ${spells.length} spell card(s)`);
   })();
-  return _pokedexPromise;
+  return _bestiaryPromise;
 }
-async function ensurePokedex() {
-  await loadPokedex();
-  return pokedex;
+async function ensureBestiary() {
+  await loadBestiary();
+  return bestiary;
 }
 
 // --- Auth + session ---
@@ -190,25 +190,25 @@ if (SUPABASE_URL && SUPABASE_SERVICE_KEY) {
   });
   auth.mount(app, authSupabase);
   collection.mount(app, authSupabase);
-  rewards.mount(app, authSupabase, ensurePokedex);
-  multiplayerHttp.mount(app, authSupabase, ensurePokedex);
-  achievements.mount(app, authSupabase, ensurePokedex);
-  dailyStreak.mount(app, authSupabase, ensurePokedex);
+  rewards.mount(app, authSupabase, ensureBestiary);
+  multiplayerHttp.mount(app, authSupabase, ensureBestiary);
+  achievements.mount(app, authSupabase, ensureBestiary);
+  dailyStreak.mount(app, authSupabase, ensureBestiary);
   xpModule.mount(app, authSupabase);
-  quests.mount(app, authSupabase, ensurePokedex);
+  quests.mount(app, authSupabase, ensureBestiary);
   theme.mount(app);
   champions.mount(app, authSupabase);
-  story.mount(app, authSupabase, ensurePokedex);
+  story.mount(app, authSupabase, ensureBestiary);
   readingMode.mount(app);
-  trading.mount(app, authSupabase, ensurePokedex);
-  dailyBoss.mount(app, authSupabase, ensurePokedex);
+  trading.mount(app, authSupabase, ensureBestiary);
+  dailyBoss.mount(app, authSupabase, ensureBestiary);
   dailyPuzzle.mount(app, authSupabase);
   analytics.mount(app);
   guestMigrate.mount(app, authSupabase);
-  deckShare.mount(app, authSupabase, ensurePokedex);
+  deckShare.mount(app, authSupabase, ensureBestiary);
   friendChallenge.mount(app, authSupabase);
   mastery.mount(app, authSupabase);
-  winstreak.mount(app, authSupabase, ensurePokedex);
+  winstreak.mount(app, authSupabase, ensureBestiary);
 
   // Match history for the signed-in user.
   app.get("/me/matches", async (req, res) => {
@@ -240,27 +240,27 @@ if (SUPABASE_URL && SUPABASE_SERVICE_KEY) {
   console.warn("[auth] Supabase credentials missing — auth routes disabled.");
 }
 
-// Multiplayer wires into the Socket.IO server. It uses the Pokédex cache
+// Multiplayer wires into the Socket.IO server. It uses the Bestiary cache
 // (loaded below) and Supabase for deck hydration + match record persistence.
-// Attached after `pokedex` has been populated by loadPokedex().
+// Attached after `bestiary` has been populated by loadBestiary().
 
-app.get("/api/pokedex/size", async (_req, res) => {
-  await ensurePokedex();
-  res.json({ size: pokedex.length });
+app.get("/api/bestiary/size", async (_req, res) => {
+  await ensureBestiary();
+  res.json({ size: bestiary.length });
 });
 
-// Lightweight Pokédex search — used by the trade UI's "what do you want"
+// Lightweight Bestiary search — used by the trade UI's "what do you want"
 // picker. Returns up to 50 matches by case-insensitive name substring or
 // by ID. No auth.
-// Public "Explore" endpoint — every Pokémon in the in-memory pokedex
+// Public "Explore" endpoint — every creature in the in-memory bestiary
 // with the full detail set the detail panel needs (sprite, types,
 // tier, rarity, card stats, raw stats, flavor, abilities, legendary
 // flags). Excludes spell cards via the kind filter. Cached in-memory
 // already; the response is ~1MB so we lean on HTTP cache headers
 // rather than hand-rolling pagination.
-app.get("/api/pokedex/all", async (_req, res) => {
-  await ensurePokedex();
-  const rows = pokedex
+app.get("/api/bestiary/all", async (_req, res) => {
+  await ensureBestiary();
+  const rows = bestiary
     .filter((c) => c.kind !== "spell")
     .map((c) => ({
       id: c.id,
@@ -288,12 +288,12 @@ app.get("/api/pokedex/all", async (_req, res) => {
   res.json({ count: rows.length, rows });
 });
 
-app.get("/api/pokedex/search", async (req, res) => {
-  await ensurePokedex();
+app.get("/api/bestiary/search", async (req, res) => {
+  await ensureBestiary();
   const q = String(req.query.q || "").trim().toLowerCase();
   if (!q) return res.json({ results: [] });
   const asNum = Number(q);
-  const matches = pokedex.filter((c) => {
+  const matches = bestiary.filter((c) => {
     if (Number.isFinite(asNum) && c.id === asNum) return true;
     return c.name?.toLowerCase().includes(q);
   }).slice(0, 50).map((c) => ({
@@ -311,9 +311,9 @@ app.get("/api/leaderboard", async (req, res) => {
   const limit = Math.min(50, Math.max(5, Number(req.query.limit) || 25));
   const { data, error } = await authSupabase
     .from("user_stats")
-    .select("user_id, display_name, matches_played, wins, losses, win_pct, cards_owned, trainer_xp, trainer_level")
+    .select("user_id, display_name, matches_played, wins, losses, win_pct, cards_owned, champion_xp, champion_level")
     .gt("matches_played", 0)
-    .order("trainer_level", { ascending: false })
+    .order("champion_level", { ascending: false })
     .order("wins", { ascending: false })
     .order("win_pct", { ascending: false })
     .limit(limit);
@@ -331,12 +331,12 @@ app.get("/api/leaderboard", async (req, res) => {
 });
 
 app.get("/api/deck", async (req, res) => {
-  await ensurePokedex();
-  if (pokedex.length === 0) {
-    return res.status(503).json({ error: "pokedex not loaded yet" });
+  await ensureBestiary();
+  if (bestiary.length === 0) {
+    return res.status(503).json({ error: "bestiary not loaded yet" });
   }
   const seed = req.query.seed ? String(req.query.seed) : undefined;
-  const deck = buildDeck(pokedex, { seed });
+  const deck = buildDeck(bestiary, { seed });
   res.json({ deck });
 });
 
@@ -467,18 +467,18 @@ app.use((err, req, res, _next) => {
 // local dev — IP-address RP_IDs are rejected by Chrome/Safari.)
 //
 // On Vercel we don't call .listen() — the platform owns the listener. The
-// boot still has to happen (loadPokedex + multiplayer.attach), but the
+// boot still has to happen (loadBestiary + multiplayer.attach), but the
 // module.exports at the bottom hands the http server back to Vercel.
 const isVercel = !!process.env.VERCEL;
 
-// Register Socket.IO handlers immediately. They'll await the Pokédex on
+// Register Socket.IO handlers immediately. They'll await the Bestiary on
 // first event-triggered use. This works on both Vercel (where the function
 // is invoked per WebSocket connect) and Node (where attach is called once).
-multiplayer.attach(io, authSupabase, () => pokedex);
+multiplayer.attach(io, authSupabase, () => bestiary);
 
 // On Vercel, kick off the load so subsequent requests see a populated dex.
 // On local Node, this runs as part of normal boot.
-const bootPromise = loadPokedex();
+const bootPromise = loadBestiary();
 
 if (!isVercel) bootPromise.finally(() => {
   server.listen(PORT, "0.0.0.0", () => {

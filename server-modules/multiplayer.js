@@ -60,10 +60,10 @@ function toPov(realSide, mySide) {
   return realSide === mySide ? "player" : "ai";
 }
 
-function attach(io, supabase, pokedexOrGetter) {
-  const getPokedex = typeof pokedexOrGetter === "function"
-    ? pokedexOrGetter
-    : () => pokedexOrGetter;
+function attach(io, supabase, bestiaryOrGetter) {
+  const getBestiary = typeof bestiaryOrGetter === "function"
+    ? bestiaryOrGetter
+    : () => bestiaryOrGetter;
 
   // Wire the Redis adapter so io.emit / io.to(roomId).emit fans out across
   // function instances. No-op when REDIS_URL isn't set.
@@ -81,7 +81,7 @@ function attach(io, supabase, pokedexOrGetter) {
         if (deck?.card_ids?.length === 30) {
           const ids = [...new Set(deck.card_ids)];
           const { data: rows } = await supabase
-            .from("pokemon")
+            .from("bestiary")
             .select("*")
             .in("id", ids);
           const byId = new Map((rows || []).map((r) => [r.id, toCard(r)]));
@@ -92,7 +92,7 @@ function attach(io, supabase, pokedexOrGetter) {
         console.warn("[mp] active-deck fetch failed:", err.message);
       }
     }
-    return buildDeck(getPokedex());
+    return buildDeck(getBestiary());
   }
 
   async function startMatch(p1Seat, p2Seat) {
@@ -193,7 +193,7 @@ function attach(io, supabase, pokedexOrGetter) {
 
     let pOffer = null;
     let aOffer = null;
-    const dex = getPokedex();
+    const dex = getBestiary();
     if (dex.length > 0) {
       if (room.players.player.userId) {
         pOffer = await offerForOutcome(room.players.player.userId, dex, winnerSide === "player");
@@ -229,7 +229,7 @@ function attach(io, supabase, pokedexOrGetter) {
         socketId: socket.id,
         playerId,
         userId: opts.userId || null,
-        displayName: String(opts.displayName || "Trainer").slice(0, 32),
+        displayName: String(opts.displayName || "Champion").slice(0, 32),
         ability: opts.ability || "brock",
         deckSource: opts.deckSource || "random",
       };
@@ -254,7 +254,7 @@ function attach(io, supabase, pokedexOrGetter) {
         socketId: socket.id,
         playerId,
         userId: opts.userId || null,
-        displayName: String(opts.displayName || "Trainer").slice(0, 32),
+        displayName: String(opts.displayName || "Champion").slice(0, 32),
         ability: opts.ability || "brock",
         deckSource: opts.deckSource || "random",
         code,
@@ -272,7 +272,7 @@ function attach(io, supabase, pokedexOrGetter) {
         socketId: socket.id,
         playerId,
         userId: opts.userId || null,
-        displayName: String(opts.displayName || "Trainer").slice(0, 32),
+        displayName: String(opts.displayName || "Champion").slice(0, 32),
         ability: opts.ability || "brock",
         deckSource: opts.deckSource || "random",
       };

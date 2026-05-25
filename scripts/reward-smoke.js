@@ -1,7 +1,7 @@
 // End-to-end test of the reward loop:
 //   1. Register two players
 //   2. Have them play a multiplayer match to completion
-//      (we accelerate by directly setting trainer HP to 1 via repeated attacks
+//      (we accelerate by directly setting champion HP to 1 via repeated attacks
 //      isn't possible without code injection, so we exercise the API path
 //      directly: trigger a concede from B, A wins)
 //   3. Verify A sees a reward modal with 3 picks and B sees 2 picks
@@ -36,12 +36,12 @@ async function makePlayer(browser, label) {
   return { ctx, page, errs };
 }
 
-async function signupAndPickTrainer(page) {
+async function signupAndPickChampion(page) {
   await page.goto(BASE, { waitUntil: "domcontentloaded" });
   await page.waitForSelector("#account-register-btn");
   await page.click("#account-register-btn");
   await page.waitForSelector("#account-logout-btn", { timeout: 15000 });
-  await page.click(".trainer-card");
+  await page.click(".champion-card");
 }
 
 async function main() {
@@ -50,8 +50,8 @@ async function main() {
   const labelB = `Boyd-${Date.now().toString(36)}`;
   const A = await makePlayer(browser, labelA);
   const B = await makePlayer(browser, labelB);
-  await signupAndPickTrainer(A.page);
-  await signupAndPickTrainer(B.page);
+  await signupAndPickChampion(A.page);
+  await signupAndPickChampion(B.page);
   console.log("✓ both players signed in");
 
   await A.page.click("#mode-mp-match");

@@ -128,8 +128,8 @@ h1, h2, h3,
 }
 .menu-stage { position: relative; z-index: 1; }
 
-/* Featured legendary hero strip — three rotating panels above the trainer
-   grid that show off the rarest Pokémon in the dex. */
+/* Featured legendary hero strip — three rotating panels above the champion
+   grid that show off the rarest creature in the dex. */
 .feature-strip {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -199,7 +199,7 @@ h1, h2, h3,
   margin-bottom: 32px;
   line-height: 1.7;
 }
-.trainer-grid {
+.champion-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 16px;
@@ -422,7 +422,7 @@ h1, h2, h3,
 .account-id strong {
   font-size: 13px;
 }
-.trainer-level-chip {
+.champion-level-chip {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -635,7 +635,7 @@ h1, h2, h3,
 }
 .champ-loading, .champ-err { color: var(--muted); padding: 22px; }
 
-/* === Pokédex completion overlay === */
+/* === Bestiary completion overlay === */
 .pdx-overlay {
   position: fixed; inset: 0;
   background: rgba(8, 9, 18, 0.86);
@@ -1265,7 +1265,7 @@ h1, h2, h3,
   text-align: right;
   color: var(--ink);
 }
-.trainer-card {
+.champion-card {
   background: var(--bg-mid);
   border: 2px solid transparent;
   border-radius: 16px;
@@ -1275,16 +1275,16 @@ h1, h2, h3,
   transition: all 0.18s ease;
   text-align: left;
 }
-.trainer-card:hover {
+.champion-card:hover {
   transform: translateY(-4px);
   border-color: var(--accent);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), 0 0 16px var(--accent);
 }
-.trainer-card.selected {
+.champion-card.selected {
   border-color: var(--accent);
   box-shadow: 0 0 24px var(--accent), 0 0 0 1px rgba(255,255,255,0.2) inset;
 }
-.trainer-portrait {
+.champion-portrait {
   width: 100%;
   height: 130px;
   border-radius: 10px;
@@ -1293,10 +1293,10 @@ h1, h2, h3,
   overflow: hidden;
   display: grid;
   place-items: center;
-  /* Trainer sprite sits in front of a type-tinted spotlight gradient. */
+  /* Champion sprite sits in front of a type-tinted spotlight gradient. */
   background-blend-mode: normal;
 }
-.trainer-portrait::before {
+.champion-portrait::before {
   content: "";
   position: absolute;
   inset: 0;
@@ -1305,7 +1305,7 @@ h1, h2, h3,
     linear-gradient(180deg, rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.45));
   z-index: 1;
 }
-.trainer-portrait::after {
+.champion-portrait::after {
   content: "";
   position: absolute;
   inset: 0;
@@ -1313,7 +1313,7 @@ h1, h2, h3,
   pointer-events: none;
   z-index: 2;
 }
-.trainer-portrait img {
+.champion-portrait img {
   height: 115%;          /* over-tall so the figure fills the chip */
   width: auto;
   max-width: none;
@@ -1323,16 +1323,16 @@ h1, h2, h3,
   transition: transform 0.4s ease;
   margin-bottom: -8px;   /* anchor the figure to the bottom of the chip */
 }
-.trainer-card:hover .trainer-portrait img,
-.trainer-card.selected .trainer-portrait img {
+.champion-card:hover .champion-portrait img,
+.champion-card.selected .champion-portrait img {
   transform: scale(1.06) translateY(-2px);
 }
-.trainer-name {
+.champion-name {
   font-family: "Press Start 2P", monospace;
   font-size: 13px;
   margin-bottom: 6px;
 }
-.trainer-bio {
+.champion-bio {
   font-size: 12px;
   color: var(--muted);
   line-height: 1.5;
@@ -1539,7 +1539,7 @@ h1, h2, h3,
   pointer-events: none;
 }
 
-.trainer-row {
+.champion-row {
   position: relative;
   z-index: 2;
   display: flex;
@@ -1548,11 +1548,11 @@ h1, h2, h3,
   padding: 12px 24px;
   gap: 16px;
 }
-.trainer-row.bottom {
+.champion-row.bottom {
   padding: 8px 24px 4px;
 }
 
-.trainer-block {
+.champion-block {
   display: flex;
   gap: 12px;
   align-items: center;
@@ -1563,20 +1563,20 @@ h1, h2, h3,
   backdrop-filter: blur(6px);
   cursor: default;
 }
-.trainer-block.ai {
+.champion-block.ai {
   cursor: pointer;
   transition: box-shadow 0.18s ease;
 }
-.trainer-block.ai:hover {
+.champion-block.ai:hover {
   box-shadow: 0 0 18px rgba(255, 90, 90, 0.4);
 }
-/* Soft glow on the trainer-block whose turn it is. JS adds `.is-turn`. */
-.trainer-block.is-turn {
+/* Soft glow on the champion-block whose turn it is. JS adds `.is-turn`. */
+.champion-block.is-turn {
   border-color: rgba(247, 208, 44, 0.6);
   box-shadow: 0 0 22px rgba(247, 208, 44, 0.25);
   background: rgba(247, 208, 44, 0.08);
 }
-.trainer-avatar {
+.champion-avatar {
   width: 56px;
   height: 56px;
   border-radius: 50%;
@@ -1588,7 +1588,7 @@ h1, h2, h3,
   display: grid;
   place-items: center;
 }
-.trainer-avatar img {
+.champion-avatar img {
   width: 130%;
   height: auto;
   position: relative;
@@ -1596,13 +1596,13 @@ h1, h2, h3,
   margin-bottom: -10px;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.6));
 }
-.trainer-avatar[data-ability="brock"]   { background: linear-gradient(140deg, #B6A136, #1a1a0a); }
-.trainer-avatar[data-ability="misty"]   { background: linear-gradient(140deg, #6390F0, #0a1430); }
-.trainer-avatar[data-ability="pikachu"] { background: linear-gradient(140deg, #F7D02C, #2a2210); }
-.trainer-avatar[data-ability="erika"]   { background: linear-gradient(140deg, #7AC74C, #122412); }
-.trainer-avatar[data-ability="sabrina"] { background: linear-gradient(140deg, #F95587, #2c0e1c); }
-.trainer-avatar[data-ability="lance"]   { background: linear-gradient(140deg, #6F35FC, #0e0828); }
-.trainer-avatar::after {
+.champion-avatar[data-ability="brock"]   { background: linear-gradient(140deg, #B6A136, #1a1a0a); }
+.champion-avatar[data-ability="misty"]   { background: linear-gradient(140deg, #6390F0, #0a1430); }
+.champion-avatar[data-ability="pikachu"] { background: linear-gradient(140deg, #F7D02C, #2a2210); }
+.champion-avatar[data-ability="erika"]   { background: linear-gradient(140deg, #7AC74C, #122412); }
+.champion-avatar[data-ability="sabrina"] { background: linear-gradient(140deg, #F95587, #2c0e1c); }
+.champion-avatar[data-ability="lance"]   { background: linear-gradient(140deg, #6F35FC, #0e0828); }
+.champion-avatar::after {
   content: "";
   position: absolute;
   inset: 6px;
@@ -1610,13 +1610,13 @@ h1, h2, h3,
   background: radial-gradient(circle at 50% 35%, rgba(255,255,255,0.3), transparent 70%);
 }
 
-.trainer-meta {
+.champion-meta {
   min-width: 220px;
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
-.trainer-label {
+.champion-label {
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.5px;
@@ -1653,7 +1653,7 @@ h1, h2, h3,
   min-width: 56px;
   text-align: right;
 }
-.trainer-resources {
+.champion-resources {
   display: flex;
   gap: 10px;
   font-size: 11px;
@@ -1667,7 +1667,7 @@ h1, h2, h3,
   font-weight: 700;
 }
 
-/* Item bar — small icon row inside the player's trainer block. */
+/* Item bar — small icon row inside the player's champion block. */
 .item-bar {
   display: flex;
   gap: 4px;
@@ -1894,7 +1894,7 @@ h1, h2, h3,
 }
 
 /* Player-action banner: a subtle line under the turn banner cueing the
-   player to act ("Tap a card to summon" / "Tap one of your Pokémon to
+   player to act ("Tap a card to summon" / "Tap one of your creature to
    attack" / "Click End Turn to pass"). */
 .turn-banner .turn-hint {
   font-size: 9.5px;
@@ -2380,7 +2380,7 @@ h1, h2, h3,
   100% { transform: translate(0, 0); }
 }
 
-/* Full-screen red vignette pulse — fires every time the player's trainer
+/* Full-screen red vignette pulse — fires every time the player's champion
    takes damage so it's impossible to miss "you're under attack." Held
    on the <body> for the duration of the animation. Reduced-motion users
    get a static dim instead of the pulse. */
@@ -2512,22 +2512,22 @@ body.in-arena .landscape-prompt {
   }
   body.in-arena .field-slot .card.summoning::after { font-size: 7px; top: -18px; padding: 2px 6px; }
 
-  /* Trainer rows tighten but stay horizontal — trainer info left,
+  /* Champion rows tighten but stay horizontal — champion info left,
      turn banner right; both stay readable. */
-  body.in-arena .trainer-row {
+  body.in-arena .champion-row {
     padding: 4px 6px;
     gap: 6px;
     flex-wrap: nowrap;
   }
-  body.in-arena .trainer-block {
+  body.in-arena .champion-block {
     padding: 3px 6px 3px 3px;
     gap: 5px;
     min-width: 0;
     flex: 1 1 auto;
   }
-  body.in-arena .trainer-avatar { width: 36px; height: 36px; }
-  body.in-arena .trainer-meta { min-width: 0; }
-  body.in-arena .trainer-label {
+  body.in-arena .champion-avatar { width: 36px; height: 36px; }
+  body.in-arena .champion-meta { min-width: 0; }
+  body.in-arena .champion-label {
     font-size: 9px;
     white-space: nowrap;
     overflow: hidden;
@@ -2638,7 +2638,7 @@ body.in-arena .landscape-prompt {
   /* Type badges + status icons need to be readable, not pixel-perfect. */
   .type-badge { width: 18px; height: 18px; font-size: 10px; }
   .status-icon { font-size: 18px; }
-  /* Boss HP / trainer HP bar — beefier so it reads across the arena. */
+  /* Boss HP / champion HP bar — beefier so it reads across the arena. */
   .hp-bar { height: 10px; }
   .hp-text { font-size: 11px; min-width: 56px; }
   .log-panel {
@@ -2648,10 +2648,10 @@ body.in-arena .landscape-prompt {
     top: 56px;
     padding: 6px 8px;
   }
-  .trainer-meta { min-width: 100px; }
-  .trainer-block { padding: 5px 9px 5px 5px; gap: 7px; }
-  .trainer-avatar { width: 42px; height: 42px; }
-  .trainer-label { font-size: 10px; }
+  .champion-meta { min-width: 100px; }
+  .champion-block { padding: 5px 9px 5px 5px; gap: 7px; }
+  .champion-avatar { width: 42px; height: 42px; }
+  .champion-label { font-size: 10px; }
   .hp-text { font-size: 8px; min-width: 42px; }
   .ep-pip { width: 11px; height: 11px; font-size: 8px; line-height: 11px; }
   .turn-banner { padding: 5px 10px; }
@@ -2659,7 +2659,7 @@ body.in-arena .landscape-prompt {
   .turn-active { font-size: 9px; }
   .turn-banner .turn-hint { font-size: 9px; min-height: 11px; }
   .field { padding: 4px 6px; gap: 6px; }
-  .trainer-row { padding: 6px 8px; gap: 8px; }
+  .champion-row { padding: 6px 8px; gap: 8px; }
   .game-title { font-size: 26px; }
 
   /* Account panel: stack vertically and shrink so it doesn't dominate. */
@@ -2681,8 +2681,8 @@ body.in-arena .landscape-prompt {
    compact the arena. Hide the combat log to leave more room for cards;
    it's accessible via a tap toggle if needed. */
 /* Short landscape arena (e.g. iPhone landscape ~390px tall). Strategy:
-   keep the normal vertical flow (top trainer → ai field → player field →
-   bottom trainer → hand) but make everything compact enough to fit. The
+   keep the normal vertical flow (top champion → ai field → player field →
+   bottom champion → hand) but make everything compact enough to fit. The
    hand and field cards sit below each other, never overlapping. */
 @media (max-height: 480px) {
   /* Hide chrome that would crowd the viewport. */
@@ -2690,12 +2690,12 @@ body.in-arena .landscape-prompt {
   body.in-arena .log-panel { display: none; }
   body.in-arena #mute-toggle { width: 28px; height: 28px; font-size: 12px; top: 4px; right: 4px; }
 
-  /* Top trainer row + turn banner */
-  body.in-arena .trainer-row { padding: 4px 8px 0; }
-  body.in-arena .trainer-block { padding: 3px 8px 3px 3px; gap: 6px; }
-  body.in-arena .trainer-avatar { width: 30px; height: 30px; }
-  body.in-arena .trainer-meta { min-width: 80px; }
-  body.in-arena .trainer-label { font-size: 9px; }
+  /* Top champion row + turn banner */
+  body.in-arena .champion-row { padding: 4px 8px 0; }
+  body.in-arena .champion-block { padding: 3px 8px 3px 3px; gap: 6px; }
+  body.in-arena .champion-avatar { width: 30px; height: 30px; }
+  body.in-arena .champion-meta { min-width: 80px; }
+  body.in-arena .champion-label { font-size: 9px; }
   body.in-arena .hp-text { font-size: 8px; min-width: 38px; }
   body.in-arena .hp-bar { height: 6px; }
   body.in-arena .turn-banner { padding: 3px 8px; }
@@ -2744,9 +2744,9 @@ body.in-arena .landscape-prompt {
   /* Slot label "empty" gets tiny */
   body.in-arena .slot-empty { font-size: 7px; }
 
-  /* Compact action bar inline with bottom trainer row */
+  /* Compact action bar inline with bottom champion row */
   body.in-arena .action-bar button { padding: 5px 10px; font-size: 9px; }
-  body.in-arena .trainer-row.bottom { padding: 0 6px; }
+  body.in-arena .champion-row.bottom { padding: 0 6px; }
 }
 
 /* Short height (landscape phones): tighten the menu vertically. */
@@ -2754,11 +2754,11 @@ body.in-arena .landscape-prompt {
   #menu { padding: 70px 16px 20px; }
   .game-title { font-size: 22px; margin-bottom: 6px; }
   .menu-tagline { font-size: 10px; margin-bottom: 12px; }
-  .trainer-grid { gap: 10px; margin-bottom: 12px; }
-  .trainer-portrait { height: 70px; margin-bottom: 6px; }
-  .trainer-card { padding: 10px; }
-  .trainer-name { font-size: 11px; margin-bottom: 4px; }
-  .trainer-bio { font-size: 10px; line-height: 1.3; }
+  .champion-grid { gap: 10px; margin-bottom: 12px; }
+  .champion-portrait { height: 70px; margin-bottom: 6px; }
+  .champion-card { padding: 10px; }
+  .champion-name { font-size: 11px; margin-bottom: 4px; }
+  .champion-bio { font-size: 10px; line-height: 1.3; }
   .difficulty-grid { gap: 8px; margin-bottom: 16px; }
   .diff-card { padding: 8px 10px; }
   .diff-bio { font-size: 10px; }
@@ -2768,9 +2768,9 @@ body.in-arena .landscape-prompt {
   .start-btn { padding: 9px 18px; font-size: 11px; }
 }
 
-/* Very narrow / portrait phones: stack the trainer + difficulty grids. */
+/* Very narrow / portrait phones: stack the champion + difficulty grids. */
 @media (max-width: 600px) {
-  .trainer-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .champion-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
   .difficulty-grid { grid-template-columns: 1fr; gap: 8px; }
   .play-modes { flex-direction: column; align-items: stretch; }
   .game-title { font-size: 22px; }
@@ -3513,7 +3513,7 @@ html { overscroll-behavior: none; }
   .streak-particles span { animation: none; opacity: 0; }
 }
 
-/* --- Pokédex + Deck search rows ---------------------------------- */
+/* --- Bestiary + Deck search rows ---------------------------------- */
 .pdx-search-row {
   display: flex;
   align-items: center;
@@ -3603,7 +3603,7 @@ html { overscroll-behavior: none; }
   50%      { opacity: 1;    transform: scale(1.05); }
 }
 
-/* --- Explore overlay (browse-the-Pokédex reference) --------------- */
+/* --- Explore overlay (browse-the-Bestiary reference) --------------- */
 .explore-overlay {
   position: fixed;
   inset: 0;

@@ -48,8 +48,8 @@ test("legacy intro_v1 array preserved for backwards compat", () => {
   }
 });
 
-test("chapter speakers map to known Pokémon or 'narrator'/'lance' (UI portrait support)", () => {
-  // The client's INTRO_SPEAKER_TO_POKEMON_ID needs an entry for each
+test("chapter speakers map to known creature or 'narrator'/'lance' (UI portrait support)", () => {
+  // The client's INTRO_SPEAKER_TO_CREATURE_ID needs an entry for each
   // speaker — if a chapter adds a new one, this test catches the
   // missing UI-side mapping before deploy.
   const KNOWN = new Set([
@@ -63,7 +63,7 @@ test("chapter speakers map to known Pokémon or 'narrator'/'lance' (UI portrait 
     for (const sec of c.readAlong) {
       assert.ok(
         KNOWN.has(sec.speaker),
-        `${c.id} ${sec.id}: speaker "${sec.speaker}" not in client's portrait map — add it to INTRO_SPEAKER_TO_POKEMON_ID + SPEAKER_VOICES`,
+        `${c.id} ${sec.id}: speaker "${sec.speaker}" not in client's portrait map — add it to INTRO_SPEAKER_TO_CREATURE_ID + SPEAKER_VOICES`,
       );
     }
   }
@@ -85,7 +85,7 @@ test("/api/story/chapter/:id/intro returns readAlong with audioUrl hydration", a
   const http = require("http");
   const story = require("../server-modules/story");
 
-  // story.mount expects supabase and getPokedex. We don't actually hit
+  // story.mount expects supabase and getBestiary. We don't actually hit
   // either for the /intro route — it's a pure read of CHAPTERS — so
   // stubs are fine.
   const fakeSupabase = { from: () => ({ select: () => ({}), eq: () => ({}), maybeSingle: () => ({}) }) };

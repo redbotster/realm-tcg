@@ -74,7 +74,7 @@ async function main() {
 
   // Close panel, then start a single-player match — should use the saved deck.
   await page.click(".cb-x");
-  await page.click(".trainer-card");
+  await page.click(".champion-card");
   await page.click("#start-btn");
   try { await page.waitForSelector(".mulligan-confirm", { timeout: 12000 }); await page.click(".mulligan-confirm"); } catch {}
   await page.waitForSelector("#hand .card", { timeout: 15000 });

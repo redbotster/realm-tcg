@@ -78,7 +78,7 @@ function makeMatchRecord(matchId, playerId, opts = {}) {
   };
 }
 
-function makePokedex() {
+function makeBestiary() {
   const out = [];
   for (let i = 1; i <= 12; i++) {
     out.push({ id: i, name: `M${i}`, types: ["normal"], tier: ((i - 1) % 5) + 1,
@@ -91,7 +91,7 @@ function makePokedex() {
 let server;
 let port;
 let mountedSupabase;
-let getPokedexFn;
+let getBestiaryFn;
 
 // roomWithLock + roomGet are module-scoped methods on the singleton
 // store. We need to swap them per-test to simulate throws / specific
@@ -109,8 +109,8 @@ before(async () => {
   const app = express();
   app.use(express.json({ limit: "256kb" }));
   mountedSupabase = makeSupabaseStub();
-  getPokedexFn = () => makePokedex();
-  mpHttp.mount(app, mountedSupabase, () => getPokedexFn());
+  getBestiaryFn = () => makeBestiary();
+  mpHttp.mount(app, mountedSupabase, () => getBestiaryFn());
   // Mirror server.js: JSON error middleware. Any throw past the route's
   // own try/catch must still surface as JSON.
   app.use((err, _req, res, _next) => {
@@ -413,7 +413,7 @@ test("every action response across all failure modes is JSON", async () => {
 
 test("MP play-card forwards spellTarget to engine.playCard", async () => {
   // Set up a match where the player holds a Freeze spell and the AI
-  // has a Pokémon on field. Then send a play-card action with
+  // has a creature on field. Then send a play-card action with
   // payload.spellTarget = 0. After the action, the AI's slot 0 should
   // have status.kind = "freeze".
   const { spellToCard, SPELL_CARDS } = require("../shared/spell-cards");

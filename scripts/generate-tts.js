@@ -2,7 +2,7 @@
 // TTS generation pipeline for Reading Mode stories.
 //
 // One-time generation: each section text gets converted to MP3 via the
-// ElevenLabs API (using a voice ID per Pokémon speaker), then uploaded
+// ElevenLabs API (using a voice ID per creature speaker), then uploaded
 // to Supabase Storage (bucket: `tts-audio`). The resulting public URL
 // is recorded in `shared/reading-stories-manifest.json`, which the
 // server loads at boot and merges onto the story sections so the
@@ -21,7 +21,7 @@
 //   node scripts/generate-tts.js --confirm      # generate + upload
 //   node scripts/generate-tts.js --confirm --force  # regenerate even if cached
 //
-// Required env (sourced from ~/.secrets/pokemon.env):
+// Required env (sourced from ~/.secrets/creature.env):
 //   ELEVENLABS_API_KEY     ElevenLabs API token
 //   SUPABASE_PROJECT_ID    e.g. "bphnyyiwwcetryafgjof"
 //   SUPABASE_SERVICE_KEY   service-role key (NOT the anon key — uploads
@@ -33,7 +33,7 @@ const { READING_STORIES } = require("../shared/reading-stories");
 const { BATTLE_EMOTES, EMOTE_VOICES } = require("../shared/battle-emotes");
 const { CHAPTERS } = require("../shared/story-chapters");
 
-const SECRETS_FILE = path.join(process.env.HOME || "", ".secrets", "pokemon.env");
+const SECRETS_FILE = path.join(process.env.HOME || "", ".secrets", "creature.env");
 const MANIFEST_PATH = path.join(__dirname, "..", "shared", "reading-stories-manifest.json");
 const BUCKET = "tts-audio";
 const ELEVEN_BASE = "https://api.elevenlabs.io/v1";
@@ -45,7 +45,7 @@ const ELEVEN_BASE = "https://api.elevenlabs.io/v1";
 // $ELEVENLABS_API_KEY"` and picking from the returned list.
 //
 // Tuned for kid-friendly + character fit: brighter/younger voices for
-// small Pokémon (Pikachu, Caterpie, Jigglypuff), deeper voices for big
+// small creature (Pikachu, Caterpie, Jigglypuff), deeper voices for big
 // ones (Snorlax, Onix), warmer storyteller for the narrator. When the
 // manifest carries a voiceId that no longer matches this map, the
 // `--regenerate-voice-mismatch` flag re-creates just those entries.

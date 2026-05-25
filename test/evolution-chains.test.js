@@ -1,5 +1,5 @@
 // Tests for the evolution-chain table + the server-side stamping pass
-// that bakes `evolves_to_card` onto each Pokémon at boot.
+// that bakes `evolves_to_card` onto each creature at boot.
 
 const { test } = require("node:test");
 const assert = require("node:assert/strict");
@@ -19,7 +19,7 @@ test("EVOLVES_TO maps from-id → to-id (both numeric)", () => {
   }
 });
 
-test("no Pokémon evolves into itself (no infinite loops)", () => {
+test("no creature evolves into itself (no infinite loops)", () => {
   for (const [from, to] of Object.entries(EVOLVES_TO)) {
     assert.notEqual(Number(from), to, `id ${from} evolves into itself`);
   }
@@ -55,7 +55,7 @@ test("classic Gen-1 starter chains are present", () => {
   assert.equal(EVOLVES_TO[148], 149, "Dragonair → Dragonite");
 });
 
-test("final-form Pokémon return null from evolutionFor", () => {
+test("final-form creature return null from evolutionFor", () => {
   // Charizard, Venusaur, Blastoise — no further evolutions.
   assert.equal(evolutionFor(3),   null, "Venusaur");
   assert.equal(evolutionFor(6),   null, "Charizard");
@@ -87,7 +87,7 @@ test("EVOLUTION_KO_THRESHOLD is 2 (slice 9 contract)", () => {
 
 test("server-side stamping: a card with an evolution chain has evolves_to_card baked", () => {
   // Mirror the boot pass server.js does. Confirms the bake produces
-  // self-contained cards (so the engine doesn't need a pokedex
+  // self-contained cards (so the engine doesn't need a bestiary
   // lookup at runtime).
   const { toCard } = require("../shared/deck-builder");
   function fakeRow(id, name) {

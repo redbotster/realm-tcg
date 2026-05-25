@@ -2,7 +2,7 @@ const { test } = require("node:test");
 const assert = require("node:assert/strict");
 const { toCard, buildDeck, tierFromBst } = require("../shared/deck-builder");
 
-// Build a synthetic Pokédex spanning all tiers so the deck builder always has
+// Build a synthetic Bestiary spanning all tiers so the deck builder always has
 // enough variety to satisfy the default distribution.
 function synthDex(n = 200) {
   const rows = [];

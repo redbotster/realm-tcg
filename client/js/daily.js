@@ -31,14 +31,14 @@ export async function renderDailyCard(targetEl, { currentUser } = {}) {
     targetEl.innerHTML = "";
     return;
   }
-  const sprite = today.boss.anchorPokemonId
-    ? `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${today.boss.anchorPokemonId}.png`
+  const sprite = today.boss.anchorCreatureId
+    ? `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/creature/other/official-artwork/${today.boss.anchorCreatureId}.png`
     : null;
   const playedTag = today.alreadyPlayed
     ? `<div class="daily-result-line">${today.alreadyPlayed.won ? "✅ Cleared today" : "❌ Defeated today"} — ${today.alreadyPlayed.turns} turns · ${today.alreadyPlayed.hp_left} HP left</div>`
     : "";
   const stats = await fetch("/api/daily/stats").then((r) => r.ok ? r.json() : null).catch(() => null);
-  const statsLine = stats ? `<div class="daily-stats-line">🌍 ${stats.todayPlayed.toLocaleString()} trainer${stats.todayPlayed === 1 ? "" : "s"} attempted today · ${stats.todayWon.toLocaleString()} won</div>` : "";
+  const statsLine = stats ? `<div class="daily-stats-line">🌍 ${stats.todayPlayed.toLocaleString()} champion${stats.todayPlayed === 1 ? "" : "s"} attempted today · ${stats.todayWon.toLocaleString()} won</div>` : "";
 
   targetEl.innerHTML = `
     <div class="daily-card">
@@ -91,7 +91,7 @@ async function startDailyFight() {
         id: `daily-${_today.dayNumber}`,
         name: `Daily #${_today.dayNumber}`,
         locale: "TODAY'S CHALLENGE",
-        enemyTrainerName: _today.boss.displayName,
+        enemyChampionName: _today.boss.displayName,
         enemyAbility: _today.boss.ability || "lance",
       },
       boss: _today.boss,
@@ -142,7 +142,7 @@ export function showShareDialog(result) {
         <a class="share-social tw" target="_blank" rel="noopener noreferrer"
            href="https://twitter.com/intent/tweet?text=${tweetText}">𝕏 / Twitter</a>
         <a class="share-social rd" target="_blank" rel="noopener noreferrer"
-           href="https://www.reddit.com/submit?title=${encodeURIComponent(`Pokémon TCG Daily #${result.dayNumber}: ${result.bossName}`)}&url=${encodeURIComponent(result.shareUrl)}">Reddit</a>
+           href="https://www.reddit.com/submit?title=${encodeURIComponent(`creature TCG Daily #${result.dayNumber}: ${result.bossName}`)}&url=${encodeURIComponent(result.shareUrl)}">Reddit</a>
         <a class="share-social wa" target="_blank" rel="noopener noreferrer"
            href="https://wa.me/?text=${tweetText}">WhatsApp</a>
         <a class="share-social tg" target="_blank" rel="noopener noreferrer"
@@ -179,7 +179,7 @@ async function nativeShare(result) {
   if (!navigator.share) { copyToClipboard(result.shareText); return; }
   try {
     await navigator.share({
-      title: `Pokémon TCG Daily #${result.dayNumber}`,
+      title: `creature TCG Daily #${result.dayNumber}`,
       text: result.shareText,
       url: result.shareUrl,
     });
@@ -198,8 +198,8 @@ function shareLastResult() {
     ? (p.turns <= 8 ? "★★★★★" : p.turns <= 12 ? "★★★★☆" : p.turns <= 18 ? "★★★☆☆" : "★★☆☆☆")
     : "💀";
   const text = p.won
-    ? `Pokémon TCG Daily #${_today.dayNumber} · ${_today.boss.displayName}\n${stars}  ✅ ${p.turns} turn${p.turns === 1 ? "" : "s"} · ${p.hp_left} HP left\nplay: ${url}`
-    : `Pokémon TCG Daily #${_today.dayNumber} · ${_today.boss.displayName}\n${stars}  ❌ Survived ${p.turns} turns\nplay: ${url}`;
+    ? `creature TCG Daily #${_today.dayNumber} · ${_today.boss.displayName}\n${stars}  ✅ ${p.turns} turn${p.turns === 1 ? "" : "s"} · ${p.hp_left} HP left\nplay: ${url}`
+    : `creature TCG Daily #${_today.dayNumber} · ${_today.boss.displayName}\n${stars}  ❌ Survived ${p.turns} turns\nplay: ${url}`;
   showShareDialog({ shareText: text, shareUrl: url, dayNumber: _today.dayNumber, stars, bossName: _today.boss.displayName });
 }
 
@@ -218,7 +218,7 @@ async function openLeaderboard() {
       <h2>Daily #${data.dayNumber} Leaderboard</h2>
       ${!data.rows.length
         ? `<p class="lb-empty">No one has finished today's challenge yet — be the first!</p>`
-        : `<table class="lb-table"><thead><tr><th>#</th><th>Trainer</th><th>Result</th><th>Turns</th><th>HP</th></tr></thead>
+        : `<table class="lb-table"><thead><tr><th>#</th><th>Champion</th><th>Result</th><th>Turns</th><th>HP</th></tr></thead>
             <tbody>${data.rows.map((r) => `
               <tr class="${r.isYou ? "is-you" : ""}">
                 <td>${r.rank}</td>

@@ -25,14 +25,14 @@ function mkState() {
     log: [], turn: 1, phase: "main", activePlayer: "player",
     players: {
       player: {
-        name: "P", ability: "brock", trainerHp: 30, maxTrainerHp: 30,
+        name: "P", ability: "brock", championHp: 30, maxChampionHp: 30,
         energy: 5, maxEnergy: 5,
         deck: [mkCard(99), mkCard(100), mkCard(101)],
         hand: [], field: [null, null, null, null, null], discard: [],
         items: defaultKit(),
       },
       ai: {
-        name: "A", ability: "lance", trainerHp: 30, maxTrainerHp: 30,
+        name: "A", ability: "lance", championHp: 30, maxChampionHp: 30,
         energy: 5, maxEnergy: 5, deck: [], hand: [], field: [null, null, null, null, null], discard: [], items: defaultKit(),
       },
     },

@@ -10,10 +10,10 @@ import {
   aiTakeTurn,
   effectiveCost,
   mulliganHand,
-  TRAINERS,
+  CHAMPIONS,
   FIELD_SIZE,
-  TRAINER_START_HP,
-  trainerMascotUrl,
+  CHAMPION_START_HP,
+  championMascotUrl,
 } from "./game.js";
 import { renderCard } from "./cards.js";
 import { fireAttackTrail, floatDamage, knockOut, flashVerdict, shakeHit } from "./animations.js";
@@ -39,7 +39,7 @@ import * as mp from "./multiplayer.js";
 import * as rewards from "./rewards.js";
 import * as leaderboard from "./leaderboard.js";
 import * as achievements from "./achievements.js";
-import * as pokedex from "./pokedex.js";
+import * as bestiary from "./bestiary.js";
 import * as story from "./story.js";
 import * as trading from "./trading.js";
 import * as daily from "./daily.js";
@@ -52,11 +52,11 @@ const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 
 let state = null; // current game state
 let selectedAttacker = null; // { slot: number } when player has clicked one of their field cards
-let aiDifficulty = localStorage.getItem("pokemon-tcg-difficulty") || "easy";
+let aiDifficulty = localStorage.getItem("creature-tcg-difficulty") || "easy";
 let currentUser = null;     // populated after passkey login/register or /auth/me probe
 let gameMode = "solo";      // "solo" | "mp"
 let mpOpponent = null;      // { displayName, ability } in multiplayer
-let chosenTrainer = null;   // remember during multiplayer matchmaking
+let chosenChampion = null;   // remember during multiplayer matchmaking
 let soloSessionId = null;   // server-tracked anti-cheat session for solo matches
 let chosenAbilityId = "basic"; // ability the player will use on their next attack
 let pendingItem = null;        // when set, next slot click targets this item
@@ -64,14 +64,14 @@ let pendingReplace = null;     // { handIndex } — next own-field click sacrifi
 let pendingSpell = null;       // { handIndex, target } — next field click resolves this spell ("enemyField" | "ownField")
 let currentTheme = null;       // { type, endsAt } — theme of the week
 let aiPersonality = null;      // chosen at match start so it stays consistent
-let _prevHps = { player: null, ai: null }; // tracks trainer HPs between renders for the flash
+let _prevHps = { player: null, ai: null }; // tracks champion HPs between renders for the flash
 let _prevEnergy = null; // tracks your energy across renders so we can pip-refill the new ones
 let _prevActivePlayer = null; // tracks active player so we can fire a turn-start cue
 // Whether the player has explicitly lifted their hand to full view. Persists
 // across renders + game sessions so mobile users don't have to re-toggle
 // every turn.
 let _handLifted = false;
-try { _handLifted = localStorage.getItem("pokemon-tcg-hand-lifted") === "1"; } catch {}
+try { _handLifted = localStorage.getItem("creature-tcg-hand-lifted") === "1"; } catch {}
 // Touch devices get a "tap-to-peek, tap-again-to-play" affordance so users
 // can read a card's abilities before committing. Desktop one-click play
 // stays unchanged.
@@ -81,7 +81,7 @@ let _peekedHandIdx = null;
 // auto-tuning + juiced first-win. Stored in localStorage so anonymous
 // users get the same first-match treatment even without an account.
 // Big-deal moment for the player's first-ever win. A burst of confetti
-// + a "WELCOME, TRAINER" banner that sits above the regular game-over
+// + a "WELCOME, CHAMPION" banner that sits above the regular game-over
 // recap.  Cleans up after 4 seconds.
 // Big-deal momentum banner for win-streak milestones (3 / 5 / 10).
 // Intensity drives the glow + particle count. Stays on-screen ~2.4s
@@ -123,7 +123,7 @@ function celebrateFirstWin() {
   banner.className = "first-win-banner";
   banner.innerHTML = `
     <div class="fwb-tag">FIRST VICTORY</div>
-    <div class="fwb-msg">You did it. Welcome, Trainer.</div>`;
+    <div class="fwb-msg">You did it. Welcome, Champion.</div>`;
   document.body.appendChild(banner);
   requestAnimationFrame(() => banner.classList.add("show"));
   setTimeout(() => {
@@ -150,16 +150,16 @@ function celebrateFirstWin() {
 }
 
 function hasPlayedBefore() {
-  try { return localStorage.getItem("pokemon-tcg-played-once") === "1"; } catch { return false; }
+  try { return localStorage.getItem("creature-tcg-played-once") === "1"; } catch { return false; }
 }
 function markHasPlayed() {
-  try { localStorage.setItem("pokemon-tcg-played-once", "1"); } catch {}
+  try { localStorage.setItem("creature-tcg-played-once", "1"); } catch {}
 }
 function hasWonBefore() {
-  try { return localStorage.getItem("pokemon-tcg-won-once") === "1"; } catch { return false; }
+  try { return localStorage.getItem("creature-tcg-won-once") === "1"; } catch { return false; }
 }
 function markHasWon() {
-  try { localStorage.setItem("pokemon-tcg-won-once", "1"); } catch {}
+  try { localStorage.setItem("creature-tcg-won-once", "1"); } catch {}
 }
 
 function refreshHandPeek() {
@@ -206,7 +206,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   const urlParams = new URLSearchParams(location.search);
   const incomingCode = urlParams.get("code");
   if (incomingCode) {
-    flashVerdict(`Tap a trainer, then join ${incomingCode.toUpperCase()}`, "super");
+    flashVerdict(`Tap a champion, then join ${incomingCode.toUpperCase()}`, "super");
     window.__incomingRoomCode = incomingCode.toUpperCase();
   }
   // Spectator deep-link: ?spectate=<matchId> opens watch mode.
@@ -243,7 +243,7 @@ window.addEventListener("DOMContentLoaded", async () => {
         fetch(`/api/deck-code/${encodeURIComponent(versusDeck)}/owner`).then((r) => r.ok ? r.json() : null)
           .then((data) => { if (data?.owner) window.__versusOwner = data.owner.displayName; })
           .catch(() => {});
-        flashVerdict("Tap a trainer to battle the shared deck.", "super");
+        flashVerdict("Tap a champion to battle the shared deck.", "super");
       } catch {
         flashVerdict("Couldn't load battle deck.", "weak");
       }
@@ -266,16 +266,16 @@ function renderMenu() {
   menu.classList.remove("hidden");
   document.body.classList.remove("in-arena");
 
-  const trainerEls = Object.values(TRAINERS).map((t) => {
+  const championEls = Object.values(CHAMPIONS).map((t) => {
     const c = TYPE_COLORS[t.portrait] || "#888";
-    const art = trainerMascotUrl(t.id);
+    const art = championMascotUrl(t.id);
     return `
-      <button class="trainer-card" data-trainer="${t.id}" style="--accent:${c}">
-        <div class="trainer-portrait" style="background:linear-gradient(160deg, ${c}, #0c0d1a)">
+      <button class="champion-card" data-champion="${t.id}" style="--accent:${c}">
+        <div class="champion-portrait" style="background:linear-gradient(160deg, ${c}, #0c0d1a)">
           ${art ? `<img src="${art}" alt="${escape(t.name)}" loading="lazy">` : ""}
         </div>
-        <div class="trainer-name">${t.name}</div>
-        <div class="trainer-bio">${t.bio}</div>
+        <div class="champion-name">${t.name}</div>
+        <div class="champion-bio">${t.bio}</div>
       </button>`;
   });
 
@@ -294,7 +294,7 @@ function renderMenu() {
   menu.innerHTML = `
     ${renderAccountPanel()}
     <div class="menu-stage">
-      <h1 class="game-title">Pokémon TCG</h1>
+      <h1 class="game-title">creature TCG</h1>
       <div class="menu-tagline">Build a 30-card deck. Wield Legendary signature moves. Out-strategize your rival.</div>
       ${renderFeatureStrip()}
       <div id="daily-card-slot"></div>
@@ -302,25 +302,25 @@ function renderMenu() {
       ${currentTheme?.type ? `
         <div class="theme-banner" style="--theme:${TYPE_COLORS[currentTheme.type] || '#888'}">
           <span class="theme-pill">Theme week</span>
-          <span class="theme-text"><strong>${currentTheme.type}</strong> Pokémon get +1 ATK and appear more often in reward drops</span>
+          <span class="theme-text"><strong>${currentTheme.type}</strong> creature get +1 ATK and appear more often in reward drops</span>
         </div>
       ` : ""}
       <div id="daily-streak-banner"></div>
       <div id="daily-quests-panel"></div>
-      <div class="trainer-grid">${trainerEls.join("")}</div>
+      <div class="champion-grid">${championEls.join("")}</div>
       <div class="section-label">Solo vs. AI difficulty</div>
       <div class="difficulty-grid">${difficultyEls.join("")}</div>
       <div class="menu-foot">
-        <button class="start-btn" id="start-btn" disabled>Choose a trainer to begin</button>
+        <button class="start-btn" id="start-btn" disabled>Choose a champion to begin</button>
         <div class="play-modes">
           <button class="mode-btn" id="mode-mp-match" disabled>Find online match</button>
           <button class="mode-btn" id="mode-mp-friend" disabled>Play vs friend (code)</button>
           <button class="mode-btn" id="mode-champion" disabled>Fight a Champion</button>
-          <button class="mode-btn story-launch" id="mode-story" disabled title="${currentUser ? "Pick a trainer to begin Story Mode" : "Sign in to unlock Story Mode"}">📖 Story Mode</button>
-          <button class="mode-btn" id="mode-trade" ${currentUser ? "" : "disabled"} title="${currentUser ? "Trade cards with other trainers" : "Sign in to trade"}">🔄 Trade Cards</button>
+          <button class="mode-btn story-launch" id="mode-story" disabled title="${currentUser ? "Pick a champion to begin Story Mode" : "Sign in to unlock Story Mode"}">📖 Story Mode</button>
+          <button class="mode-btn" id="mode-trade" ${currentUser ? "" : "disabled"} title="${currentUser ? "Trade cards with other champions" : "Sign in to trade"}">🔄 Trade Cards</button>
           <button class="mode-btn puzzle-launch" id="mode-puzzle" title="Today's chess-style card puzzle">🧩 Daily Puzzle</button>
-          <button class="mode-btn" id="mode-reading" title="Read along with Pokémon friends">📚 Story Time</button>
-          <button class="mode-btn" id="mode-explore" title="Browse every Pokémon in the Pokédex">🔍 Explore</button>
+          <button class="mode-btn" id="mode-reading" title="Read along with creature friends">📚 Story Time</button>
+          <button class="mode-btn" id="mode-explore" title="Browse every creature in the Bestiary">🔍 Explore</button>
           <button class="mode-btn" id="how-to-play-btn">How to play</button>
         </div>
       </div>
@@ -328,35 +328,35 @@ function renderMenu() {
   `;
   wireAccountPanel();
 
-  let chosen = chosenTrainer;
+  let chosen = chosenChampion;
   if (chosen) {
-    $$(".trainer-card", menu).forEach((el) => {
-      if (el.dataset.trainer === chosen) el.classList.add("selected");
+    $$(".champion-card", menu).forEach((el) => {
+      if (el.dataset.champion === chosen) el.classList.add("selected");
     });
     const btn = $("#start-btn");
     btn.disabled = false;
-    btn.textContent = `Battle as ${TRAINERS[chosen].name} ▸`;
+    btn.textContent = `Battle as ${CHAMPIONS[chosen].name} ▸`;
     $("#mode-mp-match").disabled = false;
     $("#mode-mp-friend").disabled = false;
     $("#mode-champion").disabled = false;
     if (currentUser) $("#mode-story").disabled = false;
   }
-  $$(".trainer-card", menu).forEach((el) => {
+  $$(".champion-card", menu).forEach((el) => {
     el.addEventListener("click", () => {
-      $$(".trainer-card", menu).forEach((b) => b.classList.remove("selected"));
+      $$(".champion-card", menu).forEach((b) => b.classList.remove("selected"));
       el.classList.add("selected");
-      chosen = el.dataset.trainer;
-      chosenTrainer = chosen;
+      chosen = el.dataset.champion;
+      chosenChampion = chosen;
       const btn = $("#start-btn");
       btn.disabled = false;
-      btn.textContent = `Battle as ${TRAINERS[chosen].name} ▸`;
+      btn.textContent = `Battle as ${CHAMPIONS[chosen].name} ▸`;
       $("#mode-mp-match").disabled = false;
       $("#mode-mp-friend").disabled = false;
       $("#mode-champion").disabled = false;
       if (currentUser) $("#mode-story").disabled = false;
 
       // QR auto-join: if we landed here via ?code=XXXXX, jump straight to
-      // the friend-join flow now that a trainer is picked.
+      // the friend-join flow now that a champion is picked.
       if (window.__incomingRoomCode) {
         const code = window.__incomingRoomCode;
         delete window.__incomingRoomCode;
@@ -374,7 +374,7 @@ function renderMenu() {
       $$(".diff-card", menu).forEach((b) => b.classList.remove("selected"));
       el.classList.add("selected");
       aiDifficulty = el.dataset.difficulty;
-      localStorage.setItem("pokemon-tcg-difficulty", aiDifficulty);
+      localStorage.setItem("creature-tcg-difficulty", aiDifficulty);
     });
   });
 
@@ -385,9 +385,9 @@ function renderMenu() {
     btn.textContent = "Shuffling decks…";
     try {
       gameMode = "solo";
-      const trainerIds = Object.keys(TRAINERS);
-      const otherTrainers = trainerIds.filter((id) => id !== chosen);
-      const aiTrainer = otherTrainers[Math.floor(Math.random() * otherTrainers.length)];
+      const championIds = Object.keys(CHAMPIONS);
+      const otherChampions = championIds.filter((id) => id !== chosen);
+      const aiChampion = otherChampions[Math.floor(Math.random() * otherChampions.length)];
       // If the visitor arrived via a /?v=<code> Friend Battle link, the
       // AI plays that deck instead of a random roll.
       let [playerDeck, aiDeck] = await Promise.all([
@@ -417,7 +417,7 @@ function renderMenu() {
         playerDeck,
         aiDeck,
         playerAbility: chosen,
-        aiAbility: aiTrainer,
+        aiAbility: aiChampion,
         firstPlayer: "player",
         masteryById,
       });
@@ -467,12 +467,12 @@ function renderMenu() {
       document.body.classList.add("in-arena");
       startBGM();
       await playVsCinematic({
-        playerName: TRAINERS[chosen].name,
-        playerSprite: trainerMascotUrl(chosen),
-        playerColor: TYPE_COLORS[TRAINERS[chosen].portrait] || "#888",
-        aiName: TRAINERS[aiTrainer].name,
-        aiSprite: trainerMascotUrl(aiTrainer),
-        aiColor: TYPE_COLORS[TRAINERS[aiTrainer].portrait] || "#888",
+        playerName: CHAMPIONS[chosen].name,
+        playerSprite: championMascotUrl(chosen),
+        playerColor: TYPE_COLORS[CHAMPIONS[chosen].portrait] || "#888",
+        aiName: CHAMPIONS[aiChampion].name,
+        aiSprite: championMascotUrl(aiChampion),
+        aiColor: TYPE_COLORS[CHAMPIONS[aiChampion].portrait] || "#888",
         subtitle: state.modifierActive
           ? `${state.modifierActive.icon} ${state.modifierActive.name}`
           : (isFirstMatch ? "Your first rival" : `${({ aggressive: "Aggressive", balanced: "Balanced", tactical: "Tactical" })[aiPersonality]} Rival`),
@@ -510,10 +510,10 @@ function renderMenu() {
   $("#mode-explore")?.addEventListener("click", openExplore);
   $("#how-to-play-btn").addEventListener("click", showHowToPlay);
 
-  // Daily streak banner + trainer level chip + daily quests (signed-in only).
+  // Daily streak banner + champion level chip + daily quests (signed-in only).
   if (currentUser) {
     loadAndRenderStreak();
-    loadAndRenderTrainerLevel();
+    loadAndRenderChampionLevel();
     loadAndRenderQuests();
   }
   // Daily boss landing card — shown to everyone (anonymous users see the
@@ -522,7 +522,7 @@ function renderMenu() {
   if (currentUser) loadAndRenderChallenges();
 
   // First-time helper: nudge new visitors who haven't started a game yet.
-  if (!localStorage.getItem("pokemon-tcg-seen-howto")) {
+  if (!localStorage.getItem("creature-tcg-seen-howto")) {
     setTimeout(() => {
       if (document.body.contains($("#how-to-play-btn"))) {
         $("#how-to-play-btn").classList.add("can-act");
@@ -555,7 +555,7 @@ async function loadAndRenderChallenges() {
         <ul class="ci-list">
           ${recent.map((r) => `
             <li class="ci-row ${r.won ? "lost" : "won"}">
-              <span class="ci-who">${escape(r.challenger_name || "Anonymous Trainer")}</span>
+              <span class="ci-who">${escape(r.challenger_name || "Anonymous Champion")}</span>
               <span class="ci-verdict">${r.won ? "beat your deck" : "lost to your deck"}</span>
               <span class="ci-meta">${r.turns}t · ${r.hp_left}HP</span>
             </li>`).join("")}
@@ -637,8 +637,8 @@ async function claimQuest(id) {
   }
 }
 
-async function loadAndRenderTrainerLevel() {
-  const chip = $("#trainer-level-chip");
+async function loadAndRenderChampionLevel() {
+  const chip = $("#champion-level-chip");
   if (!chip) return;
   try {
     const r = await fetch("/me/xp");
@@ -670,7 +670,7 @@ async function grantXp({ won, kos, crits }) {
         setTimeout(() => flashVerdict(`Win streak: ${data.winStreak}`, "super"), 600);
       }
       if (data.leveledUp) {
-        setTimeout(() => flashVerdict(`Trainer Level ${data.level}!`, "super"), 1300);
+        setTimeout(() => flashVerdict(`Champion Level ${data.level}!`, "super"), 1300);
       }
     }, 600);
   } catch {}
@@ -734,7 +734,7 @@ async function claimStreak() {
 // endpoint reads to grant a beefier offer on win.
 let _championId = null;
 async function openChampionPicker() {
-  if (!chosenTrainer) { flashVerdict("Pick a trainer first", "weak"); return; }
+  if (!chosenChampion) { flashVerdict("Pick a champion first", "weak"); return; }
   let overlay = document.querySelector(".champ-overlay");
   if (overlay) overlay.remove();
   overlay = document.createElement("div");
@@ -750,7 +750,7 @@ async function openChampionPicker() {
       <div class="champ-list">
         ${champions.map((c) => `
           <button class="champ-row" data-id="${c.id}">
-            <img class="champ-art" src="https://play.pokemonshowdown.com/sprites/trainers/${c.portrait}.png" alt="${escape(c.name)}" loading="lazy">
+            <img class="champ-art" src="https://play.creatureshowdown.com/sprites/champions/${c.portrait}.png" alt="${escape(c.name)}" loading="lazy">
             <div class="champ-body">
               <div class="champ-name">${escape(c.name)}</div>
               <div class="champ-titletag">${escape(c.title)}</div>
@@ -780,7 +780,7 @@ let _storyContext = null; // { chapterId, sessionId, chapter } during a story fi
 // Daily Boss wrapper around the regular boss-fight path. Same engine,
 // same arena — finishDaily replaces finishChapter on game-over.
 async function startDailyBossFight({ sessionId, chapter, boss, deck, phaseRules, summonCards }) {
-  if (!chosenTrainer) chosenTrainer = currentUser?.trainer_ability || Object.keys(TRAINERS)[0];
+  if (!chosenChampion) chosenChampion = currentUser?.champion_ability || Object.keys(CHAMPIONS)[0];
   await startBossFight({
     chapterId: chapter.id,
     sessionId,
@@ -797,12 +797,12 @@ async function startDailyBossFight({ sessionId, chapter, boss, deck, phaseRules,
 
 async function startBossFight({ chapterId, sessionId, chapter, boss, deck, phaseRules, summonCards }) {
   // Story can be launched from a chapter card directly — be lenient about
-  // trainer pick. Default to the user's saved trainer ability or the first
-  // trainer in the registry so we never silently bounce back to the menu.
-  if (!chosenTrainer) {
-    chosenTrainer = currentUser?.trainer_ability || Object.keys(TRAINERS)[0];
+  // champion pick. Default to the user's saved champion ability or the first
+  // champion in the registry so we never silently bounce back to the menu.
+  if (!chosenChampion) {
+    chosenChampion = currentUser?.champion_ability || Object.keys(CHAMPIONS)[0];
   }
-  flashVerdict(`${chapter.enemyTrainerName} blocks your path!`, "super");
+  flashVerdict(`${chapter.enemyChampionName} blocks your path!`, "super");
   const playerDeck = await loadPlayerDeck();
   gameMode = "story";
   _storyContext = { chapterId, sessionId, chapter };
@@ -810,18 +810,18 @@ async function startBossFight({ chapterId, sessionId, chapter, boss, deck, phase
   state = createGame({
     playerDeck,
     aiDeck: deck,
-    playerAbility: chosenTrainer,
+    playerAbility: chosenChampion,
     aiAbility: chapter.enemyAbility || "lance",
     firstPlayer: "player",
-    aiTrainerHp: boss.maxHp,
-    aiName: chapter.enemyTrainerName || boss.displayName,
+    aiChampionHp: boss.maxHp,
+    aiName: chapter.enemyChampionName || boss.displayName,
   });
   if (currentTheme?.type) state.themeType = currentTheme.type;
   state.boss = {
     chapterId,
     displayName: boss.displayName,
     maxHp: boss.maxHp,
-    anchorPokemonId: boss.anchorPokemonId,
+    anchorCreatureId: boss.anchorCreatureId,
     types: boss.types || [],
     phaseRules: (phaseRules || []).map((r) => ({ ...r, applied: false })),
     summonCards: summonCards || {},
@@ -842,7 +842,7 @@ async function startBossFight({ chapterId, sessionId, chapter, boss, deck, phase
 }
 
 async function startChampionFight(championId) {
-  if (!chosenTrainer) return;
+  if (!chosenChampion) return;
   flashVerdict("Engaging Champion…", "super");
   try {
     const r = await fetch(`/api/champion/${championId}/deck`);
@@ -854,8 +854,8 @@ async function startChampionFight(championId) {
     state = createGame({
       playerDeck,
       aiDeck,
-      playerAbility: chosenTrainer,
-      aiAbility: "lance", // generic so the AI trainer has SOMETHING; flavor only
+      playerAbility: chosenChampion,
+      aiAbility: "lance", // generic so the AI champion has SOMETHING; flavor only
       firstPlayer: "player",
     });
     if (currentTheme?.type) state.themeType = currentTheme.type;
@@ -888,7 +888,7 @@ async function startChampionFight(championId) {
   }
 }
 
-// Opens the Pokédex Explore overlay. Lazy-loads so the ~6KB module +
+// Opens the Bestiary Explore overlay. Lazy-loads so the ~6KB module +
 // CSS only ship when the player actually clicks Explore.
 async function openExplore() {
   const mod = await import("./explore.js");
@@ -922,7 +922,7 @@ async function openReadingMode() {
 }
 
 function showHowToPlay() {
-  localStorage.setItem("pokemon-tcg-seen-howto", "1");
+  localStorage.setItem("creature-tcg-seen-howto", "1");
   document.querySelector(".howto-overlay")?.remove();
   const o = document.createElement("div");
   o.className = "howto-overlay";
@@ -933,14 +933,14 @@ function showHowToPlay() {
         <div class="howto-num">1</div>
         <div>
           <strong>Each turn</strong> you draw a card and your max Energy ⚡ grows
-          by 1 (up to 10). Play Pokémon from your hand by clicking them — they
+          by 1 (up to 10). Play creature from your hand by clicking them — they
           cost Energy based on their tier.
         </div>
       </div>
       <div class="howto-step">
         <div class="howto-num">2</div>
         <div>
-          <strong>To attack</strong>, tap one of your Pokémon to select it, then
+          <strong>To attack</strong>, tap one of your creature to select it, then
           choose its <em>Basic</em> attack (free) or its <em>Special</em> attack
           (costs extra Energy, more damage, often inflicts a status).
         </div>
@@ -948,8 +948,8 @@ function showHowToPlay() {
       <div class="howto-step">
         <div class="howto-num">3</div>
         <div>
-          <strong>Then tap a target</strong> — an enemy Pokémon, or the opposing
-          trainer's portrait when their field is empty. Reduce their trainer's
+          <strong>Then tap a target</strong> — an enemy creature, or the opposing
+          champion's portrait when their field is empty. Reduce their champion's
           HP from 30 to 0 to win.
         </div>
       </div>
@@ -983,15 +983,15 @@ function render() {
   const arena = $("#arena");
   arena.innerHTML = `
     <div class="arena-bg"></div>
-    <div class="trainer-row top">
-      <div class="trainer-block ai${state.activePlayer === "ai" && !state.winner ? " is-turn" : ""}">
-        <div class="trainer-avatar" data-ability="${state.players.ai.ability}">
-          ${trainerMascotUrl(state.players.ai.ability) ? `<img src="${trainerMascotUrl(state.players.ai.ability)}" alt="${escape(TRAINERS[state.players.ai.ability]?.name || "")}" loading="lazy">` : ""}
+    <div class="champion-row top">
+      <div class="champion-block ai${state.activePlayer === "ai" && !state.winner ? " is-turn" : ""}">
+        <div class="champion-avatar" data-ability="${state.players.ai.ability}">
+          ${championMascotUrl(state.players.ai.ability) ? `<img src="${championMascotUrl(state.players.ai.ability)}" alt="${escape(CHAMPIONS[state.players.ai.ability]?.name || "")}" loading="lazy">` : ""}
         </div>
-        <div class="trainer-meta">
-          <div class="trainer-label">${escape(opponentLabel())} (${TRAINERS[state.players.ai.ability]?.name || state.players.ai.ability})</div>
-          ${hpBar(state.players.ai.trainerHp, state.players.ai.maxTrainerHp)}
-          <div class="trainer-resources">
+        <div class="champion-meta">
+          <div class="champion-label">${escape(opponentLabel())} (${CHAMPIONS[state.players.ai.ability]?.name || state.players.ai.ability})</div>
+          ${hpBar(state.players.ai.championHp, state.players.ai.maxChampionHp)}
+          <div class="champion-resources">
             <span>✋ ${state.players.ai.hand.length}</span>
             <span>📚 ${state.players.ai.deck.length}</span>
           </div>
@@ -1010,15 +1010,15 @@ function render() {
     <div class="field ai-field" id="ai-field"></div>
     <div class="field player-field" id="player-field"></div>
 
-    <div class="trainer-row bottom">
-      <div class="trainer-block player${state.activePlayer === "player" && !state.winner ? " is-turn" : ""}">
-        <div class="trainer-avatar" data-ability="${state.players.player.ability}">
-          ${trainerMascotUrl(state.players.player.ability) ? `<img src="${trainerMascotUrl(state.players.player.ability)}" alt="${escape(TRAINERS[state.players.player.ability]?.name || "")}" loading="lazy">` : ""}
+    <div class="champion-row bottom">
+      <div class="champion-block player${state.activePlayer === "player" && !state.winner ? " is-turn" : ""}">
+        <div class="champion-avatar" data-ability="${state.players.player.ability}">
+          ${championMascotUrl(state.players.player.ability) ? `<img src="${championMascotUrl(state.players.player.ability)}" alt="${escape(CHAMPIONS[state.players.player.ability]?.name || "")}" loading="lazy">` : ""}
         </div>
-        <div class="trainer-meta">
-          <div class="trainer-label">${escape(youLabel())} (${TRAINERS[state.players.player.ability]?.name || state.players.player.ability})</div>
-          ${hpBar(state.players.player.trainerHp, state.players.player.maxTrainerHp)}
-          <div class="trainer-resources">
+        <div class="champion-meta">
+          <div class="champion-label">${escape(youLabel())} (${CHAMPIONS[state.players.player.ability]?.name || state.players.player.ability})</div>
+          ${hpBar(state.players.player.championHp, state.players.player.maxChampionHp)}
+          <div class="champion-resources">
             <div class="energy-pips" title="Energy ${state.players.player.energy}/${state.players.player.maxEnergy}">
               ${renderEnergyPips(state.players.player.energy, state.players.player.maxEnergy)}
             </div>
@@ -1065,7 +1065,7 @@ function render() {
     onGameOver();
   });
 
-  bindTrainerAttackTarget();
+  bindChampionAttackTarget();
   bindItemBar();
   bindDragAttack();
   startTurnTimer();
@@ -1087,16 +1087,16 @@ function render() {
   }
   _prevActivePlayer = state.activePlayer;
 
-  // Trainer HP flash: if either side's HP dropped vs the previous render,
+  // Champion HP flash: if either side's HP dropped vs the previous render,
   // run the damage animation on that bar. When the PLAYER's HP drops
   // also fire a full-screen red vignette + scream the damage as a
-  // big floating number on the trainer block — without this, time-
-  // pressure ticks and trainer-targeted attacks were easy to miss.
+  // big floating number on the champion block — without this, time-
+  // pressure ticks and champion-targeted attacks were easy to miss.
   for (const side of ["player", "ai"]) {
-    const cur = state.players[side].trainerHp;
+    const cur = state.players[side].championHp;
     const prev = _prevHps[side];
     if (prev != null && cur < prev) {
-      const bar = $(`.trainer-block.${side} .hp-bar`);
+      const bar = $(`.champion-block.${side} .hp-bar`);
       if (bar) {
         bar.classList.remove("damaged");
         // eslint-disable-next-line no-unused-expressions
@@ -1105,7 +1105,7 @@ function render() {
       }
       if (side === "player") {
         const lost = prev - cur;
-        const block = $(".trainer-block.player");
+        const block = $(".champion-block.player");
         if (block) {
           floatDamage(block, `-${lost}`, { kind: lost >= 6 ? "crit" : "hit" });
           shakeHit(block);
@@ -1121,7 +1121,7 @@ function render() {
 
 // Coach the player about what to do next. Reads state to figure out which
 // action is the most useful nudge.
-// Three featured legendaries above the trainer grid — rotates each page-load
+// Three featured legendaries above the champion grid — rotates each page-load
 // from a small curated pool of icons with custom signatures.
 const FEATURED_POOL = [
   { id: 150, name: "Mewtwo",   tag: "Recover",        desc: "Heals 3 HP every turn it survives" },
@@ -1130,7 +1130,7 @@ const FEATURED_POOL = [
   { id: 249, name: "Lugia",    tag: "Aeroblast",      desc: "Every attack ignores defense" },
   { id: 145, name: "Zapdos",   tag: "Thunderstorm",   desc: "Doubles your crit chance" },
   { id: 493, name: "Arceus",   tag: "Judgment",       desc: "Heals your whole field on summon" },
-  { id: 382, name: "Kyogre",   tag: "Drizzle",        desc: "Your Water Pokémon strike for +1" },
+  { id: 382, name: "Kyogre",   tag: "Drizzle",        desc: "Your Water creature strike for +1" },
   { id: 384, name: "Rayquaza", tag: "Dragon Ascent",  desc: "+1 ATK each turn, up to +5" },
 ];
 function renderFeatureStrip() {
@@ -1146,7 +1146,7 @@ function renderFeatureStrip() {
     <div class="feature-strip">
       ${picks.map((c) => `
         <div class="feature-card">
-          <div class="feature-art" style="background-image:url('https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${c.id}.png')"></div>
+          <div class="feature-art" style="background-image:url('https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/creature/other/official-artwork/${c.id}.png')"></div>
           <div class="feature-body">
             <div class="feature-name">${escape(c.name)}</div>
             <div class="feature-ability">⭐ ${escape(c.tag)}</div>
@@ -1159,7 +1159,7 @@ function renderFeatureStrip() {
 }
 
 // Drag-to-attack — players can grab one of their ready attackers and drop
-// it on an enemy card or the opposing trainer block. Uses native HTML5
+// it on an enemy card or the opposing champion block. Uses native HTML5
 // drag-and-drop; click-to-attack stays as fallback for touch and for the
 // ability-popover path.
 let _dragSlot = null;
@@ -1199,22 +1199,22 @@ function bindDragAttack() {
     });
   });
 
-  // Trainer block as a drop target when their field is empty.
-  const trainerBlock = $(".trainer-row.top .trainer-block.ai");
-  if (trainerBlock) {
-    trainerBlock.addEventListener("dragover", (e) => {
+  // Champion block as a drop target when their field is empty.
+  const championBlock = $(".champion-row.top .champion-block.ai");
+  if (championBlock) {
+    championBlock.addEventListener("dragover", (e) => {
       if (_dragSlot == null) return;
       e.preventDefault();
-      trainerBlock.classList.add("drop-hover");
+      championBlock.classList.add("drop-hover");
     });
-    trainerBlock.addEventListener("dragleave", () => trainerBlock.classList.remove("drop-hover"));
-    trainerBlock.addEventListener("drop", (e) => {
+    championBlock.addEventListener("dragleave", () => championBlock.classList.remove("drop-hover"));
+    championBlock.addEventListener("drop", (e) => {
       e.preventDefault();
-      trainerBlock.classList.remove("drop-hover");
+      championBlock.classList.remove("drop-hover");
       if (_dragSlot == null) return;
       const fromSlot = _dragSlot;
       _dragSlot = null;
-      performAttackFromDrag(fromSlot, "trainer");
+      performAttackFromDrag(fromSlot, "champion");
     });
   }
 }
@@ -1229,8 +1229,8 @@ function performAttackFromDrag(fromSlot, target) {
     return;
   }
   const attackerEl = $(`.player-field .field-slot[data-slot="${fromSlot}"] .card`);
-  const defenderEl = target === "trainer"
-    ? $(".trainer-block.ai")
+  const defenderEl = target === "champion"
+    ? $(".champion-block.ai")
     : $(`.ai-field .field-slot[data-slot="${target}"] .card`);
   const attackerInst = state.players.player.field[fromSlot];
   const result = attack(state, "player", fromSlot, target, { abilityId: "basic" });
@@ -1307,7 +1307,7 @@ function bindItemBar() {
         selectedAttacker = null;
         hideAbilityPopover();
         chosenAbilityId = "basic";
-        flashVerdict(`${def.name}: tap one of your Pokémon`, "super");
+        flashVerdict(`${def.name}: tap one of your creature`, "super");
         render();
       }
     });
@@ -1356,22 +1356,22 @@ function turnHint() {
   const oppField = state.players.ai.field.filter(Boolean);
 
   if (pendingReplace != null) {
-    return "Tap one of your Pokémon to sacrifice (it will be discarded)";
+    return "Tap one of your creature to sacrifice (it will be discarded)";
   }
   if (pendingItem != null) {
-    return "Tap one of your Pokémon to use the item on";
+    return "Tap one of your creature to use the item on";
   }
   if (selectedAttacker != null) {
     if (oppField.length > 0) return "Pick an attack, then tap your target";
-    return "Pick an attack, then tap the opposing trainer";
+    return "Pick an attack, then tap the opposing champion";
   }
 
-  // Are any of our Pokémon ready to attack?
+  // Are any of our creature ready to attack?
   const readyAttackers = p.field.filter(
     (s) => s && !s.summoningSickness && !s.attackedThisTurn,
   );
   if (readyAttackers.length > 0) {
-    return `Tap one of your ${readyAttackers.length === 1 ? "Pokémon" : `${readyAttackers.length} Pokémon`} to attack`;
+    return `Tap one of your ${readyAttackers.length === 1 ? "creature" : `${readyAttackers.length} creature`} to attack`;
   }
 
   // Otherwise prompt summoning or end-turn.
@@ -1392,7 +1392,7 @@ function youLabel() {
 }
 
 function hpBar(hp, max) {
-  const cap = max || TRAINER_START_HP;
+  const cap = max || CHAMPION_START_HP;
   const pct = Math.max(0, Math.min(100, (hp / cap) * 100));
   const tone = pct > 60 ? "good" : pct > 30 ? "mid" : "bad";
   return `
@@ -1547,10 +1547,10 @@ function showAbilityPopover(attackerInst) {
       if (pop.contains(e.target)) return;
       const onAttacker = e.target.closest(".player-field .field-slot .selected");
       if (onAttacker) return;
-      // Allow clicks on attack targets (enemy cards / opposing trainer block).
+      // Allow clicks on attack targets (enemy cards / opposing champion block).
       const onEnemyField = e.target.closest(".ai-field .field-slot");
-      const onOpponentTrainer = e.target.closest(".trainer-block.ai");
-      if (onEnemyField || onOpponentTrainer) return;
+      const onOpponentChampion = e.target.closest(".champion-block.ai");
+      if (onEnemyField || onOpponentChampion) return;
       // Otherwise cancel: drop the selection and close the popover.
       selectedAttacker = null;
       chosenAbilityId = "basic";
@@ -1606,7 +1606,7 @@ function renderHand() {
     const cost = effectiveCost(p, card);
     cardEl.dataset.handIndex = String(idx);
     // Spells don't need a field slot — they go from hand → discard.
-    // Pokémon need an empty slot OR the user must pick one to replace.
+    // creature need an empty slot OR the user must pick one to replace.
     const isSpell = card.kind === "spell";
     const playable = state.activePlayer === "player"
       && p.energy >= cost
@@ -1673,7 +1673,7 @@ function onHandCardClick(handIndex) {
   }
   // Clicking a new hand card cancels any staged spell — otherwise a
   // user staging Freeze and then changing their mind to summon a
-  // Pokémon would leave the spell intent dangling.
+  // creature would leave the spell intent dangling.
   if (pendingSpell) pendingSpell = null;
   // Touch-device peek: first tap shows the full card big so abilities are
   // legible; a second tap on the SAME card commits to playing it. Tapping
@@ -1703,9 +1703,9 @@ function onHandCardClick(handIndex) {
     chosenAbilityId = "basic";
     hideAbilityPopover();
     const prompt = card.target === "enemyField"
-      ? `🎯 Tap an enemy Pokémon to ${card.effect} them`
+      ? `🎯 Tap an enemy creature to ${card.effect} them`
       : card.target === "ownField"
-        ? `🎯 Tap one of your Pokémon to ${card.effect} them`
+        ? `🎯 Tap one of your creature to ${card.effect} them`
         : `✨ Cast ${card.name}!`;
     flashVerdict(prompt, "super");
     // For "no target" spells (Surge, Scout, Phoenix, AOE), resolve
@@ -1734,12 +1734,12 @@ function onHandCardClick(handIndex) {
   }
 
   if (!p.field.includes(null)) {
-    // Field is full — prompt user to sacrifice one of their Pokémon.
+    // Field is full — prompt user to sacrifice one of their creature.
     pendingReplace = { handIndex };
     selectedAttacker = null;
     chosenAbilityId = "basic";
     hideAbilityPopover();
-    flashVerdict(`Field full — tap a Pokémon to sacrifice for ${card.name}`, "weak");
+    flashVerdict(`Field full — tap a creature to sacrifice for ${card.name}`, "weak");
     render();
     return;
   }
@@ -1776,11 +1776,11 @@ async function onSlotClick(side, slot) {
     const expectsEnemy = pendingSpell.target === "enemyField";
     const expectsOwn   = pendingSpell.target === "ownField";
     if (expectsEnemy && side !== "ai") {
-      flashVerdict("Tap an ENEMY Pokémon", "weak");
+      flashVerdict("Tap an ENEMY creature", "weak");
       return;
     }
     if (expectsOwn && side !== "player") {
-      flashVerdict("Tap one of YOUR Pokémon", "weak");
+      flashVerdict("Tap one of YOUR creature", "weak");
       return;
     }
     const targetField = expectsEnemy ? state.players.ai.field : state.players.player.field;
@@ -1815,7 +1815,7 @@ async function onSlotClick(side, slot) {
   // Item targeting takes priority over attack targeting.
   if (pendingItem) {
     if (side !== "player") {
-      flashVerdict("Tap one of YOUR Pokémon", "weak");
+      flashVerdict("Tap one of YOUR creature", "weak");
       return;
     }
     const inst = state.players.player.field[slot];
@@ -1828,10 +1828,10 @@ async function onSlotClick(side, slot) {
   }
 
   // Replace targeting: user picked a hand card while field was full,
-  // now they're choosing which Pokémon to sacrifice.
+  // now they're choosing which creature to sacrifice.
   if (pendingReplace) {
     if (side !== "player") {
-      flashVerdict("Tap one of YOUR Pokémon to sacrifice", "weak");
+      flashVerdict("Tap one of YOUR creature to sacrifice", "weak");
       return;
     }
     const inst = state.players.player.field[slot];
@@ -1880,7 +1880,7 @@ async function onSlotClick(side, slot) {
   if (!selectedAttacker) return;
   const fromSlot = selectedAttacker.slot;
   const defenderInst = state.players.ai.field[slot];
-  if (!defenderInst) return; // can't attack empty slot directly (use trainer button)
+  if (!defenderInst) return; // can't attack empty slot directly (use champion button)
 
   if (gameMode === "mp") {
     selectedAttacker = null;
@@ -1922,9 +1922,9 @@ async function onSlotClick(side, slot) {
   });
 }
 
-// Trainer face is a click target when the opposing field is empty.
-function bindTrainerAttackTarget() {
-  const block = $(".trainer-row.top .trainer-block.ai");
+// Champion face is a click target when the opposing field is empty.
+function bindChampionAttackTarget() {
+  const block = $(".champion-row.top .champion-block.ai");
   if (!block) return;
   block.addEventListener("click", () => {
     if (state.activePlayer !== "player" || state.winner) return;
@@ -1933,12 +1933,12 @@ function bindTrainerAttackTarget() {
     if (gameMode === "mp") {
       selectedAttacker = null;
       hideAbilityPopover();
-      mp.attack(fromSlot, "trainer", chosenAbilityId);
+      mp.attack(fromSlot, "champion", chosenAbilityId);
       chosenAbilityId = "basic";
       return;
     }
     const attackerEl = $(`.player-field .field-slot[data-slot="${fromSlot}"] .card`);
-    const result = attack(state, "player", fromSlot, "trainer", { abilityId: chosenAbilityId });
+    const result = attack(state, "player", fromSlot, "champion", { abilityId: chosenAbilityId });
     if (!result.ok) {
       flashVerdict(result.reason, "weak");
       selectedAttacker = null;
@@ -2083,7 +2083,7 @@ function sleep(ms) { return new Promise((r) => setTimeout(r, ms)); }
 
 function toggleHandLift() {
   _handLifted = !_handLifted;
-  try { localStorage.setItem("pokemon-tcg-hand-lifted", _handLifted ? "1" : "0"); } catch {}
+  try { localStorage.setItem("creature-tcg-hand-lifted", _handLifted ? "1" : "0"); } catch {}
   applyHandLiftState();
 }
 
@@ -2126,7 +2126,7 @@ function renderOpponentHand(count) {
   return cards.join("");
 }
 
-// VS cinematic: two trainer portraits slam in from opposite sides, "VS"
+// VS cinematic: two champion portraits slam in from opposite sides, "VS"
 // flashes between them, then fade out. ~2s total, async so callers can
 // await before showing the mulligan modal.
 async function playVsCinematic({ playerName, playerSprite, playerColor, aiName, aiSprite, aiColor, subtitle }) {
@@ -2171,16 +2171,16 @@ function maybeShowRivalTaunt() {
   if (Math.random() < 0.35) return; // don't spam
   _lastTauntTurn = state.turn;
   let bank = aiPersonality && RIVAL_TAUNTS[aiPersonality] || RIVAL_TAUNTS.balanced;
-  const aiHp = state.players.ai.trainerHp;
-  const playerHp = state.players.player.trainerHp;
+  const aiHp = state.players.ai.championHp;
+  const playerHp = state.players.player.championHp;
   if (aiHp > 0 && playerHp / Math.max(1, aiHp) < 0.5) bank = RIVAL_TAUNTS.victorious;
   else if (aiHp / Math.max(1, playerHp) < 0.4) bank = RIVAL_TAUNTS.losing;
   const line = bank[Math.floor(Math.random() * bank.length)];
   showRivalBubble(line);
 }
 function showRivalBubble(text) {
-  const anchor = document.querySelector(".trainer-row.top .trainer-block.ai")
-              || document.querySelector(".trainer-row.top .trainer-block")
+  const anchor = document.querySelector(".champion-row.top .champion-block.ai")
+              || document.querySelector(".champion-row.top .champion-block")
               || document.querySelector(".ai-field");
   document.querySelectorAll(".rival-bubble").forEach((b) => b.remove());
   const el = document.createElement("div");
@@ -2242,8 +2242,8 @@ async function handleAiActionInner(action) {
     if (!r?.ok) { await sleep(200); return; }
     const attackerEl = $(`.ai-field .field-slot[data-slot="${action.fromSlot}"] .card`);
     let defenderEl;
-    if (action.target === "trainer") {
-      defenderEl = $(".trainer-row.bottom .trainer-block.player") || $(".trainer-row.bottom .trainer-block");
+    if (action.target === "champion") {
+      defenderEl = $(".champion-row.bottom .champion-block.player") || $(".champion-row.bottom .champion-block");
     } else {
       defenderEl = $(`.player-field .field-slot[data-slot="${action.target}"] .card`);
     }
@@ -2273,7 +2273,7 @@ async function handleAiActionInner(action) {
       await knockOut(defenderEl);
       if (r.attackerLeveled && attackerEl) {
         attackerEl.classList.add("leveled-up");
-        flashVerdict(`Rival's ${action.attackerCard?.name || "Pokémon"} evolved!`, "weak");
+        flashVerdict(`Rival's ${action.attackerCard?.name || "creature"} evolved!`, "weak");
         await sleep(800);
         attackerEl.classList.remove("leveled-up");
       }
@@ -2312,11 +2312,11 @@ function renderAccountPanel() {
         <div class="account-id">
           <span class="account-greeting">Signed in as</span>
           <strong>${escape(currentUser.display_name)}</strong>
-          <div class="trainer-level-chip" id="trainer-level-chip"></div>
+          <div class="champion-level-chip" id="champion-level-chip"></div>
         </div>
         <div class="account-actions">
           <button id="account-collection-btn">Collection</button>
-          <button id="account-pokedex-btn">Pokédex</button>
+          <button id="account-bestiary-btn">Bestiary</button>
           <button id="account-achievements-btn">Achievements</button>
           <button id="account-matches-btn">History</button>
           <button id="account-leaderboard-btn">Leaderboard</button>
@@ -2363,8 +2363,8 @@ function wireAccountPanel() {
   if ($mh) $mh.addEventListener("click", () => {
     achievements.openMatchHistory({ onClose: () => {} });
   });
-  const $pdx = $("#account-pokedex-btn");
-  if ($pdx) $pdx.addEventListener("click", () => pokedex.open());
+  const $pdx = $("#account-bestiary-btn");
+  if ($pdx) $pdx.addEventListener("click", () => bestiary.open());
 }
 
 function onRegister() {
@@ -2379,7 +2379,7 @@ function onRegister() {
   showAuthModal({
     title: "Create account",
     submitLabel: "Create",
-    placeholder: "Trainer name (2-32 chars)",
+    placeholder: "Champion name (2-32 chars)",
     onSubmit: async (name) => {
       const displayName = name.trim();
       if (displayName.length < 2) return "Name must be at least 2 chars.";
@@ -2404,7 +2404,7 @@ function onSignIn() {
   showAuthModal({
     title: "Sign in",
     submitLabel: "Continue",
-    placeholder: "Trainer name (optional)",
+    placeholder: "Champion name (optional)",
     helpText: "Leave blank to use any passkey saved on this device.",
     optional: true,
     onSubmit: async (name) => {
@@ -2594,8 +2594,8 @@ function stopSpectator() {
 }
 
 async function startMultiplayer({ mode }) {
-  if (!chosenTrainer) {
-    flashVerdict("Pick a trainer first", "weak");
+  if (!chosenChampion) {
+    flashVerdict("Pick a champion first", "weak");
     return;
   }
   // Render the spinner immediately so the UI shows activity while we
@@ -2622,7 +2622,7 @@ async function startMultiplayer({ mode }) {
   const opts = {
     userId: currentUser?.id || null,
     displayName: currentUser?.display_name || `Guest-${Math.random().toString(36).slice(2, 6)}`,
-    ability: chosenTrainer,
+    ability: chosenChampion,
     deckSource: currentUser ? "active" : "random",
   };
 
@@ -2775,10 +2775,10 @@ function handleMpAnim(anim) {
       ? $(`.ai-field .field-slot[data-slot="${anim.fromSlot}"] .card`)
       : $(`.player-field .field-slot[data-slot="${anim.fromSlot}"] .card`);
     let defenderEl;
-    if (anim.target === "trainer") {
+    if (anim.target === "champion") {
       defenderEl = isOpp
-        ? ($(".trainer-row.bottom .trainer-block.player") || $(".trainer-row.bottom .trainer-block"))
-        : $(".trainer-block.ai");
+        ? ($(".champion-row.bottom .champion-block.player") || $(".champion-row.bottom .champion-block"))
+        : $(".champion-block.ai");
     } else {
       defenderEl = isOpp
         ? $(`.player-field .field-slot[data-slot="${anim.target}"] .card`)
@@ -2805,7 +2805,7 @@ function handleMpAnim(anim) {
     else if (anim.verdict?.text) flashVerdict(anim.verdict.text, anim.verdict.tone);
     if (anim.attackerLeveled && attackerEl) {
       attackerEl.classList.add("leveled-up");
-      flashVerdict(isOpp ? "Rival's Pokémon evolved!" : `Evolved! L${anim.attackerLeveled}`, isOpp ? "weak" : "super");
+      flashVerdict(isOpp ? "Rival's creature evolved!" : `Evolved! L${anim.attackerLeveled}`, isOpp ? "weak" : "super");
       setTimeout(() => attackerEl.classList.remove("leveled-up"), 850);
     }
     return;
@@ -2880,7 +2880,7 @@ function showYourTurnBanner() {
 }
 
 // Red-vignette pulse from the screen edges. Fired whenever the player's
-// trainer HP drops so trainer-targeted attacks + time-pressure ticks
+// champion HP drops so champion-targeted attacks + time-pressure ticks
 // can't be missed. `heavy=true` for big-damage hits + KOs.
 function triggerPlayerHitVignette(heavy = false) {
   document.querySelectorAll(".player-hit-vignette").forEach((n) => n.remove());
@@ -2930,7 +2930,7 @@ function onGameOver() {
       trackEvent("first_win");
     }
     // Anonymous players accumulate a small collection in localStorage
-    // — one random Pokémon from the rival's deck per win. On signup
+    // — one random creature from the rival's deck per win. On signup
     // this state migrates into their real account via the existing
     // /me/migrate-guest endpoint.
     if (!currentUser) {
@@ -2965,7 +2965,7 @@ function onGameOver() {
       biggestHit: myRecap.biggestHit || 0,
       crits: myRecap.crits || 0,
       kos: myKOs,
-      perfectVictory: state.winner === "player" && state.players.player.trainerHp === TRAINER_START_HP,
+      perfectVictory: state.winner === "player" && state.players.player.championHp === CHAMPION_START_HP,
       lightningWin:   state.winner === "player" && state.turn <= 8,
       enduranceWin:   state.winner === "player" && state.turn >= 25,
     };
@@ -2976,11 +2976,11 @@ function onGameOver() {
     }).catch(() => {});
     setTimeout(() => achievements.checkForNewUnlocks(), 1500);
   }
-  // Card Mastery: post per-Pokémon kill tallies from this match.
+  // Card Mastery: post per-creature kill tallies from this match.
   // Server returns level-up info; we surface a quick "★ Mastery
   // levelled up" verdict for any cards that crossed a threshold.
   if (currentUser) {
-    const kos = state.recap?.player?.kosByPokemonId || {};
+    const kos = state.recap?.player?.kosByCreatureId || {};
     if (Object.keys(kos).length) {
       fetch("/me/mastery/bump", {
         method: "POST",
@@ -3002,7 +3002,7 @@ function onGameOver() {
   // anonymous-friendly.
   if (state._versusCode) {
     const anonId = (() => {
-      try { return localStorage.getItem("pokemon-tcg-anon-id") || null; } catch { return null; }
+      try { return localStorage.getItem("creature-tcg-anon-id") || null; } catch { return null; }
     })();
     fetch(`/api/deck-code/${encodeURIComponent(state._versusCode)}/result`, {
       method: "POST",
@@ -3010,9 +3010,9 @@ function onGameOver() {
       body: JSON.stringify({
         won: state.winner === "player",
         turns: state.turn,
-        hpLeft: state.players.player.trainerHp,
+        hpLeft: state.players.player.championHp,
         anonId,
-        challengerName: currentUser?.display_name || "Anonymous Trainer",
+        challengerName: currentUser?.display_name || "Anonymous Champion",
       }),
     }).then((r) => r.ok && trackEvent("versus_result_posted", { won: state.winner === "player" }))
       .catch(() => {});
@@ -3064,7 +3064,7 @@ function onGameOver() {
       sessionId: _storyContext.sessionId,
       won,
       turns: state.turn,
-      hpLeft: state.players.player.trainerHp,
+      hpLeft: state.players.player.championHp,
       kos: state.players.ai.discard.length,
     };
     daily.finishDaily(result).then((data) => {
@@ -3130,19 +3130,19 @@ function onGameOver() {
   overlay.className = "game-over";
   const myKOs = state.players.ai.discard.length;     // we KO'd these of theirs
   const oppKOs = state.players.player.discard.length;
-  const myHpLeft = state.players.player.trainerHp;
-  const oppHpLeft = state.players.ai.trainerHp;
+  const myHpLeft = state.players.player.championHp;
+  const oppHpLeft = state.players.ai.championHp;
   const recap = state.recap || { player: {}, ai: {} };
   const my = recap.player || {};
   // Earned badges — pure flavour, drive replay urge.
   const badges = [];
   if (state.winner === "player") {
-    if (myHpLeft === TRAINER_START_HP) badges.push({ key: "perfect", label: "PERFECT VICTORY", desc: "Won without taking a single point of damage." });
-    else if (myHpLeft >= TRAINER_START_HP - 3) badges.push({ key: "untouchable", label: "UNTOUCHABLE", desc: "Won with nearly full HP." });
+    if (myHpLeft === CHAMPION_START_HP) badges.push({ key: "perfect", label: "PERFECT VICTORY", desc: "Won without taking a single point of damage." });
+    else if (myHpLeft >= CHAMPION_START_HP - 3) badges.push({ key: "untouchable", label: "UNTOUCHABLE", desc: "Won with nearly full HP." });
     if (state.turn <= 8) badges.push({ key: "lightning", label: "LIGHTNING WIN", desc: `Closed it out in ${state.turn} turns.` });
     if (state.turn >= 25) badges.push({ key: "endurance", label: "ENDURANCE", desc: `A ${state.turn}-turn grind — and you won.` });
     if ((my.crits || 0) >= 3) badges.push({ key: "crit-chain", label: "CRIT MASTER", desc: `${my.crits} critical hits in one match.` });
-    if (myKOs >= 5) badges.push({ key: "rampage", label: "RAMPAGE", desc: `KO'd ${myKOs} of the rival's Pokémon.` });
+    if (myKOs >= 5) badges.push({ key: "rampage", label: "RAMPAGE", desc: `KO'd ${myKOs} of the rival's creature.` });
   } else {
     if (state.turn >= 20) badges.push({ key: "valiant", label: "VALIANT EFFORT", desc: `Held out for ${state.turn} turns.` });
     if ((my.biggestHit || 0) >= 12) badges.push({ key: "punisher", label: "HEAVY HITTER", desc: `Landed a ${my.biggestHit}-damage strike.` });
@@ -3159,10 +3159,10 @@ function onGameOver() {
   const goClass = isTie ? "draw" : (state.winner === "player" ? "win" : "loss");
   const goTitle = isTie ? "Draw" : (state.winner === "player" ? "Victory!" : "Defeat");
   const goSub = isTie
-    ? "Both trainers fell at the same moment."
+    ? "Both champions fell at the same moment."
     : (state.winner === "player"
-        ? "Your rival's trainer has been knocked out."
-        : "Your trainer has been knocked out.");
+        ? "Your rival's champion has been knocked out."
+        : "Your champion has been knocked out.");
   overlay.innerHTML = `
     <div class="game-over-card ${goClass}">
       <h2>${goTitle}</h2>

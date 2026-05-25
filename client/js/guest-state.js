@@ -6,11 +6,11 @@
 // All read/write goes through this module so the on-disk shape can
 // evolve without touching call sites.
 
-const STORAGE_KEY = "pokemon-tcg-guest-state-v1";
+const STORAGE_KEY = "creature-tcg-guest-state-v1";
 
 function emptyState() {
   return {
-    ownedCards: {},       // { [pokemonId]: quantity }
+    ownedCards: {},       // { [creatureId]: quantity }
     storyProgress: [],    // [chapterId, ...]
     championWins: [],     // [championId, ...]
     achievementsViewed: [], // [achievementId, ...]
@@ -38,11 +38,11 @@ function write(state) {
 
 export function get() { return read(); }
 
-export function addCard(pokemonId) {
+export function addCard(creatureId) {
   const s = read();
   // Cap each guest card at 5 — anti-abuse + matches the standard ≤2
   // copies in a deck × a few decks worth of duplicates.
-  s.ownedCards[pokemonId] = Math.min(5, (s.ownedCards[pokemonId] || 0) + 1);
+  s.ownedCards[creatureId] = Math.min(5, (s.ownedCards[creatureId] || 0) + 1);
   write(s);
   return s;
 }

@@ -1,4 +1,4 @@
-// Reading Mode — kid-friendly read-along UI for the Pokémon stories
+// Reading Mode — kid-friendly read-along UI for the creature stories
 // in shared/reading-stories.js. Distinct from the battle-based Story
 // Mode (server-modules/story.js). Shows one section at a time with a
 // big readable font and Next/Back controls. The "Read aloud" button
@@ -27,11 +27,11 @@ let _audioEl = null;
 let _detachWordClicks = null;
 
 const SPRITE_URL = (id) =>
-  `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`;
+  `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/creature/other/official-artwork/${id}.png`;
 
-// Speaker → Pokédex ID. Used to fetch a portrait sprite next to each
+// Speaker → Bestiary ID. Used to fetch a portrait sprite next to each
 // section so kids can pair "who's talking" with the dialog.
-const SPEAKER_TO_POKEMON_ID = {
+const SPEAKER_TO_CREATURE_ID = {
   narrator:    null,
   pikachu:     25,
   squirtle:     7,
@@ -99,7 +99,7 @@ async function renderPicker() {
 }
 
 function storyCardHtml(s) {
-  const sprite = s.cover?.pokemonId ? SPRITE_URL(s.cover.pokemonId) : null;
+  const sprite = s.cover?.creatureId ? SPRITE_URL(s.cover.creatureId) : null;
   const glyph = s.cover?.glyph || "📖";
   const themeType = s.cover?.themeType || "normal";
   return `
@@ -145,7 +145,7 @@ function renderStory() {
   const i = Math.max(0, Math.min(_state.sectionIdx, total - 1));
   const sec = story.sections[i];
   const speaker = sec.speaker || "narrator";
-  const speakerId = SPEAKER_TO_POKEMON_ID[speaker];
+  const speakerId = SPEAKER_TO_CREATURE_ID[speaker];
   const speakerSprite = speakerId ? SPRITE_URL(speakerId) : null;
   const speakerName = speaker === "narrator"
     ? "Story"

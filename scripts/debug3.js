@@ -1,6 +1,6 @@
 const { chromium } = require("playwright");
-process.chdir("/Users/kevinjones/pokemon-game/pokemon-tcg");
-const BASE = "https://pokemon-tcg-five-lime.vercel.app";
+process.chdir("/Users/kevinjones/creature-game/creature-tcg");
+const BASE = "https://creature-tcg-five-lime.vercel.app";
 const DISPLAY = `Smoke-${Date.now().toString(36)}`;
 (async () => {
   const browser = await chromium.launch({ headless: true });

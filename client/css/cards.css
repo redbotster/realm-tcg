@@ -139,7 +139,7 @@
 }
 .card.crit-flash { animation: critFlash 0.55s ease; }
 
-/* AI summons a Pokémon — brief celebratory glow around the new card. */
+/* AI summons a creature — brief celebratory glow around the new card. */
 @keyframes aiSummon {
   0%   { transform: scale(0.5) translateY(-30px); opacity: 0; box-shadow: 0 0 0 0 rgba(255,255,255,0.6); }
   60%  { transform: scale(1.1); opacity: 1; box-shadow: 0 0 24px 4px rgba(255,255,255,0.5); }
@@ -196,7 +196,7 @@
   cursor: grabbing;
 }
 body.dragging-attack .ai-field .field-slot,
-body.dragging-attack .trainer-block.ai {
+body.dragging-attack .champion-block.ai {
   outline: 2px dashed rgba(255, 92, 99, 0.45);
   outline-offset: 4px;
   border-radius: 14px;
@@ -571,7 +571,7 @@ body.dragging-attack .trainer-block.ai {
 
 /* Card Mastery badge — small gold stars.
  * Mirrored to the TOP-RIGHT corner so it doesn't crowd the
- * Pokémon name in the footer's lower-left. .card-level sits in the
+ * creature name in the footer's lower-left. .card-level sits in the
  * top-left corner; mastery now sits in the top-right.
  * L3 gets a glow ring (signals the +1 ATK active state). */
 .card .card-mastery {
@@ -600,7 +600,7 @@ body.dragging-attack .trainer-block.ai {
 }
 
 /* =========================================================================
- * Spell cards — visually distinct from Pokémon. Gradient background,
+ * Spell cards — visually distinct from creature. Gradient background,
  * big centered glyph (no sprite), description text below the name.
  * Shares the same outer .card frame so hover / drag / selected styles
  * Just Work without extra rules.
@@ -668,7 +668,7 @@ body.dragging-attack .trainer-block.ai {
 
 /* Rarity-coloured border accent so players can spot rare spells fast.
  * Uses outer ring vs the existing legendary star treatment for
- * Pokémon (we don't want spells competing visually with the
+ * creature (we don't want spells competing visually with the
  * legendary glow that announces a Mewtwo). */
 .card.spell-card.rarity-uncommon { box-shadow: 0 0 0 1px #6ee7b755, inset 0 0 18px color-mix(in srgb, var(--type-1) 40%, transparent), 0 4px 14px rgba(0,0,0,.5); }
 .card.spell-card.rarity-rare     { box-shadow: 0 0 0 2px #60a5fa88, inset 0 0 18px color-mix(in srgb, var(--type-1) 40%, transparent), 0 4px 14px rgba(0,0,0,.5); }
@@ -684,7 +684,7 @@ body.dragging-attack .trainer-block.ai {
 }
 
 /* --- Species evolution flash (slice 9) -------------------------------
- * Fires when a Pokémon transforms into its next evolution form
+ * Fires when a creature transforms into its next evolution form
  * mid-match (Charmander → Charmeleon). A bigger, more dramatic
  * version of the existing level-up bump.
  */

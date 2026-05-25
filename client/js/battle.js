@@ -11,7 +11,7 @@ export function effectiveDefense(card) {
 }
 
 // `ability` may include damageMult and may set `ignoreDefense`. abilityBonus
-// is a trainer-ability flat-add (e.g. Pikachu Fan +1). If `rand` rolls a
+// is a champion-ability flat-add (e.g. Pikachu Fan +1). If `rand` rolls a
 // crit (10% by default), the result is multiplied by `critMult` (1.5×) and
 // `critical: true` is flagged so the UI can play the gold flash.
 //

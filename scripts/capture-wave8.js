@@ -1,7 +1,7 @@
 const { chromium } = require("playwright");
 const fs = require("fs");
 const path = require("path");
-const BASE = process.argv[2] || "https://pokemon-tcg-five-lime.vercel.app";
+const BASE = process.argv[2] || "https://creature-tcg-five-lime.vercel.app";
 const OUT = "/tmp/pkmn-screens";
 fs.mkdirSync(OUT, { recursive: true });
 (async () => {
@@ -15,8 +15,8 @@ fs.mkdirSync(OUT, { recursive: true });
   });
   await page.addInitScript((n) => { window.__autoFillName = n; window.prompt = () => n; }, `Wave8-${Date.now().toString(36)}`);
   await page.goto(BASE, { waitUntil: "domcontentloaded" });
-  await page.waitForSelector(".trainer-card");
-  // Wait for trainer mascot images to load
+  await page.waitForSelector(".champion-card");
+  // Wait for champion mascot images to load
   await page.waitForTimeout(1800);
   await page.screenshot({ path: path.join(OUT, "wave8-menu-mascots.png") });
   console.log("✓ mascots menu");
@@ -24,7 +24,7 @@ fs.mkdirSync(OUT, { recursive: true });
   // Register + start a match for items bar
   await page.click("#account-register-btn");
   await page.waitForSelector("#account-logout-btn", { timeout: 15000 });
-  await page.click(".trainer-card");
+  await page.click(".champion-card");
   await page.click("#start-btn");
   try { await page.waitForSelector(".mulligan-confirm", { timeout: 12000 }); await page.click(".mulligan-confirm"); } catch {}
   await page.waitForSelector("#hand .card", { timeout: 12000 });

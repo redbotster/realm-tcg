@@ -54,7 +54,7 @@ function rpFromReq(req) {
   //      an ancestor domain of it).
   //   2. Otherwise fall back to the actual request hostname.
   //   3. "localhost" if neither is set.
-  // This makes preview-URL deployments (pokemon-xxxxx.vercel.app) work
+  // This makes preview-URL deployments (creature-xxxxx.vercel.app) work
   // without breaking the canonical alias.
   const envId = (process.env.RP_ID || "").trim();
   const host = (req.hostname || "").trim() || "localhost";
@@ -64,7 +64,7 @@ function rpFromReq(req) {
   } else {
     rpID = host;
   }
-  const rpName = (process.env.RP_NAME || "Pokémon TCG").trim();
+  const rpName = (process.env.RP_NAME || "creature TCG").trim();
   // Origin must match the page the user is on, so always derive from request.
   const proto = req.headers["x-forwarded-proto"] || req.protocol || "https";
   const origin = `${proto}://${req.headers.host}`;
@@ -188,7 +188,7 @@ function mount(app, supabase) {
     setSession(res, stash.userId);
     const { data: user } = await supabase
       .from("users")
-      .select("id, display_name, trainer_ability")
+      .select("id, display_name, champion_ability")
       .eq("id", stash.userId)
       .single();
     res.json({ user });
@@ -282,7 +282,7 @@ function mount(app, supabase) {
 
     const { data: user } = await supabase
       .from("users")
-      .select("id, display_name, trainer_ability")
+      .select("id, display_name, champion_ability")
       .eq("id", pk.user_id)
       .single();
     res.json({ user });
@@ -312,7 +312,7 @@ function mount(app, supabase) {
   });
 }
 
-// Pure helper: grant a starter set. 60 random cards, ≤2 per pokemon, weighted
+// Pure helper: grant a starter set. 60 random cards, ≤2 per creature, weighted
 // toward tiers 1-3. Idempotent: only runs for users with zero cards.
 async function grantStarter(supabase, userId) {
   const { count } = await supabase
@@ -322,10 +322,10 @@ async function grantStarter(supabase, userId) {
   if (count && count > 0) return;
 
   const { data: all, error } = await supabase
-    .from("pokemon")
+    .from("bestiary")
     .select("id, hp, attack, defense, sp_attack, sp_defense, speed, is_legendary, is_mythical");
   if (error) {
-    console.warn("[starter] could not load pokedex:", error.message);
+    console.warn("[starter] could not load bestiary:", error.message);
     return;
   }
   const bsts = all.map((p) => ({
@@ -344,7 +344,7 @@ async function grantStarter(supabase, userId) {
   }
   // Distribution for a 60-card starter: 25 T1, 22 T2, 10 T3, 3 T4, 0 T5
   const dist = { 1: 25, 2: 22, 3: 10, 4: 3, 5: 0 };
-  const picks = new Map(); // pokemon_id -> qty
+  const picks = new Map(); // creature_id -> qty
   for (const tier of Object.keys(dist)) {
     const want = dist[tier];
     const bucket = tiers[tier].slice();
@@ -363,13 +363,13 @@ async function grantStarter(supabase, userId) {
     }
   }
   const rows = [];
-  for (const [pokemon_id, qty] of picks) {
-    rows.push({ user_id: userId, pokemon_id, quantity: qty });
+  for (const [creature_id, qty] of picks) {
+    rows.push({ user_id: userId, creature_id, quantity: qty });
   }
   if (rows.length) {
     const { error: insErr } = await supabase
       .from("owned_cards")
-      .upsert(rows, { onConflict: "user_id,pokemon_id" });
+      .upsert(rows, { onConflict: "user_id,creature_id" });
     if (insErr) console.warn("[starter] could not grant:", insErr.message);
   }
 }

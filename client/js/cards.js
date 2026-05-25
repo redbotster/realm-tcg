@@ -102,7 +102,7 @@ function statusGlyph(kind) {
   return "✦";
 }
 
-// Spell-card render — distinct frame from Pokémon. Type-themed gradient
+// Spell-card render — distinct frame from creature. Type-themed gradient
 // background, big glyph instead of a sprite, description text below.
 // The `card.kind === "spell"` branch in renderCard funnels here so
 // downstream callers don't need to know about the split.

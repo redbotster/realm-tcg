@@ -1,7 +1,7 @@
 const { chromium } = require("playwright");
 const fs = require("fs");
 const path = require("path");
-const BASE = process.argv[2] || "https://pokemon-tcg-five-lime.vercel.app";
+const BASE = process.argv[2] || "https://creature-tcg-five-lime.vercel.app";
 const OUT = "/tmp/pkmn-screens";
 fs.mkdirSync(OUT, { recursive: true });
 (async () => {

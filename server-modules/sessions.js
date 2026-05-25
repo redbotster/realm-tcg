@@ -80,7 +80,7 @@ function attach(supabase) {
     }
     const { data, error } = await supabase
       .from("users")
-      .select("id, display_name, created_at, last_seen, trainer_ability")
+      .select("id, display_name, created_at, last_seen, champion_ability")
       .eq("id", s.uid)
       .maybeSingle();
     if (error) {

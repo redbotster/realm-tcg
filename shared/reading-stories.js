@@ -5,7 +5,7 @@
 // designed to help kids practice. Each story has 4-6 sections of short
 // sentences, repeated patterns, and high-frequency vocabulary.
 //
-// Audio: each section names a `speaker` (Pokémon name). When the
+// Audio: each section names a `speaker` (creature name). When the
 // ElevenLabs TTS pipeline runs (slice 5b), it generates an MP3 per
 // section using a voice ID assigned to the speaker, then caches the
 // public URL in `audioUrl`. Until then `audioUrl` is null and the
@@ -15,7 +15,7 @@ const READING_STORIES = [
   {
     id: "pikachus-lost-berry",
     title: "Pikachu's Lost Berry",
-    cover: { pokemonId: 25, glyph: "⚡", themeType: "electric" },
+    cover: { creatureId: 25, glyph: "⚡", themeType: "electric" },
     estimatedMinutes: 4,
     readingLevel: "K-1",
     summary: "Pikachu loses a special berry and friends help find it.",
@@ -61,7 +61,7 @@ const READING_STORIES = [
   {
     id: "the-brave-bug-catcher",
     title: "The Brave Caterpie",
-    cover: { pokemonId: 10, glyph: "🐛", themeType: "bug" },
+    cover: { creatureId: 10, glyph: "🐛", themeType: "bug" },
     estimatedMinutes: 4,
     readingLevel: "K-1",
     summary: "A small Caterpie shows that brave comes in all sizes.",
@@ -101,7 +101,7 @@ const READING_STORIES = [
   {
     id: "snorlaxs-big-nap",
     title: "Snorlax's Big Nap",
-    cover: { pokemonId: 143, glyph: "💤", themeType: "normal" },
+    cover: { creatureId: 143, glyph: "💤", themeType: "normal" },
     estimatedMinutes: 5,
     readingLevel: "1-2",
     summary: "Snorlax sleeps on the path. Friends find a kind way to help.",

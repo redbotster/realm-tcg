@@ -28,25 +28,25 @@ function starsForPuzzle({ solved, movesUsed, par }) {
 
 async function hydratePuzzle(supabase, puzzle) {
   if (!supabase) return puzzle;
-  // Fetch the pokemon rows for every unique pokemonId in the puzzle so
+  // Fetch the creature rows for every unique creatureId in the puzzle so
   // the client has sprite/type data without extra round trips.
   const ids = [...new Set([
-    ...puzzle.player.map((p) => p.pokemonId),
-    ...puzzle.enemy.map((e) => e.pokemonId),
+    ...puzzle.player.map((p) => p.creatureId),
+    ...puzzle.enemy.map((e) => e.creatureId),
   ])];
-  const { data: rows } = await supabase.from("pokemon").select("*").in("id", ids);
+  const { data: rows } = await supabase.from("bestiary").select("*").in("id", ids);
   const byId = new Map((rows || []).map((r) => [r.id, toCard(r)]));
   return {
     ...puzzle,
     player: puzzle.player.map((p, i) => ({
       slot: i,
-      card: byId.get(p.pokemonId) || { id: p.pokemonId, name: `?#${p.pokemonId}` },
+      card: byId.get(p.creatureId) || { id: p.creatureId, name: `?#${p.creatureId}` },
       hp: p.hp, maxHp: p.hp,
       atk: p.atk,
     })),
     enemy: puzzle.enemy.map((e, i) => ({
       slot: i,
-      card: byId.get(e.pokemonId) || { id: e.pokemonId, name: `?#${e.pokemonId}` },
+      card: byId.get(e.creatureId) || { id: e.creatureId, name: `?#${e.creatureId}` },
       hp: e.hp, maxHp: e.hp,
       atk: e.atk,
     })),
@@ -124,8 +124,8 @@ function mount(app, supabase) {
                 || (req.headers.host && `https://${req.headers.host}`) || "";
     const url = `${origin}/?puzzle=${dayNumber}`;
     const shareText = solved
-      ? `Pokémon TCG Puzzle #${dayNumber} · "${puzzle.title}"\n${stars}  ✅ Cleared in ${movesUsed}/${puzzle.par} ${movesUsed === 1 ? "move" : "moves"}\nplay: ${url}`
-      : `Pokémon TCG Puzzle #${dayNumber} · "${puzzle.title}"\n${stars}  ❌ Defeated after ${movesUsed} ${movesUsed === 1 ? "move" : "moves"}\nplay: ${url}`;
+      ? `creature TCG Puzzle #${dayNumber} · "${puzzle.title}"\n${stars}  ✅ Cleared in ${movesUsed}/${puzzle.par} ${movesUsed === 1 ? "move" : "moves"}\nplay: ${url}`
+      : `creature TCG Puzzle #${dayNumber} · "${puzzle.title}"\n${stars}  ❌ Defeated after ${movesUsed} ${movesUsed === 1 ? "move" : "moves"}\nplay: ${url}`;
     res.json({ ok: true, dayNumber, stars, shareText, shareUrl: url, puzzleTitle: puzzle.title, par: puzzle.par });
   });
 
@@ -142,7 +142,7 @@ function mount(app, supabase) {
     if (error) return res.status(500).json({ error: error.message });
     const rows = (data || []).map((r, i) => ({
       rank: i + 1,
-      displayName: r.users?.display_name || "Trainer",
+      displayName: r.users?.display_name || "Champion",
       solved: r.solved,
       movesUsed: r.moves_used,
       isYou: req.user && r.user_id === req.user.id,

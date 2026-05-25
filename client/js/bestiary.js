@@ -1,12 +1,12 @@
-// Pokédex completion overlay. Renders all 1025 species as a grid;
+// Bestiary completion overlay. Renders all 1025 species as a grid;
 // owned ones are colored + show count, unowned ones are silhouettes.
 // Generation totals are shown at the top for the "gotta catch 'em all"
 // progress bar feel. A search box at the top live-filters by name,
 // dex id, type, or generation (e.g. "char fire" or "gen3 grass").
 
-import { filterPokedexEntries } from "./search-utils.js";
+import { filterBestiaryEntries } from "./search-utils.js";
 
-let _allRows = [];   // unfiltered rows from /me/pokedex
+let _allRows = [];   // unfiltered rows from /me/bestiary
 let _query = "";     // current search string
 
 export async function open() {
@@ -17,9 +17,9 @@ export async function open() {
     document.body.appendChild(overlay);
   }
   overlay.classList.remove("hidden");
-  overlay.innerHTML = `<div class="pdx-loading">Loading Pokédex…</div>`;
+  overlay.innerHTML = `<div class="pdx-loading">Loading Bestiary…</div>`;
   try {
-    const r = await fetch("/me/pokedex");
+    const r = await fetch("/me/bestiary");
     if (!r.ok) throw new Error(r.statusText);
     const { total, owned, rows } = await r.json();
     render(overlay, rows, owned, total);
@@ -49,7 +49,7 @@ function render(overlay, rows, owned, total) {
   overlay.innerHTML = `
     <div class="pdx-card">
       <header class="pdx-header">
-        <div class="pdx-title">Pokédex</div>
+        <div class="pdx-title">Bestiary</div>
         <div class="pdx-summary">
           <div class="pdx-pct">${pct.toFixed(1)}%</div>
           <div class="pdx-count">${owned} / ${total} caught</div>
@@ -76,7 +76,7 @@ function render(overlay, rows, owned, total) {
   const countEl  = overlay.querySelector(".pdx-search-count");
   searchEl.value = _query;
   const applyFilter = () => {
-    const filtered = filterPokedexEntries(_allRows, _query);
+    const filtered = filterBestiaryEntries(_allRows, _query);
     countEl.textContent = _query
       ? `${filtered.length} of ${_allRows.length}`
       : "";
@@ -95,7 +95,7 @@ function paintGrid(overlay, rows) {
   if (!grid) return;
   grid.innerHTML = "";
   if (rows.length === 0) {
-    grid.innerHTML = `<div class="pdx-empty">No Pokémon match that search.</div>`;
+    grid.innerHTML = `<div class="pdx-empty">No creature match that search.</div>`;
     return;
   }
   for (const r of rows) {

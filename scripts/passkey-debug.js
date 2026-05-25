@@ -14,7 +14,7 @@ const { chromium } = require("playwright");
   page.on("response", (r) => {
     if (r.url().includes("/auth/")) console.log("[response]", r.status(), r.url());
   });
-  await page.goto("https://pokemon-tcg-five-lime.vercel.app/", { waitUntil: "domcontentloaded" });
+  await page.goto("https://creature-tcg-five-lime.vercel.app/", { waitUntil: "domcontentloaded" });
   await page.waitForSelector("#account-register-btn", { timeout: 8000 });
   console.log("Clicking register...");
   await page.click("#account-register-btn");

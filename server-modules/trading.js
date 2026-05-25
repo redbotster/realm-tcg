@@ -1,7 +1,7 @@
 // Player-to-player card trading.
 //
-// One simple model: a trade OFFER says "I'm offering pokemon X and looking
-// for pokemon Y". Anyone who owns Y can accept by clicking — server runs the
+// One simple model: a trade OFFER says "I'm offering creature X and looking
+// for creature Y". Anyone who owns Y can accept by clicking — server runs the
 // swap atomically (decrement X from offerer, give Y to offerer, decrement Y
 // from accepter, give X to accepter).
 //
@@ -15,28 +15,28 @@
 //
 // Anti-spam:
 //   - Max 5 open offers per user
-//   - Can't offer pokemon you don't own
+//   - Can't offer creature you don't own
 //   - Can't accept your own offer
-//   - Can't offer/want the same pokemon
+//   - Can't offer/want the same creature
 
 const MAX_OPEN_OFFERS = 5;
 
-async function ownedQty(supabase, userId, pokemonId) {
+async function ownedQty(supabase, userId, creatureId) {
   const { data } = await supabase
     .from("owned_cards")
     .select("quantity")
     .eq("user_id", userId)
-    .eq("pokemon_id", pokemonId)
+    .eq("creature_id", creatureId)
     .maybeSingle();
   return data?.quantity || 0;
 }
 
-async function incrementOwned(supabase, userId, pokemonId, delta) {
+async function incrementOwned(supabase, userId, creatureId, delta) {
   const { data: existing } = await supabase
     .from("owned_cards")
     .select("quantity")
     .eq("user_id", userId)
-    .eq("pokemon_id", pokemonId)
+    .eq("creature_id", creatureId)
     .maybeSingle();
   const newQty = (existing?.quantity || 0) + delta;
   if (newQty <= 0) {
@@ -46,24 +46,24 @@ async function incrementOwned(supabase, userId, pokemonId, delta) {
       .from("owned_cards")
       .delete()
       .eq("user_id", userId)
-      .eq("pokemon_id", pokemonId);
+      .eq("creature_id", creatureId);
     return 0;
   }
   await supabase
     .from("owned_cards")
     .upsert(
-      { user_id: userId, pokemon_id: pokemonId, quantity: newQty, acquired_at: new Date().toISOString() },
-      { onConflict: "user_id,pokemon_id" }
+      { user_id: userId, creature_id: creatureId, quantity: newQty, acquired_at: new Date().toISOString() },
+      { onConflict: "user_id,creature_id" }
     );
   return newQty;
 }
 
-// Decorate an offer row with the offerer's display name + pokemon meta so
+// Decorate an offer row with the offerer's display name + creature meta so
 // the client doesn't need a separate join.
-async function decorateOffers(supabase, getPokedex, rows) {
+async function decorateOffers(supabase, getBestiary, rows) {
   if (!rows.length) return [];
-  const pokedex = await getPokedex();
-  const byId = new Map((pokedex || []).map((p) => [p.id, p]));
+  const bestiary = await getBestiary();
+  const byId = new Map((bestiary || []).map((p) => [p.id, p]));
   // Batch-fetch display names.
   const userIds = [...new Set(rows.flatMap((r) => [r.offerer_user_id, r.accepter_user_id].filter(Boolean)))];
   let users = {};
@@ -74,9 +74,9 @@ async function decorateOffers(supabase, getPokedex, rows) {
   return rows.map((r) => ({
     id: r.id,
     status: r.status,
-    offered: byId.get(r.offered_pokemon_id) ? cardSummary(byId.get(r.offered_pokemon_id)) : null,
-    wanted:  byId.get(r.wanted_pokemon_id)  ? cardSummary(byId.get(r.wanted_pokemon_id))  : null,
-    offererName:  users[r.offerer_user_id]  || "Trainer",
+    offered: byId.get(r.offered_creature_id) ? cardSummary(byId.get(r.offered_creature_id)) : null,
+    wanted:  byId.get(r.wanted_creature_id)  ? cardSummary(byId.get(r.wanted_creature_id))  : null,
+    offererName:  users[r.offerer_user_id]  || "Champion",
     accepterName: users[r.accepter_user_id] || null,
     createdAt: r.created_at,
     expiresAt: r.expires_at,
@@ -92,11 +92,11 @@ function cardSummary(c) {
   };
 }
 
-function mount(app, supabase, getPokedex) {
+function mount(app, supabase, getBestiary) {
   if (!supabase) return;
 
   async function loadDex() {
-    const v = getPokedex();
+    const v = getBestiary();
     return v && typeof v.then === "function" ? await v : v;
   }
 
@@ -105,8 +105,8 @@ function mount(app, supabase, getPokedex) {
     const wanted = Number(req.query.wanted) || null;
     const offered = Number(req.query.offered) || null;
     let q = supabase.from("trade_offers").select("*").eq("status", "open").order("created_at", { ascending: false }).limit(50);
-    if (wanted) q = q.eq("wanted_pokemon_id", wanted);
-    if (offered) q = q.eq("offered_pokemon_id", offered);
+    if (wanted) q = q.eq("wanted_creature_id", wanted);
+    if (offered) q = q.eq("offered_creature_id", offered);
     const { data, error } = await q;
     if (error) return res.status(500).json({ error: error.message });
     const offers = await decorateOffers(supabase, loadDex, data || []);
@@ -115,10 +115,10 @@ function mount(app, supabase, getPokedex) {
 
   app.post("/me/trades", async (req, res) => {
     if (!req.user) return res.status(401).json({ error: "Sign in required." });
-    const offered = Number(req.body?.offeredPokemonId);
-    const wanted  = Number(req.body?.wantedPokemonId);
-    if (!offered || !wanted) return res.status(400).json({ error: "Both offered and wanted pokemon ids required." });
-    if (offered === wanted) return res.status(400).json({ error: "Can't offer the same pokemon you're asking for." });
+    const offered = Number(req.body?.offeredCreatureId);
+    const wanted  = Number(req.body?.wantedCreatureId);
+    if (!offered || !wanted) return res.status(400).json({ error: "Both offered and wanted creature ids required." });
+    if (offered === wanted) return res.status(400).json({ error: "Can't offer the same creature you're asking for." });
     // Ownership check.
     const qty = await ownedQty(supabase, req.user.id, offered);
     if (qty < 1) return res.status(400).json({ error: "You don't own that card." });
@@ -135,8 +135,8 @@ function mount(app, supabase, getPokedex) {
       .from("trade_offers")
       .insert({
         offerer_user_id: req.user.id,
-        offered_pokemon_id: offered,
-        wanted_pokemon_id: wanted,
+        offered_creature_id: offered,
+        wanted_creature_id: wanted,
       })
       .select("*")
       .single();
@@ -191,8 +191,8 @@ function mount(app, supabase, getPokedex) {
     }
     // Both parties must still own their side of the swap.
     const [offererHas, accepterHas] = await Promise.all([
-      ownedQty(supabase, offer.offerer_user_id, offer.offered_pokemon_id),
-      ownedQty(supabase, req.user.id, offer.wanted_pokemon_id),
+      ownedQty(supabase, offer.offerer_user_id, offer.offered_creature_id),
+      ownedQty(supabase, req.user.id, offer.wanted_creature_id),
     ]);
     if (offererHas < 1) {
       await supabase.from("trade_offers").update({ status: "cancelled" }).eq("id", tradeId).eq("status", "open");
@@ -214,10 +214,10 @@ function mount(app, supabase, getPokedex) {
     if (!claim) return res.status(409).json({ error: "Trade was just accepted by someone else." });
     // Run the swap. Order matters slightly — decrement first so a
     // mid-flight failure can't double-grant.
-    await incrementOwned(supabase, offer.offerer_user_id, offer.offered_pokemon_id, -1);
-    await incrementOwned(supabase, req.user.id, offer.wanted_pokemon_id, -1);
-    await incrementOwned(supabase, offer.offerer_user_id, offer.wanted_pokemon_id, +1);
-    await incrementOwned(supabase, req.user.id, offer.offered_pokemon_id, +1);
+    await incrementOwned(supabase, offer.offerer_user_id, offer.offered_creature_id, -1);
+    await incrementOwned(supabase, req.user.id, offer.wanted_creature_id, -1);
+    await incrementOwned(supabase, offer.offerer_user_id, offer.wanted_creature_id, +1);
+    await incrementOwned(supabase, req.user.id, offer.offered_creature_id, +1);
     const decorated = await decorateOffers(supabase, loadDex, [claim]);
     res.json({ offer: decorated[0], swapped: true });
   });

@@ -70,7 +70,7 @@ function mount(app, supabase) {
       .eq("code", code)
       .maybeSingle();
     if (!data) return res.json({ owner: null });
-    res.json({ owner: { displayName: data.users?.display_name || "Trainer" } });
+    res.json({ owner: { displayName: data.users?.display_name || "Champion" } });
   });
 
   // Anonymous-friendly: record a result against a shared deck. If the
@@ -85,7 +85,7 @@ function mount(app, supabase) {
     const challengerName = req.user?.display_name
       || (typeof req.body?.challengerName === "string"
           ? req.body.challengerName.slice(0, 32)
-          : "Anonymous Trainer");
+          : "Anonymous Champion");
 
     const { data: deck } = await supabase
       .from("shared_decks")

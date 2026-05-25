@@ -38,17 +38,17 @@ test("every spell has the fields the engine + UI need", () => {
     }
     assert.equal(s.kind, "spell");
     assert.ok(KNOWN_RARITIES.has(s.rarity), `${s.name} has unknown rarity ${s.rarity}`);
-    assert.ok(s.id >= SPELL_BASE_ID, `${s.name} id ${s.id} collides with Pokémon ID space`);
+    assert.ok(s.id >= SPELL_BASE_ID, `${s.name} id ${s.id} collides with creature ID space`);
   }
 });
 
-test("spell IDs are unique and start above the Pokémon ID range", () => {
-  // Pokémon IDs are <2000. Spell IDs start at SPELL_BASE_ID (10000+) so
+test("spell IDs are unique and start above the creature ID range", () => {
+  // creature IDs are <2000. Spell IDs start at SPELL_BASE_ID (10000+) so
   // they never collide with PokeAPI ids in owned_cards / drop offers.
   const ids = new Set();
   for (const s of SPELL_CARDS) {
     assert.ok(!ids.has(s.id), `duplicate spell id ${s.id}`);
-    assert.ok(s.id > 2000, `spell id ${s.id} could collide with Pokémon space`);
+    assert.ok(s.id > 2000, `spell id ${s.id} could collide with creature space`);
     ids.add(s.id);
   }
 });
@@ -70,12 +70,12 @@ test("tierFromSpellCost clamps to the 1..5 range deck-builder expects", () => {
   assert.equal(tierFromSpellCost(0), 1);
 });
 
-test("spellToCard inflates a spell into the same shape as a Pokémon card", () => {
-  // Tests just one canonical spell — the Pokémon-card shape contract is
+test("spellToCard inflates a spell into the same shape as a creature card", () => {
+  // Tests just one canonical spell — the creature-card shape contract is
   // the important bit (so downstream callers don't need to branch).
   const freeze = SPELL_CARDS.find((s) => s.effect === "freeze");
   const c = spellToCard(freeze);
-  // Required Pokémon-card fields the rest of the codebase reads:
+  // Required creature-card fields the rest of the codebase reads:
   for (const k of ["id", "name", "types", "tier", "energyCost", "cardHp",
                    "cardAttack", "rarity", "is_legendary", "is_mythical"]) {
     assert.ok(k in c, `spellToCard output missing "${k}"`);
@@ -89,11 +89,11 @@ test("spellToCard inflates a spell into the same shape as a Pokémon card", () =
   assert.equal(c.energyCost, energyCostFromPower(freeze.power));
 });
 
-test("isSpellCard distinguishes spells from Pokémon", () => {
+test("isSpellCard distinguishes spells from creature", () => {
   const freeze = spellToCard(SPELL_CARDS[0]);
-  const pokemon = { id: 25, name: "Pikachu", tier: 2 };
+  const creature = { id: 25, name: "Pikachu", tier: 2 };
   assert.equal(isSpellCard(freeze), true);
-  assert.equal(isSpellCard(pokemon), false);
+  assert.equal(isSpellCard(creature), false);
   // Defensive: null / undefined don't crash.
   assert.equal(isSpellCard(null), false);
   assert.equal(isSpellCard(undefined), false);
@@ -135,7 +135,7 @@ test("rarity bands cover every player tier (slice 6 expanded the spread)", () =>
   assert.ok((byRarity.legendary   || 0) >= 1, "expected ≥1 legendary spell");
 });
 
-test("spellById looks up by Pokémon-card id and returns a card-shaped object", () => {
+test("spellById looks up by creature-card id and returns a card-shaped object", () => {
   const freeze = SPELL_CARDS.find((s) => s.effect === "freeze");
   const c = spellById(freeze.id);
   assert.ok(c);

@@ -3,7 +3,7 @@
 //   GET /d/<code>            human-readable landing: show the deck +
 //                            a CTA to either copy it into the user's
 //                            collection or jump straight into a match.
-//                            Hydrates the cards via the pokedex so
+//                            Hydrates the cards via the bestiary so
 //                            the page is shareable on social as-is.
 //   GET /api/deck-code/:code returns the hydrated cards for the
 //                            deck-builder to load when the user opens
@@ -14,9 +14,9 @@
 const { decodeDeckCode } = require("../shared/deck-codes");
 const { toCard } = require("../shared/deck-builder");
 
-function mount(app, supabase, getPokedex) {
+function mount(app, supabase, getBestiary) {
   async function loadDex() {
-    const v = getPokedex();
+    const v = getBestiary();
     return v && typeof v.then === "function" ? await v : v;
   }
 
@@ -28,7 +28,7 @@ function mount(app, supabase, getPokedex) {
     }
     if (!supabase) return ids.map((id) => ({ id, name: `?#${id}`, missing: true }));
     const unique = [...new Set(ids)];
-    const { data: rows } = await supabase.from("pokemon").select("*").in("id", unique);
+    const { data: rows } = await supabase.from("bestiary").select("*").in("id", unique);
     const byId = new Map((rows || []).map((r) => [r.id, toCard(r)]));
     return ids.map((id) => byId.get(id) || { id, name: `?#${id}`, missing: true });
   }
@@ -78,9 +78,9 @@ function mount(app, supabase, getPokedex) {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Shared deck · Pokémon TCG</title>
-  <meta name="description" content="${escape("A 30-card Pokémon TCG deck with " + topTypes.map(([t, n]) => `${n} ${t}`).join(", ") + ".")}" />
-  <meta property="og:title" content="${escape(`Deck: ${topTypes.map(([t]) => t).join("/") || "Pokémon TCG"}`)}" />
+  <title>Shared deck · creature TCG</title>
+  <meta name="description" content="${escape("A 30-card creature TCG deck with " + topTypes.map(([t, n]) => `${n} ${t}`).join(", ") + ".")}" />
+  <meta property="og:title" content="${escape(`Deck: ${topTypes.map(([t]) => t).join("/") || "creature TCG"}`)}" />
   <meta property="og:description" content="${escape(`A 30-card build featuring ${previewCards.map((c) => c.name).slice(0, 4).join(", ")}…`)}" />
   <meta property="og:image" content="${origin}/og-card.png" />
   <meta property="og:url" content="${origin}/d/${escape(code)}" />
@@ -109,7 +109,7 @@ function mount(app, supabase, getPokedex) {
 <body>
   <div class="wrap">
     <h1>Shared deck</h1>
-    <p class="sub">A 30-card Pokémon TCG build. Load it into your collection or battle against it.</p>
+    <p class="sub">A 30-card creature TCG build. Load it into your collection or battle against it.</p>
     <div class="meta">
       ${topTypes.map(([t, n]) => `<span>${escape(t)} ×${n}</span>`).join("")}
       ${[1,2,3,4,5].map((t) => byTier[t] ? `<span>T${t}: ${byTier[t]}</span>` : "").join("")}

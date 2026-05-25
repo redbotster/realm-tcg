@@ -2,7 +2,7 @@
 // URLs from /api/reading/emotes, then plays a random matching clip
 // when the engine fires a battle event.
 //
-// User-facing toggle: localStorage["pokemon-tcg-emotes"] === "off"
+// User-facing toggle: localStorage["creature-tcg-emotes"] === "off"
 // disables all emote playback. Default ON.
 
 let _manifest = null;       // { [event]: [{ id, audioUrl }, ...] }
@@ -13,7 +13,7 @@ const EMOTE_COOLDOWN_MS = 600;
 
 function emotesEnabled() {
   try {
-    return localStorage.getItem("pokemon-tcg-emotes") !== "off";
+    return localStorage.getItem("creature-tcg-emotes") !== "off";
   } catch {
     return true;
   }
@@ -21,7 +21,7 @@ function emotesEnabled() {
 
 export function setEmotesEnabled(on) {
   try {
-    localStorage.setItem("pokemon-tcg-emotes", on ? "on" : "off");
+    localStorage.setItem("creature-tcg-emotes", on ? "on" : "off");
   } catch {}
 }
 

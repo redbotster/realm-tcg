@@ -58,7 +58,7 @@ before(async () => {
   app.use(cookieParser());
 
   const supabaseStub = makeSupabaseStub();
-  const getPokedex = () => Promise.resolve([]);
+  const getBestiary = () => Promise.resolve([]);
 
   // Mount every module the same way server.js does.
   const auth = require("../server-modules/auth");
@@ -86,26 +86,26 @@ before(async () => {
   // None of these should throw at mount time.
   auth.mount(app, supabaseStub);
   collection.mount(app, supabaseStub);
-  rewards.mount(app, supabaseStub, getPokedex);
-  achievements.mount(app, supabaseStub, getPokedex);
-  dailyStreak.mount(app, supabaseStub, getPokedex);
+  rewards.mount(app, supabaseStub, getBestiary);
+  achievements.mount(app, supabaseStub, getBestiary);
+  dailyStreak.mount(app, supabaseStub, getBestiary);
   xp.mount(app, supabaseStub);
-  quests.mount(app, supabaseStub, getPokedex);
+  quests.mount(app, supabaseStub, getBestiary);
   theme.mount(app);
   champions.mount(app, supabaseStub);
-  story.mount(app, supabaseStub, getPokedex);
-  trading.mount(app, supabaseStub, getPokedex);
-  dailyBoss.mount(app, supabaseStub, getPokedex);
+  story.mount(app, supabaseStub, getBestiary);
+  trading.mount(app, supabaseStub, getBestiary);
+  dailyBoss.mount(app, supabaseStub, getBestiary);
   dailyPuzzle.mount(app, supabaseStub);
   analytics.mount(app);
   siteGate.parseFormBody(app);
   siteGate.mount(app);
   guestMigrate.mount(app, supabaseStub);
-  deckShare.mount(app, supabaseStub, getPokedex);
+  deckShare.mount(app, supabaseStub, getBestiary);
   friendChallenge.mount(app, supabaseStub);
   mastery.mount(app, supabaseStub);
-  winstreak.mount(app, supabaseStub, getPokedex);
-  multiplayerHttp.mount(app, supabaseStub, getPokedex);
+  winstreak.mount(app, supabaseStub, getBestiary);
+  multiplayerHttp.mount(app, supabaseStub, getBestiary);
 
   // Match server.js: a JSON-emitting error handler so any async-route
   // throw becomes `{error}` instead of Express 5's HTML 500 fallback.
@@ -214,7 +214,7 @@ test("POST /me/quests/:id/claim returns 401 not 500 (regression: circular dep)",
 });
 
 test("POST /me/rewards/claim returns 401 not 500", async () => {
-  const r = await req("POST", "/me/rewards/claim", { offerId: "abc", pokemonId: 6 });
+  const r = await req("POST", "/me/rewards/claim", { offerId: "abc", creatureId: 6 });
   assert.equal(r.status, 401);
   assert.ok(r.json?.error);
 });

@@ -1,7 +1,7 @@
 const { chromium } = require("playwright");
 const fs = require("fs");
 const path = require("path");
-const BASE = process.argv[2] || "https://pokemon-tcg-five-lime.vercel.app";
+const BASE = process.argv[2] || "https://creature-tcg-five-lime.vercel.app";
 const OUT = "/tmp/pkmn-screens";
 fs.mkdirSync(OUT, { recursive: true });
 (async () => {
@@ -18,11 +18,11 @@ fs.mkdirSync(OUT, { recursive: true });
   await page.waitForSelector("#account-register-btn");
   await page.click("#account-register-btn");
   await page.waitForSelector("#account-logout-btn", { timeout: 15000 });
-  await page.click(".trainer-card");
+  await page.click(".champion-card");
   await page.click("#start-btn");
   try { await page.waitForSelector(".mulligan-confirm", { timeout: 12000 }); await page.click(".mulligan-confirm"); } catch {}
   await page.waitForSelector("#hand .card", { timeout: 12000 });
-  // Play a few turns to accumulate energy + a couple of pokemon on the field
+  // Play a few turns to accumulate energy + a couple of creature on the field
   for (let t=0; t<3; t++) {
     const cards = await page.$$(".hand .card:not(.unplayable)");
     if (cards.length) await cards[0].click();

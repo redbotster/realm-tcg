@@ -59,7 +59,7 @@ export function t(key, params = {}) {
 
 function detectLocale() {
   try {
-    const stored = localStorage.getItem("pokemon-tcg-locale");
+    const stored = localStorage.getItem("creature-tcg-locale");
     if (stored) return stored;
     const nav = (navigator.language || "en").toLowerCase();
     if (nav.startsWith("es")) return "es";

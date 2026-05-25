@@ -1,4 +1,4 @@
-// Tests for the pure search helpers used by the Pokédex overlay and
+// Tests for the pure search helpers used by the Bestiary overlay and
 // the deck list. Covers tokenisation edge cases + the AND-across-
 // tokens, OR-across-fields semantics.
 
@@ -7,7 +7,7 @@ import assert from "node:assert/strict";
 import {
   normalizeQuery,
   matchesAllTokens,
-  filterPokedexEntries,
+  filterBestiaryEntries,
   filterDecks,
 } from "../client/js/search-utils.js";
 
@@ -46,9 +46,9 @@ test("matchesAllTokens ignores null / undefined haystacks (no crash)", () => {
   assert.equal(matchesAllTokens(["abc"], [null, undefined, "abcde"]), true);
 });
 
-// --- filterPokedexEntries -------------------------------------------
+// --- filterBestiaryEntries -------------------------------------------
 
-const POKEDEX_FIXTURE = [
+const BESTIARY_FIXTURE = [
   { id: 1,   name: "Bulbasaur",  types: ["grass", "poison"], generation: 1, quantity: 0 },
   { id: 4,   name: "Charmander", types: ["fire"],            generation: 1, quantity: 3 },
   { id: 6,   name: "Charizard",  types: ["fire", "flying"],  generation: 1, quantity: 0 },
@@ -58,48 +58,48 @@ const POKEDEX_FIXTURE = [
 ];
 
 test("empty query returns all entries (no filter)", () => {
-  assert.equal(filterPokedexEntries(POKEDEX_FIXTURE, "").length, POKEDEX_FIXTURE.length);
-  assert.equal(filterPokedexEntries(POKEDEX_FIXTURE, "  ").length, POKEDEX_FIXTURE.length);
+  assert.equal(filterBestiaryEntries(BESTIARY_FIXTURE, "").length, BESTIARY_FIXTURE.length);
+  assert.equal(filterBestiaryEntries(BESTIARY_FIXTURE, "  ").length, BESTIARY_FIXTURE.length);
 });
 
 test("substring name match (case-insensitive)", () => {
-  const r = filterPokedexEntries(POKEDEX_FIXTURE, "char");
+  const r = filterBestiaryEntries(BESTIARY_FIXTURE, "char");
   assert.deepEqual(r.map((x) => x.name).sort(), ["Charizard", "Charmander"]);
 });
 
 test("type match (single token)", () => {
-  const r = filterPokedexEntries(POKEDEX_FIXTURE, "ice");
+  const r = filterBestiaryEntries(BESTIARY_FIXTURE, "ice");
   assert.deepEqual(r.map((x) => x.name), ["Articuno"]);
 });
 
 test("padded dex ID match (#025 → Pikachu)", () => {
-  const r = filterPokedexEntries(POKEDEX_FIXTURE, "025");
+  const r = filterBestiaryEntries(BESTIARY_FIXTURE, "025");
   assert.deepEqual(r.map((x) => x.name), ["Pikachu"]);
 });
 
 test("multi-token AND: 'fire flying' finds only dual-type", () => {
-  const r = filterPokedexEntries(POKEDEX_FIXTURE, "fire flying");
+  const r = filterBestiaryEntries(BESTIARY_FIXTURE, "fire flying");
   assert.deepEqual(r.map((x) => x.name), ["Charizard"]);
 });
 
 test("multi-token AND with name + type: 'char fire'", () => {
-  const r = filterPokedexEntries(POKEDEX_FIXTURE, "char fire");
+  const r = filterBestiaryEntries(BESTIARY_FIXTURE, "char fire");
   // Charmander + Charizard both have "char" AND "fire"
   assert.deepEqual(r.map((x) => x.name).sort(), ["Charizard", "Charmander"]);
 });
 
 test("no match returns empty array", () => {
-  assert.deepEqual(filterPokedexEntries(POKEDEX_FIXTURE, "dragonzord"), []);
+  assert.deepEqual(filterBestiaryEntries(BESTIARY_FIXTURE, "dragonzord"), []);
 });
 
-test("generation match: 'gen3' finds gen-3 Pokémon", () => {
-  const r = filterPokedexEntries(POKEDEX_FIXTURE, "gen3");
+test("generation match: 'gen3' finds gen-3 creature", () => {
+  const r = filterBestiaryEntries(BESTIARY_FIXTURE, "gen3");
   assert.deepEqual(r.map((x) => x.name), ["Treecko"]);
 });
 
 // --- filterDecks ----------------------------------------------------
 
-const DEX_BY_ID = new Map(POKEDEX_FIXTURE.map((p) => [p.id, p]));
+const DEX_BY_ID = new Map(BESTIARY_FIXTURE.map((p) => [p.id, p]));
 
 const DECKS_FIXTURE = [
   { id: "d1", name: "My Fire Squad",     card_ids: [4, 6, 25] },
@@ -119,26 +119,26 @@ test("filter decks by deck name substring", () => {
   assert.deepEqual(r.map((d) => d.id), ["d1"]);
 });
 
-test("filter decks by contained Pokémon name", () => {
+test("filter decks by contained creature name", () => {
   const r = filterDecks(DECKS_FIXTURE, DEX_BY_ID, "pikachu");
   // d1 has Pikachu (id 25). d3 has Pikachu too.
   assert.deepEqual(r.map((d) => d.id).sort(), ["d1", "d3"]);
 });
 
-test("filter decks by contained Pokémon TYPE", () => {
+test("filter decks by contained creature TYPE", () => {
   const r = filterDecks(DECKS_FIXTURE, DEX_BY_ID, "grass");
   // d2 has Bulbasaur (grass/poison) + Treecko (grass).
   assert.deepEqual(r.map((d) => d.id), ["d2"]);
 });
 
-test("filter decks: multi-token AND across name + contained pokémon", () => {
+test("filter decks: multi-token AND across name + contained creature", () => {
   // "fire pikachu" → only d1 (name has "fire", contains Pikachu)
   const r = filterDecks(DECKS_FIXTURE, DEX_BY_ID, "fire pikachu");
   assert.deepEqual(r.map((d) => d.id), ["d1"]);
 });
 
-test("filter decks gracefully handles missing pokedex entries", () => {
-  // A card_id with no matching pokedex entry shouldn't crash — just
+test("filter decks gracefully handles missing bestiary entries", () => {
+  // A card_id with no matching bestiary entry shouldn't crash — just
   // skip it for the haystack. Deck name still searchable.
   const r = filterDecks(
     [{ id: "x", name: "OldDeck", card_ids: [99999, 25] }],

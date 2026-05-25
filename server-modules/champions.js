@@ -7,8 +7,8 @@
 //   GET /api/champion/:id/deck       -> 30-card deck for that champion
 //
 // The champion deck builder uses a curated id list per champion, falling
-// back to Pokémon Showdown-style typed picks if a curated id isn't in the
-// Pokédex (so it always returns 30 cards).
+// back to creature Showdown-style typed picks if a curated id isn't in the
+// Bestiary (so it always returns 30 cards).
 
 const { toCard } = require("../shared/deck-builder");
 
@@ -36,7 +36,7 @@ const CHAMPIONS = {
     name: "Steven",
     title: "Steel Magnate",
     portrait: "steven",
-    bio: "Hoenn champion. Iron-clad steel-type Pokémon only.",
+    bio: "Hoenn champion. Iron-clad steel-type creature only.",
     typeFilter: ["steel"],
     coreIds: [376, 227, 306, 411, 462, 530, 599, 681, 707, 805], // Metagross, Skarmory, Aggron, Bastiodon, Magnezone, Excadrill, Klang, Aegislash, Klefki, Stakataka
   },
@@ -56,7 +56,7 @@ async function buildChampionDeck(supabase, champion) {
   const deck = [];
   // First pass — curated core ids (each once, then any duplicates as 2nd copy).
   const { data: coreRows } = await supabase
-    .from("pokemon")
+    .from("bestiary")
     .select("*")
     .in("id", champion.coreIds);
   const byId = new Map((coreRows || []).map((r) => [r.id, r]));
@@ -72,13 +72,13 @@ async function buildChampionDeck(supabase, champion) {
   const need = 30 - deck.length;
   let { data: pool } = champion.typeFilter
     ? await supabase
-        .from("pokemon")
+        .from("bestiary")
         .select("*")
         .overlaps("types", champion.typeFilter)
         .order("hp", { ascending: false })
         .limit(200)
     : await supabase
-        .from("pokemon")
+        .from("bestiary")
         .select("*")
         .order("hp", { ascending: false })
         .limit(300);

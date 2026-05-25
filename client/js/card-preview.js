@@ -86,7 +86,7 @@ function showPreview(card, anchorEl) {
     ${renderTraitsSection(card)}
     ${renderPassivesSection(card)}
     ${card.flavor_text ? `
-      <div class="cp-section">Pokédex entry</div>
+      <div class="cp-section">Bestiary entry</div>
       <div class="cp-flavor">${escape(card.flavor_text)}</div>
     ` : ""}
   `;
@@ -122,7 +122,7 @@ if (typeof document !== "undefined") {
 const PASSIVE_DESCS = {
   static: "Static — 25% chance to paralyze the attacker on contact.",
   levitate: "Levitate — immune to Ground attacks.",
-  intimidate: "Intimidate — on summon, every enemy Pokémon loses 1 ATK.",
+  intimidate: "Intimidate — on summon, every enemy creature loses 1 ATK.",
   blaze: "Blaze — +1 ATK to Fire moves when below 1/3 HP.",
   torrent: "Torrent — +1 ATK to Water moves when below 1/3 HP.",
   overgrow: "Overgrow — +1 ATK to Grass moves when below 1/3 HP.",

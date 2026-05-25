@@ -59,7 +59,7 @@ function render(overlay, rows, me) {
       <div class="lb-table">
         <div class="lb-row lb-head">
           <span class="lb-rank">#</span>
-          <span class="lb-name">Trainer</span>
+          <span class="lb-name">Champion</span>
           <span class="lb-cell">Lvl</span>
           <span class="lb-cell">Wins</span>
           <span class="lb-cell">Losses</span>
@@ -72,7 +72,7 @@ function render(overlay, rows, me) {
               <div class="lb-row ${me && r.user_id === me.user_id ? "is-me" : ""}">
                 <span class="lb-rank">#${i + 1}</span>
                 <span class="lb-name">${escape(r.display_name)}</span>
-                <span class="lb-cell"><span class="lb-level-chip">L${r.trainer_level || 1}</span></span>
+                <span class="lb-cell"><span class="lb-level-chip">L${r.champion_level || 1}</span></span>
                 <span class="lb-cell">${r.wins}</span>
                 <span class="lb-cell">${r.losses}</span>
                 <span class="lb-cell">${r.win_pct}%</span>

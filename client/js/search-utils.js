@@ -1,8 +1,8 @@
-// Pure search/filter helpers for the Pokédex overlay and the deck
+// Pure search/filter helpers for the Bestiary overlay and the deck
 // list. Kept DOM-free so tests can exercise the matching logic without
 // standing up a browser. Both filters share the same normalization
-// path so a user typing "char" matches Pokémon names, dex IDs, types,
-// and (for decks) deck names + contained Pokémon names.
+// path so a user typing "char" matches creature names, dex IDs, types,
+// and (for decks) deck names + contained creature names.
 //
 // Tokenization:
 //   "Char.lizard / fire" → ["char", "lizard", "fire"]
@@ -36,10 +36,10 @@ export function matchesAllTokens(tokens, haystacks) {
   return true;
 }
 
-// Filter pokedex entries (rows from /me/pokedex) by a free-text query.
+// Filter bestiary entries (rows from /me/bestiary) by a free-text query.
 // Each row has: { id, name, types?: [], generation, ... }.
 // Matching against: name, padded dex id, types, generation label.
-export function filterPokedexEntries(entries, query) {
+export function filterBestiaryEntries(entries, query) {
   const tokens = normalizeQuery(query);
   if (!tokens.length) return entries;
   return entries.filter((r) => {
@@ -55,20 +55,20 @@ export function filterPokedexEntries(entries, query) {
   });
 }
 
-// Filter saved decks by query. `pokedexById` maps Pokémon id → card
-// shape so we can search by contained-Pokémon name. A deck matches if:
+// Filter saved decks by query. `bestiaryById` maps creature id → card
+// shape so we can search by contained-creature name. A deck matches if:
 //   - its name contains the query, OR
-//   - any Pokémon in card_ids matches by name/type
+//   - any creature in card_ids matches by name/type
 // Multi-token queries are AND'd — "fire pikachu" finds decks that
 // match BOTH (e.g. a fire-themed deck that also includes Pikachu).
-export function filterDecks(decks, pokedexById, query) {
+export function filterDecks(decks, bestiaryById, query) {
   const tokens = normalizeQuery(query);
   if (!tokens.length) return decks;
   return decks.filter((d) => {
     const ids = Array.isArray(d.card_ids) ? d.card_ids : [];
     const haystacks = [d.name || ""];
     for (const id of ids) {
-      const card = pokedexById?.get?.(id) || null;
+      const card = bestiaryById?.get?.(id) || null;
       if (!card) continue;
       haystacks.push(card.name);
       if (Array.isArray(card.types)) haystacks.push(...card.types);

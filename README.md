@@ -1,20 +1,20 @@
-# Pokémon TCG
+# creature TCG
 
-A vanilla-JS 1v1 Pokémon card game. Vanilla JS modules in the browser, plain
-Node on the server, no build step. Backed by Supabase for the 1,025-Pokémon
-Pokédex and persistent user accounts. Deploys to Vercel (HTTP routes) with a
+A vanilla-JS 1v1 creature card game. Vanilla JS modules in the browser, plain
+Node on the server, no build step. Backed by Supabase for the 1,025-creature
+Bestiary and persistent user accounts. Deploys to Vercel (HTTP routes) with a
 Dockerfile included for any persistent-process host (Fly.io / Render / VPS).
 
 ## Live
 
-https://pokemon-tcg-five-lime.vercel.app
+https://creature-tcg-five-lime.vercel.app
 
 ## Features
 
 - Solo vs AI on Easy / Medium / Hard
-- 6 trainers (Brock, Misty, Pikachu Fan, Erika, Sabrina, Lance) with
+- 6 champions (Brock, Misty, Pikachu Fan, Erika, Sabrina, Lance) with
   passive abilities
-- Every Pokémon has a free Basic attack plus a type-flavored Special
+- Every creature has a free Basic attack plus a type-flavored Special
   (Fire → Inferno + Burn, Electric → Volt Shock + Paralyze, etc.)
 - 18-type effectiveness chart (Gen 6+)
 - Passkey accounts (WebAuthn), Supabase-backed
@@ -31,7 +31,7 @@ https://pokemon-tcg-five-lime.vercel.app
 ```bash
 yarn install
 cp .env.example .env       # fill in your Supabase + SESSION_SECRET
-node scripts/seed-pokedex.js
+node scripts/seed-bestiary.js
 yarn start                 # node server.js — listens on :3000
 ```
 

@@ -1,4 +1,4 @@
-// Special abilities derived from a Pokémon's primary type. Each card gets
+// Special abilities derived from a creature's primary type. Each card gets
 // (a) a free "Basic" attack and (b) one type-flavored "Special" that costs
 // extra energy when used. Specials apply a damage multiplier and may
 // guarantee a status effect.

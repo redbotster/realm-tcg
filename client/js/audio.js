@@ -1,9 +1,9 @@
-// Web Audio playback for Pokémon cries. Lazy AudioContext (must be created
+// Web Audio playback for creature cries. Lazy AudioContext (must be created
 // after a user gesture) and a tiny in-memory buffer cache so re-summoning the
-// same Pokémon doesn't re-fetch.
+// same creature doesn't re-fetch.
 
 let _ctx = null;
-let _muted = localStorage.getItem("pokemon-tcg-muted") === "1";
+let _muted = localStorage.getItem("creature-tcg-muted") === "1";
 const _buffers = new Map(); // url → AudioBuffer
 const _inFlight = new Map(); // url → Promise<AudioBuffer>
 
@@ -56,7 +56,7 @@ export async function playCry(url, { volume = 0.3 } = {}) {
 
 export function setMuted(m) {
   _muted = !!m;
-  localStorage.setItem("pokemon-tcg-muted", _muted ? "1" : "0");
+  localStorage.setItem("creature-tcg-muted", _muted ? "1" : "0");
   if (_muted) stopBGM();
 }
 
@@ -179,7 +179,7 @@ export function sfxHit({ supereffective = false } = {}) {
   osc.stop(c.currentTime + 0.2);
 }
 
-// KO ding: descending chord, signals a Pokémon fainted.
+// KO ding: descending chord, signals a creature fainted.
 export function sfxKO() {
   if (_muted) return;
   const c = ctx();

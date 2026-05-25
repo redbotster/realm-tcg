@@ -20,7 +20,7 @@ const { toCard, buildDeck } = require("../shared/deck-builder");
 const { bumpDailyStats } = require("./quests");
 
 // Curated daily-boss pool. The day index modulo POOL_SIZE picks the boss.
-// Each entry is a high-tier or iconic Pokémon with a phase-rule kit. We
+// Each entry is a high-tier or iconic creature with a phase-rule kit. We
 // keep the pool large enough that one boss recurs at most weekly.
 const POOL = [
   { id: 150, name: "Mewtwo",     types: ["psychic"],        hp: 80, atk: 11, ability: "sabrina", rules: ["buff", "ignoreDef"] },
@@ -67,10 +67,10 @@ async function buildDailyDeck(supabase, boss, dayNumber) {
   // Deterministic-ish boss deck: 2x anchor (bumped) + thematic type
   // supports + tier-1 filler. Boss anchor is flagged legendary so it gets
   // holo treatment.
-  const { data: anchorRow } = await supabase.from("pokemon").select("*").eq("id", boss.id).maybeSingle();
-  if (!anchorRow) throw new Error(`Pokemon ${boss.id} missing`);
+  const { data: anchorRow } = await supabase.from("bestiary").select("*").eq("id", boss.id).maybeSingle();
+  if (!anchorRow) throw new Error(`Creature ${boss.id} missing`);
   const anchor = { ...toCard(anchorRow), cardHp: Math.max(toCard(anchorRow).cardHp, Math.round(boss.hp / 4)), cardAttack: Math.max(toCard(anchorRow).cardAttack, boss.atk), is_legendary: true };
-  let { data: pool } = await supabase.from("pokemon")
+  let { data: pool } = await supabase.from("bestiary")
     .select("*").overlaps("types", boss.types).order("hp", { ascending: false }).limit(150);
   pool = (pool || []).map(toCard).filter((c) => c.id !== boss.id);
   // Seeded shuffle so the boss's supporting deck stays consistent across
@@ -91,7 +91,7 @@ async function buildDailyDeck(supabase, boss, dayNumber) {
     deck.push(c, c);
   }
   // Fill with low-tier filler.
-  const { data: filler } = await supabase.from("pokemon").select("*").lte("hp", 50).limit(40);
+  const { data: filler } = await supabase.from("bestiary").select("*").lte("hp", 50).limit(40);
   const fillerCards = (filler || []).map(toCard).filter((c) => !seen.has(c.id));
   while (deck.length < 30 && fillerCards.length) deck.push(fillerCards.shift());
   return deck.slice(0, 30);
@@ -128,9 +128,9 @@ const store = require("./state-store");
 const DAILY_MIN_DURATION_MS = 30 * 1000;
 const DAILY_SESSION_TTL_SEC = 60 * 60; // 1 hour — same as the in-memory GC
 
-function mount(app, supabase, getPokedex) {
+function mount(app, supabase, getBestiary) {
   async function loadDex() {
-    const v = getPokedex();
+    const v = getBestiary();
     return v && typeof v.then === "function" ? await v : v;
   }
 
@@ -152,7 +152,7 @@ function mount(app, supabase, getPokedex) {
         displayName: boss.name,
         maxHp: boss.hp,
         types: boss.types,
-        anchorPokemonId: boss.id,
+        anchorCreatureId: boss.id,
         ability: boss.ability,
       },
       deck,
@@ -236,8 +236,8 @@ function mount(app, supabase, getPokedex) {
     const origin = (req.headers["x-forwarded-host"] && `https://${req.headers["x-forwarded-host"]}`) || (req.headers.host && `https://${req.headers.host}`) || "";
     const url = `${origin}/?d=${dayNumber}`;
     const shareText = won
-      ? `Pokémon TCG Daily #${dayNumber} · ${boss.name}\n${stars}  ✅ ${turns} turn${turns === 1 ? "" : "s"} · ${hpLeft} HP left\nplay: ${url}`
-      : `Pokémon TCG Daily #${dayNumber} · ${boss.name}\n${stars}  ❌ Survived ${turns} turns\nplay: ${url}`;
+      ? `creature TCG Daily #${dayNumber} · ${boss.name}\n${stars}  ✅ ${turns} turn${turns === 1 ? "" : "s"} · ${hpLeft} HP left\nplay: ${url}`
+      : `creature TCG Daily #${dayNumber} · ${boss.name}\n${stars}  ❌ Survived ${turns} turns\nplay: ${url}`;
     res.json({ ok: true, dayNumber, dateKey: session.dateKey, stars, shareText, shareUrl: url, bossName: boss.name });
   });
 
@@ -256,7 +256,7 @@ function mount(app, supabase, getPokedex) {
     if (error) return res.status(500).json({ error: error.message });
     const rows = (data || []).map((r, i) => ({
       rank: i + 1,
-      displayName: r.users?.display_name || "Trainer",
+      displayName: r.users?.display_name || "Champion",
       won: r.won, turns: r.turns, hpLeft: r.hp_left, kos: r.kos,
       isYou: req.user && r.user_id === req.user.id,
     }));

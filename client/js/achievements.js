@@ -6,14 +6,14 @@ let _onCloseMatches = null;
 let _lastSeen = new Set();
 try {
   _lastSeen = new Set(
-    JSON.parse(localStorage.getItem("pokemon-tcg-seen-achievements") || "[]"),
+    JSON.parse(localStorage.getItem("creature-tcg-seen-achievements") || "[]"),
   );
 } catch {}
 
 function persistSeen() {
   try {
     localStorage.setItem(
-      "pokemon-tcg-seen-achievements",
+      "creature-tcg-seen-achievements",
       JSON.stringify([..._lastSeen]),
     );
   } catch {}

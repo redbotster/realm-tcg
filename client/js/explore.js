@@ -1,15 +1,15 @@
-// Explore — browse every Pokémon in the Pokédex (signed-in or not),
+// Explore — browse every creature in the Bestiary (signed-in or not),
 // with a search box and a click-to-see-detail panel. Distinct from
-// the existing Pokédex overlay (which is collection-tracking with
+// the existing Bestiary overlay (which is collection-tracking with
 // silhouettes for unowned species) — Explore is a reference / browse
 // experience.
 //
-// Data: /api/pokedex/all (public, cached). One fetch on open, kept in
+// Data: /api/bestiary/all (public, cached). One fetch on open, kept in
 // memory until the user closes the overlay so search + detail clicks
 // don't round-trip.
 
 import { TYPE_COLORS } from "./type-chart.js";
-import { filterPokedexEntries } from "./search-utils.js";
+import { filterBestiaryEntries } from "./search-utils.js";
 
 let _overlay = null;
 let _allRows = [];
@@ -24,15 +24,15 @@ export async function open() {
     document.body.appendChild(_overlay);
   }
   _overlay.classList.remove("hidden");
-  _overlay.innerHTML = `<div class="explore-loading">Loading the Pokédex…</div>`;
+  _overlay.innerHTML = `<div class="explore-loading">Loading the Bestiary…</div>`;
   try {
-    const r = await fetch("/api/pokedex/all");
+    const r = await fetch("/api/bestiary/all");
     if (!r.ok) throw new Error(r.statusText);
     const data = await r.json();
     _allRows = data.rows;
     render();
   } catch (err) {
-    _overlay.innerHTML = `<div class="explore-error">Couldn't load Pokédex: ${escapeHtml(err.message || "unknown")}</div>`;
+    _overlay.innerHTML = `<div class="explore-error">Couldn't load Bestiary: ${escapeHtml(err.message || "unknown")}</div>`;
   }
 }
 
@@ -50,7 +50,7 @@ function render() {
     <div class="explore-card">
       <header class="explore-header">
         <div class="explore-title">🔍 Explore</div>
-        <div class="explore-subtitle">${_allRows.length} Pokémon to discover. Tap one to see its stats.</div>
+        <div class="explore-subtitle">${_allRows.length} creature to discover. Tap one to see its stats.</div>
         <button class="explore-x" aria-label="Close">✕</button>
       </header>
       <div class="explore-search-row">
@@ -60,7 +60,7 @@ function render() {
       <div class="explore-body">
         <div class="explore-grid"></div>
         <aside class="explore-detail">
-          <div class="explore-detail-hint">Tap a Pokémon to see its details here.</div>
+          <div class="explore-detail-hint">Tap a creature to see its details here.</div>
         </aside>
       </div>
     </div>
@@ -83,11 +83,11 @@ function paintGrid() {
   const grid = _overlay.querySelector(".explore-grid");
   const countEl = _overlay.querySelector(".explore-count");
   if (!grid || !countEl) return;
-  const filtered = filterPokedexEntries(_allRows, _query);
+  const filtered = filterBestiaryEntries(_allRows, _query);
   countEl.textContent = _query ? `${filtered.length} of ${_allRows.length}` : "";
   grid.innerHTML = "";
   if (filtered.length === 0) {
-    grid.innerHTML = `<div class="explore-empty">No Pokémon match that search.</div>`;
+    grid.innerHTML = `<div class="explore-empty">No creature match that search.</div>`;
     return;
   }
   for (const row of filtered) {
@@ -177,7 +177,7 @@ function renderDetail(row) {
         </div>` : ""}
       ${row.flavor_text ? `
         <div class="explore-detail-section">
-          <h3>Pokédex Entry</h3>
+          <h3>Bestiary Entry</h3>
           <p class="explore-flavor">${escapeHtml(row.flavor_text)}</p>
         </div>` : ""}
     </div>

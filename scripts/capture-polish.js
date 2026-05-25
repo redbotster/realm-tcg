@@ -8,7 +8,7 @@ const { chromium } = require("playwright");
 const fs = require("fs");
 const path = require("path");
 
-const BASE = process.argv[2] || "https://pokemon-tcg-five-lime.vercel.app";
+const BASE = process.argv[2] || "https://creature-tcg-five-lime.vercel.app";
 const OUT = "/tmp/pkmn-screens";
 fs.mkdirSync(OUT, { recursive: true });
 
@@ -28,7 +28,7 @@ async function main() {
   await page.waitForSelector("#account-register-btn");
   await page.click("#account-register-btn");
   await page.waitForSelector("#account-logout-btn", { timeout: 15000 });
-  await page.click(".trainer-card");
+  await page.click(".champion-card");
   await page.waitForTimeout(600);
   await page.screenshot({ path: path.join(OUT, "polish-menu.png") });
 

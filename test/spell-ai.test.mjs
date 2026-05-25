@@ -23,7 +23,7 @@ const DEFENDER = spellToCard(SPELL_CARDS.find((s) => s.effect === "defender"));
 const EVOLVE   = spellToCard(SPELL_CARDS.find((s) => s.effect === "evolve"));
 const AOE      = spellToCard(SPELL_CARDS.find((s) => s.effect === "aoe"));
 
-function pokemon(id, { hp = 8, atk = 4, cost = 1, types = ["normal"] } = {}) {
+function creature(id, { hp = 8, atk = 4, cost = 1, types = ["normal"] } = {}) {
   return {
     id, name: `P${id}`, types,
     energyCost: cost, cardHp: hp, cardAttack: atk,
@@ -64,13 +64,13 @@ function makeMatch({ aiHand = [], aiEnergy = 5, aiField = [], playerField = [] }
     players: {
       player: {
         name: "Player", ability: "brock",
-        trainerHp: 30, maxTrainerHp: 30,
+        championHp: 30, maxChampionHp: 30,
         energy: 5, maxEnergy: 10,
         deck: [], hand: [], field: padField(playerField), discard: [],
       },
       ai: {
         name: "AI", ability: "brock",
-        trainerHp: 30, maxTrainerHp: 30,
+        championHp: 30, maxChampionHp: 30,
         energy: aiEnergy, maxEnergy: 10,
         deck: [], hand: aiHand, field: padField(aiField), discard: [],
       },
@@ -80,8 +80,8 @@ function makeMatch({ aiHand = [], aiEnergy = 5, aiField = [], playerField = [] }
 
 // --- Engine call-site safety (no AI loop yet, just engine accepts target) ---
 
-test("AI with a Pokémon in hand can summon it (sanity check)", () => {
-  const mon = pokemon(1);
+test("AI with a creature in hand can summon it (sanity check)", () => {
+  const mon = creature(1);
   const state = makeMatch({ aiHand: [mon] });
   const r = playCard(state, "ai", 0);
   assert.equal(r.ok, true);
@@ -89,14 +89,14 @@ test("AI with a Pokémon in hand can summon it (sanity check)", () => {
 });
 
 test("AI calling playCard on a spell without target returns clean error (no crash)", () => {
-  const state = makeMatch({ aiHand: [FREEZE], playerField: [pokemon(2)] });
+  const state = makeMatch({ aiHand: [FREEZE], playerField: [creature(2)] });
   const r = playCard(state, "ai", 0); // no spellTarget
   assert.equal(r.ok, false);
   assert.equal(state.players.ai.hand.length, 1);
 });
 
 test("AI playing a spell WITH a valid target succeeds (Freeze)", () => {
-  const enemy = pokemon(3, { atk: 9 });
+  const enemy = creature(3, { atk: 9 });
   const state = makeMatch({ aiHand: [FREEZE], playerField: [enemy] });
   const r = playCard(state, "ai", 0, { spellTarget: 0 });
   assert.equal(r.ok, true);
@@ -113,8 +113,8 @@ test("AI Freeze targeting (manual): highest-attack enemy is the right pick", () 
   // Build a board with two enemies. Verify the AI would pick the higher-atk
   // one. We compute the expected slot ourselves and confirm playCard
   // accepts that target.
-  const weakE = pokemon(10, { atk: 2 });
-  const strongE = pokemon(11, { atk: 9 });
+  const weakE = creature(10, { atk: 2 });
+  const strongE = creature(11, { atk: 9 });
   const state = makeMatch({ aiHand: [FREEZE], playerField: [weakE, strongE] });
   // Manual scoring: slot 1 has the stronger attacker, so AI should freeze slot 1.
   const r = playCard(state, "ai", 0, { spellTarget: 1 });
@@ -124,8 +124,8 @@ test("AI Freeze targeting (manual): highest-attack enemy is the right pick", () 
 });
 
 test("AI Heal targeting (manual): lowest-HP ally is the right pick", () => {
-  const fullHpAlly = pokemon(20, { hp: 10 });
-  const hurtAlly   = pokemon(21, { hp: 10 });
+  const fullHpAlly = creature(20, { hp: 10 });
+  const hurtAlly   = creature(21, { hp: 10 });
   const state = makeMatch({
     aiHand: [HEAL],
     aiField: [makeInst(fullHpAlly, 10), makeInst(hurtAlly, 3)],
@@ -138,8 +138,8 @@ test("AI Heal targeting (manual): lowest-HP ally is the right pick", () => {
 });
 
 test("AI Defender targeting (manual): highest-attack ally is the right pick", () => {
-  const tank   = pokemon(30, { hp: 12, atk: 3 });
-  const hitter = pokemon(31, { hp: 6,  atk: 9 });
+  const tank   = creature(30, { hp: 12, atk: 3 });
+  const hitter = creature(31, { hp: 6,  atk: 9 });
   const state = makeMatch({
     aiHand: [DEFENDER], aiEnergy: 3,
     aiField: [makeInst(tank), makeInst(hitter)],
@@ -151,8 +151,8 @@ test("AI Defender targeting (manual): highest-attack ally is the right pick", ()
 });
 
 test("AI AOE targeting (manual): no target needed", () => {
-  const e1 = pokemon(40, { hp: 6 });
-  const e2 = pokemon(41, { hp: 6 });
+  const e1 = creature(40, { hp: 6 });
+  const e2 = creature(41, { hp: 6 });
   const state = makeMatch({
     aiHand: [AOE], aiEnergy: 5,
     playerField: [e1, e2],
@@ -188,7 +188,7 @@ test("AI AOE is intentionally skipped on a single-enemy board (not worth 4 energ
   // candidates. We confirm by playing it: engine accepts the play (1
   // enemy hit), but the AI's chooseHandIndex would skip it. The test
   // documents both behaviors.
-  const enemy = pokemon(50, { hp: 6 });
+  const enemy = creature(50, { hp: 6 });
   const state = makeMatch({ aiHand: [AOE], aiEnergy: 5, playerField: [enemy] });
   // Engine allows it:
   const r = playCard(state, "ai", 0);
@@ -196,13 +196,13 @@ test("AI AOE is intentionally skipped on a single-enemy board (not worth 4 energ
   assert.equal(r.hits, 1);
 });
 
-// --- Mixed hand: AI plays a Pokémon if spells aren't valid -----------
+// --- Mixed hand: AI plays a creature if spells aren't valid -----------
 
-test("AI with [spell, pokemon] and no spell target: plays the Pokémon", () => {
+test("AI with [spell, creature] and no spell target: plays the creature", () => {
   // Spell unplayable → AI should fall through to summon.
-  const mon = pokemon(60);
+  const mon = creature(60);
   const state = makeMatch({ aiHand: [FREEZE, mon] }); // no enemies on board
-  // FREEZE unplayable; AI summons Pokémon at idx 1.
+  // FREEZE unplayable; AI summons creature at idx 1.
   const r = playCard(state, "ai", 1);
   assert.equal(r.ok, true);
   assert.ok(state.players.ai.field.some((s) => s !== null));
@@ -211,12 +211,12 @@ test("AI with [spell, pokemon] and no spell target: plays the Pokémon", () => {
 // --- spellPlayable contract -----------------------------------------
 //
 // Regression context: in slice 3 the AI started preferring cheap spells
-// (Freeze at 1⚡) over Pokémon summons. With no Pokémon already on the
+// (Freeze at 1⚡) over creature summons. With no creature already on the
 // AI field, casting Freeze wasted the energy — the attack phase then
 // found no attackers and the AI silently passed. From the player's POV
 // the AI "didn't attack this turn", which read as a bug. The fix gates
 // offensive spells (freeze/paralyze/aoe) on the AI having ≥1 of its own
-// Pokémon already deployed.
+// creature already deployed.
 
 function fieldWith(...cards) {
   return cards.map((c) => ({
@@ -228,8 +228,8 @@ function fieldWith(...cards) {
 test("spellPlayable(Freeze): requires AI to have own field AND enemy field", () => {
   const aiNoField = { field: [null, null, null, null, null] };
   const oppNoField = { field: [null, null, null, null, null] };
-  const aiField = { field: fieldWith(pokemon(1)) };
-  const oppField = { field: fieldWith(pokemon(2)) };
+  const aiField = { field: fieldWith(creature(1)) };
+  const oppField = { field: fieldWith(creature(2)) };
 
   // No own field → can't follow up after disruption → skip the spell.
   assert.equal(spellPlayable(FREEZE, aiNoField, oppField), false);
@@ -243,15 +243,15 @@ test("spellPlayable(Freeze): requires AI to have own field AND enemy field", () 
 
 test("spellPlayable(Paralyze): same own-field-required gate as Freeze", () => {
   const aiNoField = { field: [null] };
-  const oppField  = { field: fieldWith(pokemon(3)) };
+  const oppField  = { field: fieldWith(creature(3)) };
   assert.equal(spellPlayable(PARALYZE, aiNoField, oppField), false);
 });
 
 test("spellPlayable(AOE): needs AI field AND ≥2 enemies (4-energy spell)", () => {
-  const aiField  = { field: fieldWith(pokemon(10)) };
+  const aiField  = { field: fieldWith(creature(10)) };
   const aiNoField = { field: [null] };
-  const oneEnemy  = { field: fieldWith(pokemon(20)) };
-  const twoEnemies = { field: fieldWith(pokemon(21), pokemon(22)) };
+  const oneEnemy  = { field: fieldWith(creature(20)) };
+  const twoEnemies = { field: fieldWith(creature(21), creature(22)) };
 
   // AI has nothing → no point in disrupting.
   assert.equal(spellPlayable(AOE, aiNoField, twoEnemies), false);
@@ -262,8 +262,8 @@ test("spellPlayable(AOE): needs AI field AND ≥2 enemies (4-energy spell)", () 
 });
 
 test("spellPlayable(Heal): only when an ally is below max HP", () => {
-  const fullAlly = fieldWith(pokemon(30));
-  const hurtAlly = fieldWith(pokemon(31, { hp: 10 }));
+  const fullAlly = fieldWith(creature(30));
+  const hurtAlly = fieldWith(creature(31, { hp: 10 }));
   hurtAlly[0].currentHp = 3; // injured
   const aiFull = { field: fullAlly };
   const aiHurt = { field: hurtAlly };
@@ -273,7 +273,7 @@ test("spellPlayable(Heal): only when an ally is below max HP", () => {
 });
 
 test("spellPlayable(Defender/Evolve): need a target ally on field", () => {
-  const aiField  = { field: fieldWith(pokemon(40)) };
+  const aiField  = { field: fieldWith(creature(40)) };
   const aiNoField = { field: [null] };
   const opp = { field: [null] };
   assert.equal(spellPlayable(DEFENDER, aiField, opp), true);
@@ -285,8 +285,8 @@ test("spellPlayable(Defender/Evolve): need a target ally on field", () => {
 test("spellPlayable(non-spell card): always passes through", () => {
   const aiNoField = { field: [null] };
   const oppNoField = { field: [null] };
-  const justAPokemon = pokemon(50);
-  assert.equal(spellPlayable(justAPokemon, aiNoField, oppNoField), true);
+  const justACreature = creature(50);
+  assert.equal(spellPlayable(justACreature, aiNoField, oppNoField), true);
 });
 
 // =====================================================================
@@ -306,10 +306,10 @@ test("Hard policy carries atkBonus=1 and critBoost=0.08", async () => {
   const state = {
     turn: 5, activePlayer: "ai", phase: "main", winner: null, log: [],
     players: {
-      player: { name: "P", ability: "brock", trainerHp: 30, maxTrainerHp: 30,
+      player: { name: "P", ability: "brock", championHp: 30, maxChampionHp: 30,
                 energy: 5, maxEnergy: 10, deck: [], hand: [],
                 field: Array(FS).fill(null), discard: [] },
-      ai:     { name: "AI", ability: "brock", trainerHp: 30, maxTrainerHp: 30,
+      ai:     { name: "AI", ability: "brock", championHp: 30, maxChampionHp: 30,
                 energy: 5, maxEnergy: 10, deck: [], hand: [],
                 field: Array(FS).fill(null), discard: [] },
     },
@@ -326,10 +326,10 @@ test("Medium policy carries no AI combat bonus (regression: only Hard gets it)",
   const state = {
     turn: 5, activePlayer: "ai", phase: "main", winner: null, log: [],
     players: {
-      player: { name: "P", ability: "brock", trainerHp: 30, maxTrainerHp: 30,
+      player: { name: "P", ability: "brock", championHp: 30, maxChampionHp: 30,
                 energy: 5, maxEnergy: 10, deck: [], hand: [],
                 field: Array(FS).fill(null), discard: [] },
-      ai:     { name: "AI", ability: "brock", trainerHp: 30, maxTrainerHp: 30,
+      ai:     { name: "AI", ability: "brock", championHp: 30, maxChampionHp: 30,
                 energy: 5, maxEnergy: 10, deck: [], hand: [],
                 field: Array(FS).fill(null), discard: [] },
     },
@@ -341,7 +341,7 @@ test("Medium policy carries no AI combat bonus (regression: only Hard gets it)",
 });
 
 test("Hard AI attack lands +1 damage compared to baseline", async () => {
-  // Direct integration: an AI Pokémon with cardAttack=4 attacking a
+  // Direct integration: an AI creature with cardAttack=4 attacking a
   // defenseless dummy should hit for 4 on Medium and 5 on Hard.
   const { attack, FIELD_SIZE: FS } = await import("../client/js/game.js");
 
@@ -355,7 +355,7 @@ test("Hard AI attack lands +1 damage compared to baseline", async () => {
       attackBoost: 0, level: 0,
     };
   }
-  function mkPokemon(id, atk) {
+  function mkCreature(id, atk) {
     return {
       id, name: "M" + id, types: ["normal"],
       energyCost: 1, cardHp: 20, cardAttack: atk,
@@ -369,15 +369,15 @@ test("Hard AI attack lands +1 damage compared to baseline", async () => {
       aiCombatBonus,
       players: {
         player: {
-          name: "P", ability: "brock", trainerHp: 30, maxTrainerHp: 30,
+          name: "P", ability: "brock", championHp: 30, maxChampionHp: 30,
           energy: 5, maxEnergy: 10, deck: [], hand: [],
-          field: [mkInst(mkPokemon(99, 1))].concat(Array(FS - 1).fill(null)),
+          field: [mkInst(mkCreature(99, 1))].concat(Array(FS - 1).fill(null)),
           discard: [],
         },
         ai: {
-          name: "AI", ability: "brock", trainerHp: 30, maxTrainerHp: 30,
+          name: "AI", ability: "brock", championHp: 30, maxChampionHp: 30,
           energy: 5, maxEnergy: 10, deck: [], hand: [],
-          field: [mkInst(mkPokemon(1, 4))].concat(Array(FS - 1).fill(null)),
+          field: [mkInst(mkCreature(1, 4))].concat(Array(FS - 1).fill(null)),
           discard: [],
         },
       },

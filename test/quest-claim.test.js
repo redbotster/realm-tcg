@@ -73,8 +73,8 @@ function makeStub({
   };
 }
 
-// Pokédex stub — 30 cards across tiers so rollPicks always succeeds.
-function makePokedex() {
+// Bestiary stub — 30 cards across tiers so rollPicks always succeeds.
+function makeBestiary() {
   const out = [];
   for (let i = 1; i <= 30; i++) {
     out.push({
@@ -125,7 +125,7 @@ function buildApp(stub, opts = {}) {
     if (id) req.user = { id: String(id) };
     next();
   });
-  quests.mount(app, stub, () => (opts.emptyPokedex ? [] : makePokedex()));
+  quests.mount(app, stub, () => (opts.emptyBestiary ? [] : makeBestiary()));
   // Mirror server.js: JSON error middleware. Any throw past the route
   // must still come back as JSON, not Express's HTML 500.
   app.use((err, _req, res, _next) => {
@@ -200,8 +200,8 @@ test("claim returns JSON 401 when unauthenticated (no HTML)", async () => {
   });
 });
 
-test("claim returns JSON 503 when pokedex unavailable", async () => {
-  await withServer(makeStub(), { emptyPokedex: true }, async () => {
+test("claim returns JSON 503 when bestiary unavailable", async () => {
+  await withServer(makeStub(), { emptyBestiary: true }, async () => {
     const r = await req("POST", "/me/quests/play3/claim", { userId: "test-user" });
     assert.equal(r.status, 503);
     assert.ok(r.json?.error);

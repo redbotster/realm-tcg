@@ -1,7 +1,7 @@
 const { chromium } = require("playwright");
 const fs = require("fs");
 const path = require("path");
-const BASE = process.argv[2] || "https://pokemon-tcg-five-lime.vercel.app";
+const BASE = process.argv[2] || "https://creature-tcg-five-lime.vercel.app";
 const OUT = "/tmp/pkmn-screens";
 fs.mkdirSync(OUT, { recursive: true });
 (async () => {
@@ -17,7 +17,7 @@ fs.mkdirSync(OUT, { recursive: true });
   await page.goto(BASE, { waitUntil: "domcontentloaded" });
   await page.click("#account-register-btn");
   await page.waitForSelector("#account-logout-btn", { timeout: 15000 });
-  await page.click(".trainer-card");
+  await page.click(".champion-card");
   await page.click("#start-btn");
   await page.waitForSelector(".mulligan-confirm", { timeout: 12000 });
   await page.click(".mulligan-confirm");

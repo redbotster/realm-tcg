@@ -25,13 +25,13 @@ async function main() {
   await page.addInitScript(() => { window.prompt = () => "Ash-" + Math.random().toString(36).slice(2, 6); });
 
   await page.goto(BASE, { waitUntil: "domcontentloaded" });
-  await page.waitForSelector(".trainer-card");
+  await page.waitForSelector(".champion-card");
   await page.waitForTimeout(800);
   await page.screenshot({ path: path.join(OUT, "menu-signed-out.png") });
 
-  // Click difficulty + trainer to show the picker state
+  // Click difficulty + champion to show the picker state
   await page.click('.diff-card[data-difficulty="medium"]');
-  await page.click(".trainer-card");
+  await page.click(".champion-card");
   await page.waitForTimeout(300);
   await page.screenshot({ path: path.join(OUT, "menu-with-difficulty.png") });
 

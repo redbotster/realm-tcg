@@ -57,15 +57,15 @@ function weightedRarity(rand = Math.random, allowed = RARITIES, rates = RARITY_R
   return allowed[allowed.length - 1];
 }
 
-function pickFromRarity(pokedex, rarity, exclude, rand = Math.random) {
-  const candidates = pokedex.filter(
+function pickFromRarity(bestiary, rarity, exclude, rand = Math.random) {
+  const candidates = bestiary.filter(
     (p) => rarityForCard(p) === rarity && !exclude.has(p.id),
   );
   if (!candidates.length) return null;
   return candidates[Math.floor(rand() * candidates.length)];
 }
 
-function rollPicks(pokedex, count, rand = Math.random, opts = {}) {
+function rollPicks(bestiary, count, rand = Math.random, opts = {}) {
   const {
     themeType = currentTheme(),
     themeBias = 0.3,
@@ -77,7 +77,7 @@ function rollPicks(pokedex, count, rand = Math.random, opts = {}) {
   // means an is_legendary card with a low BST tier can NEVER show up in
   // a medium-mode roll, because its computed rarity is "legendary" and
   // "legendary" isn't in MEDIUM_RARITIES.
-  const pool = pokedex.filter((c) => allowedSet.has(rarityForCard(c)));
+  const pool = bestiary.filter((c) => allowedSet.has(rarityForCard(c)));
   const picks = [];
   const seen = new Set();
   let safety = 0;
@@ -106,7 +106,7 @@ function rollPicks(pokedex, count, rand = Math.random, opts = {}) {
   return picks;
 }
 
-// Shape a pokedex row into the offer-pick payload sent to the client.
+// Shape a bestiary row into the offer-pick payload sent to the client.
 // Includes rarity + is_legendary/is_mythical so the reward modal can
 // render the rarity word and apply holo styling.
 function toPickPayload(p) {
@@ -182,9 +182,9 @@ function canClaimSolo(userId) {
 }
 
 // Express routes — mounted at /me/rewards/*
-function mount(app, supabase, getPokedex) {
+function mount(app, supabase, getBestiary) {
   async function loadDex() {
-    const v = getPokedex();
+    const v = getBestiary();
     return v && typeof v.then === "function" ? await v : v;
   }
 
@@ -212,9 +212,9 @@ function mount(app, supabase, getPokedex) {
   // shaped exactly like the multiplayer reward.
   app.post("/me/solo/end", async (req, res) => {
     if (!req.user) return res.status(401).json({ error: "Sign in required." });
-    const pokedex = await loadDex();
-    if (!pokedex || pokedex.length === 0) {
-      return res.status(503).json({ error: "Pokédex not loaded yet." });
+    const bestiary = await loadDex();
+    if (!bestiary || bestiary.length === 0) {
+      return res.status(503).json({ error: "Bestiary not loaded yet." });
     }
     const { sessionId, won, championId } = req.body || {};
     // kvTake = atomic get+delete. If the player retries the request,
@@ -274,10 +274,10 @@ function mount(app, supabase, getPokedex) {
     const gate = canClaimSolo(req.user.id);
     if (!gate.ok) return res.json({ reward: null, reason: gate.reason, retryAfterMs: gate.retryAfterMs });
 
-    let picks = rollPicks(pokedex, count, Math.random, rollOpts);
+    let picks = rollPicks(bestiary, count, Math.random, rollOpts);
     if (guaranteeLegendary && !picks.some((p) => p.is_legendary || p.is_mythical)) {
       // Swap one pick out for a random legendary/mythical.
-      const rares = pokedex.filter((p) => p.is_legendary || p.is_mythical);
+      const rares = bestiary.filter((p) => p.is_legendary || p.is_mythical);
       if (rares.length) {
         picks[picks.length - 1] = rares[Math.floor(Math.random() * rares.length)];
       }
@@ -293,11 +293,11 @@ function mount(app, supabase, getPokedex) {
 
   app.post("/me/rewards/claim", async (req, res) => {
     if (!req.user) return res.status(401).json({ error: "Sign in required." });
-    const { offerId, pokemonId } = req.body || {};
+    const { offerId, creatureId } = req.body || {};
     if (!offerId || typeof offerId !== "string") {
       return res.status(400).json({ error: "Missing offerId." });
     }
-    const numericId = Number(pokemonId);
+    const numericId = Number(creatureId);
     if (!Number.isInteger(numericId) || numericId < 1) {
       return res.status(400).json({ error: "Invalid card id." });
     }
@@ -319,7 +319,7 @@ function mount(app, supabase, getPokedex) {
         .from("owned_cards")
         .select("quantity")
         .eq("user_id", req.user.id)
-        .eq("pokemon_id", matched.id)
+        .eq("creature_id", matched.id)
         .maybeSingle());
     } catch (err) {
       console.error("[rewards] read owned_cards failed:", err);
@@ -337,11 +337,11 @@ function mount(app, supabase, getPokedex) {
         .upsert(
           {
             user_id: req.user.id,
-            pokemon_id: matched.id,
+            creature_id: matched.id,
             quantity: newQty,
             acquired_at: new Date().toISOString(),
           },
-          { onConflict: "user_id,pokemon_id" },
+          { onConflict: "user_id,creature_id" },
         ));
     } catch (err) {
       console.error("[rewards] upsert owned_cards threw:", err);
@@ -363,9 +363,9 @@ function mount(app, supabase, getPokedex) {
 }
 
 // Helper used by the multiplayer module on match end.
-async function offerForOutcome(userId, pokedex, didWin) {
+async function offerForOutcome(userId, bestiary, didWin) {
   const count = didWin ? 3 : 2;
-  const picks = rollPicks(pokedex, count);
+  const picks = rollPicks(bestiary, count);
   const offerId = await createOffer(userId, picks);
   return {
     offerId,

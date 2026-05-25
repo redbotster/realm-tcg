@@ -9,7 +9,7 @@ import {
   effectiveCost,
   FIELD_SIZE,
   STARTING_HAND,
-  TRAINER_START_HP,
+  CHAMPION_START_HP,
 } from "../client/js/game.js";
 
 // Mini deck factory — 30 cheap normal-type cards so deterministic tests can ignore
@@ -57,7 +57,7 @@ test("createGame deals 5-card hands and starts player turn 1 with 1 energy", () 
   assert.equal(g.activePlayer, "player");
   assert.equal(g.players.player.energy, 1);
   assert.equal(g.players.player.maxEnergy, 1);
-  assert.equal(g.players.player.trainerHp, TRAINER_START_HP);
+  assert.equal(g.players.player.championHp, CHAMPION_START_HP);
   assert.equal(g.phase, "main");
 });
 
@@ -85,7 +85,7 @@ test("summoning sickness blocks the card from attacking the turn it's played", (
   const g = createGame({ playerDeck: deck("p"), aiDeck: deck("a"), rand: fixedRng() });
   playCard(g, "player", 0);
   // AI has empty field, but attack should still be blocked by sickness
-  const r = attack(g, "player", 0, "trainer");
+  const r = attack(g, "player", 0, "champion");
   assert.equal(r.ok, false);
   assert.equal(r.reason, "summoning sickness");
 });
@@ -101,19 +101,19 @@ test("end-turn flips activePlayer and grows max energy", () => {
   assert.equal(g.players.player.energy, 2);
 });
 
-test("attack against opposing trainer when their field is empty", () => {
+test("attack against opposing champion when their field is empty", () => {
   const g = createGame({ playerDeck: deck("p"), aiDeck: deck("a"), rand: fixedRng() });
   playCard(g, "player", 0);
   endTurn(g); // ai
   endTurn(g); // back to player turn 2 -- sickness clears
-  const r = attack(g, "player", 0, "trainer");
+  const r = attack(g, "player", 0, "champion");
   assert.equal(r.ok, true);
-  assert.ok(g.players.ai.trainerHp < TRAINER_START_HP);
+  assert.ok(g.players.ai.championHp < CHAMPION_START_HP);
 });
 
-test("you can't attack the trainer if their field has a Pokémon", () => {
+test("you can't attack the champion if their field has a creature", () => {
   const g = createGame({ playerDeck: deck("p"), aiDeck: deck("a"), rand: fixedRng() });
-  // Manually drop an AI Pokémon onto the field
+  // Manually drop an AI creature onto the field
   g.players.ai.field[0] = {
     instanceId: "ai1",
     card: g.players.ai.hand[0],
@@ -124,18 +124,18 @@ test("you can't attack the trainer if their field has a Pokémon", () => {
   playCard(g, "player", 0);
   endTurn(g); // ai turn (skip)
   endTurn(g); // back to player, sickness clears
-  const r = attack(g, "player", 0, "trainer");
+  const r = attack(g, "player", 0, "champion");
   assert.equal(r.ok, false);
   assert.match(r.reason, /opposing/i);
 });
 
 test("winning ends the game", () => {
   const g = createGame({ playerDeck: deck("p"), aiDeck: deck("a"), rand: fixedRng() });
-  g.players.ai.trainerHp = 1;
+  g.players.ai.championHp = 1;
   playCard(g, "player", 0);
   endTurn(g);
   endTurn(g);
-  attack(g, "player", 0, "trainer");
+  attack(g, "player", 0, "champion");
   assert.equal(g.winner, "player");
   assert.equal(g.phase, "over");
 });

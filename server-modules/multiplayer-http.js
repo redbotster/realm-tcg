@@ -82,7 +82,7 @@ function readSeat(req) {
   // We trust the playerId — accounts use the session cookie if signed in.
   const seat = {
     playerId: String(req.body?.playerId || "").slice(0, 64),
-    displayName: String(req.body?.displayName || "Trainer").slice(0, 32),
+    displayName: String(req.body?.displayName || "Champion").slice(0, 32),
     ability: req.body?.ability || "brock",
     deckSource: req.body?.deckSource || "random",
     userId: req.user?.id || null,
@@ -91,9 +91,9 @@ function readSeat(req) {
   return seat;
 }
 
-function mount(app, supabase, getPokedex) {
+function mount(app, supabase, getBestiary) {
   async function loadDex() {
-    const v = getPokedex();
+    const v = getBestiary();
     return v && typeof v.then === "function" ? await v : v;
   }
 
@@ -109,11 +109,11 @@ function mount(app, supabase, getPokedex) {
         if (deck?.card_ids?.length === 30) {
           const ids = [...new Set(deck.card_ids)];
           const [{ data: rows }, { data: shinies }] = await Promise.all([
-            supabase.from("pokemon").select("*").in("id", ids),
-            supabase.from("owned_cards").select("pokemon_id, shiny_level")
-              .eq("user_id", seat.userId).in("pokemon_id", ids),
+            supabase.from("bestiary").select("*").in("id", ids),
+            supabase.from("owned_cards").select("creature_id, shiny_level")
+              .eq("user_id", seat.userId).in("creature_id", ids),
           ]);
-          const shinyMap = new Map((shinies || []).map((s) => [s.pokemon_id, s.shiny_level || 0]));
+          const shinyMap = new Map((shinies || []).map((s) => [s.creature_id, s.shiny_level || 0]));
           const byId = new Map((rows || []).map((r) => [r.id, toCard(r)]));
           const cards = deck.card_ids.map((id) => {
             const c = byId.get(id);
@@ -357,7 +357,7 @@ function mount(app, supabase, getPokedex) {
       switch (action) {
         case "play-card":
           // spellTarget is only meaningful for spell cards; the engine
-          // ignores it for Pokémon plays. Forwarding it unconditionally
+          // ignores it for creature plays. Forwarding it unconditionally
           // keeps the MP server thin — the client decides which fields
           // are relevant per card kind.
           r = engine.playCard(m.state, side, payload.handIndex, {
@@ -436,7 +436,7 @@ function mount(app, supabase, getPokedex) {
           }).eq("id", m.dbMatchId).then(() => {}, () => {});
         }
         // Stash rewards on the match so the next state-fetch can deliver
-        // them. If the pokédex isn't loaded yet or createOffer fails,
+        // them. If the bestiary isn't loaded yet or createOffer fails,
         // skip the reward — the match still ends.
         let dex = null;
         try {

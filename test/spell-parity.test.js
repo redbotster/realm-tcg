@@ -2,7 +2,7 @@
 // must include the 10-spell section so Story Mode + PvP + solo all
 // feel consistent. Regression context: when spells first shipped only
 // `buildDeck` (random draw) appended them — Story Mode boss decks and
-// PvP saved-deck loads quietly stayed at 30 Pokémon, which made the
+// PvP saved-deck loads quietly stayed at 30 creature, which made the
 // new mechanic appear/disappear based on which mode the player picked.
 
 const { test } = require("node:test");
@@ -17,12 +17,12 @@ const isSpell = (c) => c?.kind === "spell" || SPELL_IDS.has(c?.id);
 
 // --- Boss decks ------------------------------------------------------
 
-test("buildBossDeck returns 30 Pokémon + 10 spells = 40 cards", async () => {
+test("buildBossDeck returns 30 creature + 10 spells = 40 cards", async () => {
   // Fake supabase that returns a sensible boss pool.
   const fakeSupabase = makeFakeSupabaseWithPool();
   const chapter = {
     boss: {
-      anchorPokemonId: 15,
+      anchorCreatureId: 15,
       types: ["bug", "poison"],
       maxHp: 50, attack: 8,
     },
@@ -32,22 +32,22 @@ test("buildBossDeck returns 30 Pokémon + 10 spells = 40 cards", async () => {
     `expected 40-card boss deck, got ${deck.length}`);
   const spells = deck.filter(isSpell);
   assert.equal(spells.length, DEFAULT_SPELL_COUNT, "boss deck should include 10 spells");
-  const pokemons = deck.filter((c) => !isSpell(c));
-  assert.equal(pokemons.length, 30, "boss deck should keep 30 Pokémon");
+  const creatures = deck.filter((c) => !isSpell(c));
+  assert.equal(creatures.length, 30, "boss deck should keep 30 creature");
 });
 
-test("buildBossDeck stays deterministic about the Pokémon core (regression)", async () => {
+test("buildBossDeck stays deterministic about the creature core (regression)", async () => {
   // Spells are sampled with replacement so they'll vary run-to-run, but
-  // the Pokémon section is shaped by the supabase response and should
+  // the creature section is shaped by the supabase response and should
   // always be exactly 30 with anchor x2 inside.
   const fakeSupabase = makeFakeSupabaseWithPool();
   const chapter = {
-    boss: { anchorPokemonId: 15, types: ["bug"], maxHp: 50, attack: 8 },
+    boss: { anchorCreatureId: 15, types: ["bug"], maxHp: 50, attack: 8 },
   };
   const deck = await buildBossDeck(fakeSupabase, chapter);
-  const pokemons = deck.filter((c) => !isSpell(c));
-  const anchorCount = pokemons.filter((c) => c.id === 15).length;
-  assert.ok(anchorCount >= 1, "boss should include the anchor Pokémon at least once");
+  const creatures = deck.filter((c) => !isSpell(c));
+  const anchorCount = creatures.filter((c) => c.id === 15).length;
+  assert.ok(anchorCount >= 1, "boss should include the anchor creature at least once");
 });
 
 // --- Active-deck hydration (server-modules/collection.js + mp-http) ---
@@ -93,7 +93,7 @@ test("allSpellCards is the single source of truth for the spell pool", () => {
 // --- Test fixtures ---------------------------------------------------
 
 function makeFakeSupabaseWithPool() {
-  // Returns a supabase-shaped stub whose `from('pokemon')` chain
+  // Returns a supabase-shaped stub whose `from('bestiary')` chain
   // satisfies the queries buildBossDeck makes (anchor lookup, type
   // pool, filler pool, padding pool).
   const rows = [];

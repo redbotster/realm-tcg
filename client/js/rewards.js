@@ -52,7 +52,7 @@ export function showOffer(offer, { onClaim, didWin } = {}) {
         const res = await fetch("/me/rewards/claim", {
           method: "POST",
           headers: { "content-type": "application/json" },
-          body: JSON.stringify({ offerId: offer.offerId, pokemonId: card.id }),
+          body: JSON.stringify({ offerId: offer.offerId, creatureId: card.id }),
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || "claim failed");
