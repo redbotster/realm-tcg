@@ -706,3 +706,10 @@ body.dragging-attack .champion-block.ai {
          filter: brightness(1.8) drop-shadow(0 0 18px #fbbf24); }
   100% { transform: scale(1);    filter: brightness(1) drop-shadow(0 0 0 transparent); }
 }
+
+/* ===== Fantasy skin — gilt TCG card frame ===== */
+.card {
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.5), 0 0 0 1px var(--gold-dim, #8a6f34) inset;
+}
+.card .card-inner { border: 1px solid rgba(201, 162, 78, 0.30); }
+.card .card-name { font-family: var(--font-display); color: #f3e4b0; letter-spacing: 0.5px; }
