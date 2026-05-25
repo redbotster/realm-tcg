@@ -1,14 +1,25 @@
 /* Battle arena layout — opponent up top, player below, hand fanned at bottom. */
 
 :root {
-  --bg-deep: #0c0d1a;
-  --bg-mid:  #161930;
-  --bg-soft: #232846;
-  --ink: #f0eee2;
-  --muted: #8a8eaa;
-  --good: #6cd97c;
-  --bad: #ff5c63;
-  --mid: #f0c93f;
+  /* Painted Reliquary — Keith-Parkinson-style box-art palette:
+     warm gold/amber on a deep teal-indigo night, parchment ink. */
+  --bg-deep: #0e1a24;   /* teal-indigo night */
+  --bg-mid:  #162330;
+  --bg-soft: #223444;
+  --ink:     #f2e7cf;   /* parchment */
+  --muted:   #9aa6ad;
+  --good:    #6cc08a;
+  --bad:     #c0492f;
+  --mid:     #e0a463;   /* warm torchlight (semantic "mid"/warning accent) */
+
+  /* Gilt accents */
+  --gold:     #c9a24e;  /* aged gold leaf */
+  --gold-dim: #8a6f34;  /* tarnished gold (borders) */
+  --amber:    #e0a463;  /* warm torchlight */
+
+  /* Typography */
+  --font-display: "Cinzel", "Trajan Pro", "Times New Roman", serif;
+  --font-body:    "EB Garamond", "Inter", Georgia, serif;
 }
 
 * { box-sizing: border-box; }
@@ -16,9 +27,11 @@
 body {
   margin: 0;
   min-height: 100vh;
-  background: var(--bg-deep);
+  background:
+    radial-gradient(1200px 800px at 50% -10%, #1c3242 0%, transparent 60%),
+    var(--bg-deep);
   color: var(--ink);
-  font-family: "Inter", system-ui, sans-serif;
+  font-family: var(--font-body);
   overflow-x: hidden;
   /* The menu page scrolls vertically on short viewports (landscape phones,
      small laptops). The arena uses position:fixed so it locks the viewport
@@ -32,9 +45,17 @@ body.in-arena {
 
 h1, h2, h3,
 .game-title, .turn-label, .turn-active, .log-title, .menu-tagline {
-  font-family: "Press Start 2P", monospace;
+  font-family: var(--font-display);
   letter-spacing: 1px;
 }
+
+/* Gilt title treatment — engraved gold leaf on the night palette. */
+.game-title {
+  color: var(--gold);
+  font-weight: 900;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.55), 0 0 22px rgba(201, 162, 78, 0.35);
+}
+.menu-tagline { color: var(--amber); }
 
 /* QR + user counter from slop-computer baseline — tuck them out of the way */
 .qr-code, .user-counter {
@@ -178,7 +199,7 @@ h1, h2, h3,
   z-index: 1;
 }
 .feature-name {
-  font-family: "Press Start 2P", monospace;
+  font-family: var(--font-display);
   font-size: 11px;
   color: #f7d02c;
   margin-bottom: 3px;
@@ -207,7 +228,7 @@ h1, h2, h3,
 }
 
 .section-label {
-  font-family: "Press Start 2P", monospace;
+  font-family: var(--font-display);
   font-size: 10px;
   color: var(--muted);
   letter-spacing: 2px;
@@ -238,7 +259,7 @@ h1, h2, h3,
   box-shadow: 0 0 14px rgba(247, 208, 44, 0.4);
 }
 .diff-label {
-  font-family: "Press Start 2P", monospace;
+  font-family: var(--font-display);
   font-size: 11px;
   margin-bottom: 6px;
 }
@@ -264,7 +285,7 @@ h1, h2, h3,
 .theme-pill {
   background: var(--theme, #888);
   color: #fff;
-  font-family: "Press Start 2P", monospace;
+  font-family: var(--font-display);
   font-size: 9px;
   padding: 4px 8px;
   border-radius: 6px;
@@ -289,7 +310,7 @@ h1, h2, h3,
   max-width: 560px;
 }
 .quests-title {
-  font-family: "Press Start 2P", monospace;
+  font-family: var(--font-display);
   font-size: 9px;
   letter-spacing: 1.5px;
   color: var(--muted);
@@ -326,7 +347,7 @@ h1, h2, h3,
 }
 .quest-row.ready .quest-bar-fill { background: linear-gradient(90deg, #f7d02c, #ee8130); }
 .quest-prog {
-  font-family: "Press Start 2P", monospace;
+  font-family: var(--font-display);
   font-size: 9px;
   color: var(--muted);
   text-align: right;
@@ -368,7 +389,7 @@ h1, h2, h3,
 .streak-flame { font-size: 26px; }
 .streak-text { flex: 1; text-align: left; }
 .streak-current {
-  font-family: "Press Start 2P", monospace;
+  font-family: var(--font-display);
   font-size: 11px;
   color: var(--ink);
   margin-bottom: 4px;
@@ -377,7 +398,7 @@ h1, h2, h3,
 .streak-claim {
   background: linear-gradient(90deg, #f7d02c, #ee8130);
   color: #1a0a00;
-  font-family: "Press Start 2P", monospace;
+  font-family: var(--font-display);
   font-size: 10px;
   padding: 8px 14px;
   border: none;
@@ -430,7 +451,7 @@ h1, h2, h3,
   font-size: 10px;
 }
 .tl-level {
-  font-family: "Press Start 2P", monospace;
+  font-family: var(--font-display);
   font-size: 9px;
   background: linear-gradient(90deg, #f7d02c, #ee8130);
   color: #1a0a00;
@@ -510,7 +531,7 @@ h1, h2, h3,
   line-height: 1.5;
 }
 .cp-title {
-  font-family: "Press Start 2P", monospace;
+  font-family: var(--font-display);
   font-size: 13px;
   margin-bottom: 4px;
 }
@@ -519,11 +540,11 @@ h1, h2, h3,
   display: flex;
   gap: 12px;
   margin-bottom: 8px;
-  font-family: "Press Start 2P", monospace;
+  font-family: var(--font-display);
   font-size: 11px;
 }
 .cp-section {
-  font-family: "Press Start 2P", monospace;
+  font-family: var(--font-display);
   font-size: 9px;
   letter-spacing: 1px;
   color: var(--muted);
@@ -542,8 +563,8 @@ h1, h2, h3,
   margin-bottom: 4px;
 }
 .cp-aname { font-weight: 700; }
-.cp-acost { color: #f7d02c; font-family: "Press Start 2P", monospace; font-size: 8px; }
-.cp-amult { color: var(--mid); font-family: "Press Start 2P", monospace; font-size: 8px; }
+.cp-acost { color: #f7d02c; font-family: var(--font-display); font-size: 8px; }
+.cp-amult { color: var(--mid); font-family: var(--font-display); font-size: 8px; }
 .cp-astatus { background: #735797; color: #fff; padding: 2px 5px; border-radius: 4px; font-size: 8px; }
 .cp-adesc { grid-column: 1 / -1; color: var(--muted); font-size: 10.5px; margin-top: 2px; }
 .cp-flavor { color: var(--muted); font-size: 11px; font-style: italic; line-height: 1.5; }
@@ -568,7 +589,7 @@ h1, h2, h3,
   text-align: center;
 }
 .champ-title {
-  font-family: "Press Start 2P", monospace;
+  font-family: var(--font-display);
   font-size: 16px;
   background: linear-gradient(90deg, #f7d02c, #ee8130, #f95587);
   -webkit-background-clip: text; background-clip: text; color: transparent;
@@ -608,7 +629,7 @@ h1, h2, h3,
   filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.6));
 }
 .champ-name {
-  font-family: "Press Start 2P", monospace;
+  font-family: var(--font-display);
   font-size: 12px;
   margin-bottom: 3px;
 }
@@ -617,7 +638,7 @@ h1, h2, h3,
 .champ-go {
   background: linear-gradient(90deg, #f7d02c, #ee8130);
   color: #1a0a00;
-  font-family: "Press Start 2P", monospace;
+  font-family: var(--font-display);
   font-size: 11px;
   padding: 9px 12px;
   border-radius: 8px;
@@ -664,14 +685,14 @@ h1, h2, h3,
   margin-bottom: 12px;
 }
 .pdx-title {
-  font-family: "Press Start 2P", monospace;
+  font-family: var(--font-display);
   font-size: 16px;
   background: linear-gradient(90deg, #f7d02c, #ee8130, #f95587);
   -webkit-background-clip: text; background-clip: text; color: transparent;
 }
 .pdx-summary { margin-left: auto; text-align: right; }
 .pdx-pct {
-  font-family: "Press Start 2P", monospace;
+  font-family: var(--font-display);
   font-size: 18px;
   background: linear-gradient(90deg, #f7d02c, #ee8130);
   -webkit-background-clip: text; background-clip: text; color: transparent;
@@ -690,7 +711,7 @@ h1, h2, h3,
   margin-bottom: 12px;
 }
 .pdx-gen { display: flex; align-items: center; gap: 8px; font-size: 11px; }
-.pdx-gen-label { font-family: "Press Start 2P", monospace; font-size: 9px; color: var(--muted); white-space: nowrap; }
+.pdx-gen-label { font-family: var(--font-display); font-size: 9px; color: var(--muted); white-space: nowrap; }
 .pdx-gen-bar {
   flex: 1; height: 5px;
   background: rgba(255, 255, 255, 0.06);
@@ -727,7 +748,7 @@ h1, h2, h3,
 .pdx-cell.owned.mythical  { border-color: rgba(247, 105, 220, 0.55); box-shadow: 0 0 14px rgba(247, 105, 220, 0.25); }
 .pdx-cell img { width: 64px; height: 64px; object-fit: contain; }
 .pdx-id {
-  font-family: "Press Start 2P", monospace;
+  font-family: var(--font-display);
   font-size: 7px;
   color: var(--muted);
   margin-bottom: 2px;
@@ -747,7 +768,7 @@ h1, h2, h3,
   right: 6px;
   background: var(--bg-mid);
   color: var(--ink);
-  font-family: "Press Start 2P", monospace;
+  font-family: var(--font-display);
   font-size: 7px;
   padding: 1px 4px;
   border-radius: 4px;
@@ -758,7 +779,7 @@ h1, h2, h3,
   right: 6px;
   background: linear-gradient(140deg, #f7d02c, #ee8130);
   color: #1a0a00;
-  font-family: "Press Start 2P", monospace;
+  font-family: var(--font-display);
   font-size: 7px;
   padding: 1px 4px;
   border-radius: 4px;
@@ -789,7 +810,7 @@ h1, h2, h3,
   text-align: center;
 }
 .mulligan-title {
-  font-family: "Press Start 2P", monospace;
+  font-family: var(--font-display);
   font-size: 18px;
   background: linear-gradient(90deg, #f7d02c, #ee8130);
   -webkit-background-clip: text; background-clip: text; color: transparent;
@@ -838,7 +859,7 @@ h1, h2, h3,
   gap: 12px;
 }
 .mulligan-count {
-  font-family: "Press Start 2P", monospace;
+  font-family: var(--font-display);
   font-size: 10px;
   color: var(--muted);
 }
@@ -848,7 +869,7 @@ h1, h2, h3,
   border: none;
   padding: 10px 18px;
   border-radius: 8px;
-  font-family: "Press Start 2P", monospace;
+  font-family: var(--font-display);
   font-size: 11px;
   cursor: pointer;
 }
@@ -859,7 +880,7 @@ h1, h2, h3,
   background: rgba(20, 23, 44, 0.7);
   padding: 10px 16px;
   border-radius: 10px;
-  font-family: "Press Start 2P", monospace;
+  font-family: var(--font-display);
   font-size: 11px;
   letter-spacing: 1px;
 }
@@ -886,7 +907,7 @@ h1, h2, h3,
 }
 .howto-card h2 {
   margin: 0 0 18px;
-  font-family: "Press Start 2P", monospace;
+  font-family: var(--font-display);
   font-size: 18px;
   background: linear-gradient(90deg, #f7d02c, #ee8130, #f95587);
   -webkit-background-clip: text;
@@ -909,7 +930,7 @@ h1, h2, h3,
   color: #1a0a00;
   font-weight: 800;
   display: grid; place-items: center;
-  font-family: "Press Start 2P", monospace;
+  font-family: var(--font-display);
   font-size: 12px;
 }
 .howto-step strong { color: #f7d02c; }
@@ -922,7 +943,7 @@ h1, h2, h3,
   border: none;
   padding: 11px 22px;
   border-radius: 8px;
-  font-family: "Press Start 2P", monospace;
+  font-family: var(--font-display);
   font-size: 11px;
   cursor: pointer;
 }
@@ -952,7 +973,7 @@ h1, h2, h3,
   padding-bottom: 12px; margin-bottom: 12px;
 }
 .ach-title, .mh-title {
-  font-family: "Press Start 2P", monospace;
+  font-family: var(--font-display);
   font-size: 13px;
   background: linear-gradient(90deg, #f7d02c, #f95587);
   -webkit-background-clip: text;
@@ -1019,7 +1040,7 @@ h1, h2, h3,
   background: linear-gradient(90deg, #f7d02c, #ee8130);
 }
 .ach-prog {
-  font-family: "Press Start 2P", monospace;
+  font-family: var(--font-display);
   font-size: 8px;
   color: var(--muted);
   margin-top: 4px;
@@ -1042,12 +1063,12 @@ h1, h2, h3,
   font-size: 12px;
 }
 .mh-row:hover { background: rgba(255,255,255,0.06); }
-.mh-win  { color: var(--good); font-family: "Press Start 2P", monospace; font-size: 10px; }
-.mh-loss { color: var(--bad);  font-family: "Press Start 2P", monospace; font-size: 10px; }
+.mh-win  { color: var(--good); font-family: var(--font-display); font-size: 10px; }
+.mh-loss { color: var(--bad);  font-family: var(--font-display); font-size: 10px; }
 .mh-pending { color: var(--muted); }
 .mh-opp { font-weight: 600; }
 .mh-meta, .mh-when { color: var(--muted); font-size: 11px; }
-.mh-when { font-family: "Press Start 2P", monospace; font-size: 9px; }
+.mh-when { font-family: var(--font-display); font-size: 9px; }
 
 /* === Achievement toast === */
 .ach-toast {
@@ -1070,7 +1091,7 @@ h1, h2, h3,
 .ach-toast.show { transform: translateX(0); }
 .ach-toast-icon { font-size: 28px; }
 .ach-toast-title {
-  font-family: "Press Start 2P", monospace;
+  font-family: var(--font-display);
   font-size: 8px;
   letter-spacing: 1.5px;
   opacity: 0.7;
@@ -1097,7 +1118,7 @@ h1, h2, h3,
   color: var(--ink);
 }
 .auth-title {
-  font-family: "Press Start 2P", monospace;
+  font-family: var(--font-display);
   font-size: 13px;
   margin-bottom: 14px;
 }
@@ -1181,7 +1202,7 @@ h1, h2, h3,
   margin-bottom: 14px;
 }
 .lb-title {
-  font-family: "Press Start 2P", monospace;
+  font-family: var(--font-display);
   font-size: 14px;
   background: linear-gradient(90deg, #f7d02c, #ee8130, #f95587);
   -webkit-background-clip: text;
@@ -1232,7 +1253,7 @@ h1, h2, h3,
   display: inline-block;
   background: linear-gradient(90deg, #f7d02c, #ee8130);
   color: #1a0a00;
-  font-family: "Press Start 2P", monospace;
+  font-family: var(--font-display);
   font-size: 8px;
   padding: 2px 6px;
   border-radius: 5px;
@@ -1240,7 +1261,7 @@ h1, h2, h3,
 }
 .lb-row.lb-head {
   background: rgba(255,255,255,0.04);
-  font-family: "Press Start 2P", monospace;
+  font-family: var(--font-display);
   font-size: 9px;
   color: var(--muted);
   letter-spacing: 1px;
@@ -1251,7 +1272,7 @@ h1, h2, h3,
   font-weight: 700;
 }
 .lb-rank {
-  font-family: "Press Start 2P", monospace;
+  font-family: var(--font-display);
   font-size: 10px;
   color: var(--mid);
 }
@@ -1328,7 +1349,7 @@ h1, h2, h3,
   transform: scale(1.06) translateY(-2px);
 }
 .champion-name {
-  font-family: "Press Start 2P", monospace;
+  font-family: var(--font-display);
   font-size: 13px;
   margin-bottom: 6px;
 }
@@ -1342,7 +1363,7 @@ h1, h2, h3,
   color: #1a0a00;
   border: none;
   padding: 12px 28px;
-  font-family: "Press Start 2P", monospace;
+  font-family: var(--font-display);
   font-size: 13px;
   border-radius: 10px;
   cursor: pointer;
@@ -1405,7 +1426,7 @@ h1, h2, h3,
   color: var(--ink);
 }
 .mm-title {
-  font-family: "Press Start 2P", monospace;
+  font-family: var(--font-display);
   font-size: 14px;
   margin-bottom: 18px;
 }
@@ -1416,7 +1437,7 @@ h1, h2, h3,
   line-height: 1.6;
 }
 .mm-code {
-  font-family: "Press Start 2P", monospace;
+  font-family: var(--font-display);
   font-size: 32px;
   letter-spacing: 8px;
   color: #f7d02c;
@@ -1500,7 +1521,7 @@ h1, h2, h3,
   border: 1px solid rgba(255, 255, 255, 0.18);
   padding: 8px 12px;
   border-radius: 8px;
-  font-family: "Press Start 2P", monospace;
+  font-family: var(--font-display);
   font-size: 13px;
   letter-spacing: 3px;
   text-transform: uppercase;
@@ -1647,7 +1668,7 @@ h1, h2, h3,
 .hp-bar.tone-mid .hp-fill { background: linear-gradient(90deg, var(--mid), #d6a824); }
 .hp-bar.tone-bad .hp-fill { background: linear-gradient(90deg, var(--bad), #c33d44); }
 .hp-text {
-  font-family: "Press Start 2P", monospace;
+  font-family: var(--font-display);
   font-size: 9px;
   letter-spacing: 0.5px;
   min-width: 56px;
@@ -1717,7 +1738,7 @@ h1, h2, h3,
   flex-wrap: wrap;
 }
 .combo-tag {
-  font-family: "Press Start 2P", monospace;
+  font-family: var(--font-display);
   font-size: 8px;
   letter-spacing: 1px;
   padding: 3px 6px;
@@ -1728,7 +1749,7 @@ h1, h2, h3,
   text-shadow: 0 1px 0 rgba(0,0,0,0.5);
 }
 .item-uses {
-  font-family: "Press Start 2P", monospace;
+  font-family: var(--font-display);
   font-size: 8px;
   color: var(--muted);
 }
@@ -1776,7 +1797,7 @@ h1, h2, h3,
 .turn-label { font-size: 10px; color: var(--muted); margin-bottom: 4px; }
 .turn-active { font-size: 11px; }
 .turn-timer {
-  font-family: "Press Start 2P", monospace;
+  font-family: var(--font-display);
   font-size: 14px;
   margin-top: 4px;
   color: var(--good);
@@ -1821,7 +1842,7 @@ h1, h2, h3,
 .field-slot.player { border-color: rgba(90, 220, 130, 0.15); }
 .slot-empty {
   color: rgba(255, 255, 255, 0.18);
-  font-family: "Press Start 2P", monospace;
+  font-family: var(--font-display);
   font-size: 9px;
   letter-spacing: 2px;
 }
@@ -1921,7 +1942,7 @@ h1, h2, h3,
   color: var(--ink);
   border: 1px solid rgba(255, 255, 255, 0.1);
   padding: 8px 16px;
-  font-family: "Press Start 2P", monospace;
+  font-family: var(--font-display);
   font-size: 10px;
   border-radius: 8px;
   cursor: pointer;
@@ -1989,7 +2010,7 @@ h1, h2, h3,
   box-shadow: 0 10px 28px rgba(0, 0, 0, 0.55);
 }
 .ap-title {
-  font-family: "Press Start 2P", monospace;
+  font-family: var(--font-display);
   font-size: 9px;
   color: var(--muted);
   margin-bottom: 8px;
@@ -2039,12 +2060,12 @@ h1, h2, h3,
   color: #f7d02c;
   padding: 2px 6px;
   border-radius: 6px;
-  font-family: "Press Start 2P", monospace;
+  font-family: var(--font-display);
   font-size: 9px;
 }
 .ap-mult {
   color: var(--mid);
-  font-family: "Press Start 2P", monospace;
+  font-family: var(--font-display);
   font-size: 9px;
 }
 .ap-status {
@@ -2072,7 +2093,7 @@ h1, h2, h3,
   color: #fff;
   padding: 4px 10px;
   border-radius: 6px;
-  font-family: "Press Start 2P", monospace;
+  font-family: var(--font-display);
   font-size: 12px;
   pointer-events: none;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
@@ -2145,7 +2166,7 @@ h1, h2, h3,
   text-align: center;
 }
 .reward-title {
-  font-family: "Press Start 2P", monospace;
+  font-family: var(--font-display);
   font-size: 16px;
   background: linear-gradient(90deg, #f7d02c, #ee8130, #f95587);
   -webkit-background-clip: text;
@@ -2210,7 +2231,7 @@ h1, h2, h3,
   bottom: -10px;
   left: 50%;
   transform: translateX(-50%);
-  font-family: "Press Start 2P", monospace;
+  font-family: var(--font-display);
   font-size: 9px;
   padding: 3px 8px;
   border-radius: 6px;
@@ -2244,7 +2265,7 @@ h1, h2, h3,
 .damage-float {
   position: fixed;
   transform: translate(-50%, -50%);
-  font-family: "Press Start 2P", monospace;
+  font-family: var(--font-display);
   font-size: 18px;
   color: #fff;
   text-shadow: 0 0 6px rgba(0,0,0,0.8), 0 2px 0 rgba(0,0,0,0.6);
@@ -2271,7 +2292,7 @@ h1, h2, h3,
   top: 38%;
   left: 50%;
   transform: translate(-50%, -50%) scale(0.6);
-  font-family: "Press Start 2P", monospace;
+  font-family: var(--font-display);
   font-size: 38px;
   letter-spacing: 6px;
   color: transparent;
@@ -2296,7 +2317,7 @@ h1, h2, h3,
   top: 35%;
   left: 50%;
   transform: translate(-50%, -50%) scale(0.6);
-  font-family: "Press Start 2P", monospace;
+  font-family: var(--font-display);
   font-size: 26px;
   color: #fff;
   padding: 14px 28px;
@@ -2433,7 +2454,7 @@ h1, h2, h3,
   padding-bottom: 6px;
 }
 .go-stat span { color: var(--muted); }
-.go-stat strong { color: var(--ink); font-family: "Press Start 2P", monospace; font-size: 10px; }
+.go-stat strong { color: var(--ink); font-family: var(--font-display); font-size: 10px; }
 .game-over-card button {
   margin-top: 20px;
   padding: 12px 22px;
@@ -2441,7 +2462,7 @@ h1, h2, h3,
   color: #1a0a00;
   border: none;
   border-radius: 8px;
-  font-family: "Press Start 2P", monospace;
+  font-family: var(--font-display);
   font-size: 12px;
   cursor: pointer;
 }
@@ -3035,7 +3056,7 @@ body.in-arena .landscape-prompt {
 .opp-hand-row .opp-card-back:nth-child(even) { transform: translateY(1px)  rotate(3deg); }
 .opp-hand-empty {
   font-size: 12px; opacity: 0.55;
-  font-family: "Press Start 2P", monospace;
+  font-family: var(--font-display);
   letter-spacing: 1px;
   text-transform: uppercase;
   padding: 8px;
@@ -3123,7 +3144,7 @@ body.in-arena .landscape-prompt {
   bottom: -22px; left: 50%;
   transform: translateX(-50%);
   font-size: 9px;
-  font-family: "Press Start 2P", monospace;
+  font-family: var(--font-display);
   letter-spacing: 1px;
   color: #ffd166;
   text-shadow: 0 0 8px #ffd166aa;
@@ -3165,7 +3186,7 @@ body.in-arena .landscape-prompt {
   font-size: 11px;
   letter-spacing: 5px;
   font-weight: 900;
-  font-family: "Press Start 2P", monospace;
+  font-family: var(--font-display);
   margin-bottom: 6px;
   text-transform: uppercase;
 }
@@ -3268,7 +3289,7 @@ html { overscroll-behavior: none; }
   width: min(380px, 92vw);
 }
 .critbar-hint {
-  font-family: "Press Start 2P", monospace;
+  font-family: var(--font-display);
   letter-spacing: 3px;
   font-size: 11px;
   color: var(--theme);
@@ -3451,7 +3472,7 @@ html { overscroll-behavior: none; }
   transform: translate(-50%, 0) scale(1);
 }
 .sb-tag {
-  font-family: "Press Start 2P", monospace;
+  font-family: var(--font-display);
   letter-spacing: 4px;
   font-size: 14px;
   margin-bottom: 8px;

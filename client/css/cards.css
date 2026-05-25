@@ -97,7 +97,7 @@
   font-size: 9px;
   letter-spacing: 1px;
   text-transform: uppercase;
-  font-family: "Press Start 2P", monospace;
+  font-family: var(--font-display);
   color: #d4e0ff;
   white-space: nowrap;
   z-index: 10;
@@ -126,7 +126,7 @@
   padding: 2px 8px;
   font-size: 8px;
   letter-spacing: 1px;
-  font-family: "Press Start 2P", monospace;
+  font-family: var(--font-display);
   color: #aaa;
   white-space: nowrap;
   z-index: 3;
@@ -157,7 +157,7 @@
   border-radius: 50%;
   background: radial-gradient(circle at 35% 30%, #fff7c2, #f7d02c, #ee8130);
   color: #1a0a00;
-  font-family: "Press Start 2P", monospace;
+  font-family: var(--font-display);
   font-size: 9px;
   display: grid;
   place-items: center;
@@ -275,7 +275,7 @@ body.dragging-attack .champion-block.ai {
   padding: 2px 7px;
   font-size: 8px;
   letter-spacing: 1.2px;
-  font-family: "Press Start 2P", monospace;
+  font-family: var(--font-display);
   z-index: 4;
   white-space: nowrap;
   box-shadow: 0 2px 6px rgba(0,0,0,0.4);
@@ -424,7 +424,7 @@ body.dragging-attack .champion-block.ai {
 }
 
 .card-hp {
-  font-family: "Press Start 2P", monospace;
+  font-family: var(--font-display);
   font-size: 11px;
   letter-spacing: 1px;
 }
@@ -485,7 +485,7 @@ body.dragging-attack .champion-block.ai {
   max-width: 100px;
 }
 .card-attack {
-  font-family: "Press Start 2P", monospace;
+  font-family: var(--font-display);
   font-size: 11px;
 }
 
@@ -498,7 +498,7 @@ body.dragging-attack .champion-block.ai {
   top: 38px;
   left: 50%;
   transform: translateX(-50%);
-  font-family: "Press Start 2P", monospace;
+  font-family: var(--font-display);
   font-size: 7px;
   color: gold;
   text-shadow: 0 0 4px gold, 0 0 8px gold;
@@ -521,7 +521,7 @@ body.dragging-attack .champion-block.ai {
   position: absolute;
   bottom: 38px;
   right: 6px;
-  font-family: "Press Start 2P", monospace;
+  font-family: var(--font-display);
   font-size: 7px;
   padding: 2px 4px;
   border-radius: 4px;
