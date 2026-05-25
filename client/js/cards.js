@@ -3,6 +3,9 @@
 import { TYPE_COLORS } from "./type-chart.js";
 import { isGuardian } from "./passives.js";
 
+// Generated spell/item art lives in Supabase Storage, keyed by effect.
+const SPELL_ART_BASE = "https://gmlhnbpbqjlkahvnoxjl.supabase.co/storage/v1/object/public/creatures/spells";
+
 function isGuardianCard(card) { return isGuardian(card); }
 
 const TYPE_GLYPH = {
@@ -133,6 +136,7 @@ function renderSpellCard(card, { compact = false } = {}) {
       </header>
       <div class="card-art spell-art">
         <div class="spell-glyph" aria-hidden="true">${card.glyph || "✦"}</div>
+        ${card.effect ? `<img class="spell-art-img" src="${SPELL_ART_BASE}/${card.effect}.webp" alt="" loading="lazy" onerror="this.remove()">` : ""}
       </div>
       <footer class="card-footer spell-footer">
         <div class="card-name">${escape(card.name)}</div>

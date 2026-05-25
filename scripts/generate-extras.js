@@ -83,10 +83,56 @@ async function upload(objectPath, bytes) {
   return supabase.storage.from(BUCKET).getPublicUrl(objectPath).data.publicUrl;
 }
 
+// Spell/item card art — a single iconic fantasy object/effect per spell,
+// centered on a dark atmospheric ground, matching the painted style.
+const SPELL_VIS = {
+  freeze:       "a faceted frost-blue crystal vial swirling with freezing mist and rime",
+  stun:         "a crackling rune-stone wreathed in arcs of white-blue lightning",
+  heal:         "an ornate glass flask of luminous emerald healing elixir, glowing softly",
+  defender:     "an ornate iron tower shield emblazoned with a glowing protective rune",
+  evolve:       "a radiant chrysalis cracking open with golden transformative light",
+  aoe:          "a great rune-carved stone slamming into the ground, a shockwave of cracked earth and dust",
+  bolt:         "a single jagged bolt of lightning captured in a charged storm-javelin",
+  "sleep-powder":"a drifting cloud of glowing green soporific spores from an open pouch",
+  cleanse:      "an ornate phial of radiant holy water pouring a burst of purifying light",
+  surge:        "an overcharged arcane rune-cell crackling with overflowing blue energy",
+  scout:        "an ornate brass spyglass beside three fanned glowing scrying cards",
+  phoenix:      "a brilliant phoenix rising in a spiral of flame from glowing ashes",
+  burn:         "a sealed vial of churning liquid fire, flames licking its glass",
+  shield:       "a glowing hexagonal ward-barrier of radiant blue light, an ornate buckler at its center",
+  "mass-heal":  "a radiant fountain of healing light cascading over a marble altar",
+  "power-strike":"a heroic greatsword raised and wreathed in surging golden might",
+  counter:      "a mirrored ward-rune deflecting an incoming blade in a flash of light",
+  "stop-time":  "an ornate golden hourglass with its sand frozen mid-fall, arcane glow around it",
+  curse:        "a cursed obsidian idol leaking swirling violet hex-smoke and dark sigils",
+  storm:        "a violent tempest of wind and rain captured churning inside a glass bottle",
+  burst:        "an explosive fire-rune detonating in a blossom of flame and embers",
+  "brave-strike":"a raised war-banner and a glowing gauntleted fist crackling with valor",
+  refresh:      "a dew-laden sprig of glowing verdant leaves unfurling with renewing light",
+  drain:        "a bat-winged dark sigil siphoning glowing red life-essence into a black chalice",
+};
+function spellPrompt(s) {
+  const vis = SPELL_VIS[s.effect] || `a glowing magical relic representing ${s.name}`;
+  return `A fantasy spell-card illustration: ${vis}. Single iconic object centered on a dark, ` +
+    `atmospheric background with depth. ${PAINTED} Aspect 3:4 portrait. --ar 3:4 --style raw`;
+}
+
 async function main() {
   const which = process.argv[2] || "all";
   await ensureBucket();
   const results = {};
+
+  if (which === "all" || which === "spells") {
+    const { SPELL_CARDS } = require("../shared/spell-cards");
+    for (const s of SPELL_CARDS) {
+      try {
+        const bytes = await imagen(spellPrompt(s), "3:4");
+        const u = await upload(`spells/${s.effect}.webp`, bytes);
+        results[`spell:${s.effect}`] = u;
+        console.log(`✓ spell ${s.effect} (${s.name}) -> ${u}`);
+      } catch (e) { console.error(`✗ spell ${s.effect}: ${e.message}`); }
+    }
+  }
 
   if (which === "all" || which === "champions") {
     for (const [id, subject] of Object.entries(CHAMPIONS)) {
