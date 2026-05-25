@@ -123,6 +123,7 @@ function mount(app, supabase) {
       .from("users")
       .update({
         champion_xp: after,
+        champion_level: newLevel,
         match_win_streak: newStreak,
         match_win_streak_best: bestStreak,
       })
