@@ -22,17 +22,17 @@ alter table users add column if not exists quest_progress jsonb default '{}'::js
 create table if not exists trade_offers (
   id                 uuid primary key default gen_random_uuid(),
   offerer_user_id    uuid not null references users(id) on delete cascade,
-  offered_pokemon_id int  not null,
-  wanted_pokemon_id  int  not null,
+  offered_creature_id int  not null,
+  wanted_creature_id  int  not null,
   status             text not null default 'open',
   accepter_user_id   uuid references users(id) on delete set null,
   created_at         timestamptz not null default now(),
   expires_at         timestamptz not null default now() + interval '24 hours',
   accepted_at        timestamptz,
   check (status in ('open', 'accepted', 'cancelled', 'expired')),
-  check (offered_pokemon_id <> wanted_pokemon_id)
+  check (offered_creature_id <> wanted_creature_id)
 );
 
 create index if not exists trade_offers_status_idx   on trade_offers (status, created_at desc);
 create index if not exists trade_offers_offerer_idx  on trade_offers (offerer_user_id);
-create index if not exists trade_offers_wanted_idx   on trade_offers (wanted_pokemon_id) where status = 'open';
+create index if not exists trade_offers_wanted_idx   on trade_offers (wanted_creature_id) where status = 'open';
