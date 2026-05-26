@@ -175,8 +175,10 @@ async function googleAdapter(prompt, opts) {
       headers: { "Content-Type": "application/json" },
       body,
     });
-    if (res.status === 429 && attempt < 6) {
-      // Imagen free/standard tier is ~10 req/min; respect the suggested delay.
+    if (res.status === 429 && attempt < 2) {
+      // Short retry for transient per-minute throttling. A sustained quota cap
+      // (daily) won't recover here — we let it throw so the caller can stop
+      // the run fast instead of grinding the suggested delay on every card.
       const txt = await res.text();
       const m = txt.match(/retry in ([\d.]+)s/i);
       const waitMs = Math.ceil((m ? parseFloat(m[1]) : 25) + 1) * 1000;
@@ -279,8 +281,9 @@ async function main() {
   );
   if (work.length === 0) { console.log("Nothing to generate."); return; }
 
-  let done = 0, failed = 0;
+  let done = 0, failed = 0, abort = false;
   await pool(work, ARGS.concurrency, async (c) => {
+    if (abort) return; // a sustained quota cap was hit — skip the rest fast
     const file = path.join(OUT_DIR, `${c.id}.webp`);
     if (ARGS.dryRun) {
       console.log(`#${c.id} ${c.name}\n  -> ${path.relative(ROOT, file)}\n  prompt: ${c.art_prompt.slice(0, 90)}...`);
@@ -298,11 +301,19 @@ async function main() {
       console.log(`✓ #${c.id} ${c.name} (${(bytes.length / 1024) | 0} KB)${doUpload ? " ↑uploaded" : ""}`);
     } catch (err) {
       failed++;
-      console.error(`✗ #${c.id} ${c.name}: ${err.message}`);
+      // Persistent 429 / quota → stop the whole pass quickly; the resume loop
+      // will retry later when the quota frees up.
+      if (/\b429\b|quota|RESOURCE_EXHAUSTED/i.test(err.message)) {
+        if (!abort) console.error("  quota cap hit — stopping this pass (will resume later)");
+        abort = true;
+      } else {
+        console.error(`✗ #${c.id} ${c.name}: ${err.message}`);
+      }
     }
   });
 
-  console.log(`\nDone. generated=${done} failed=${failed}`);
+  console.log(`\nDone. generated=${done} failed=${failed}${abort ? " (stopped on quota)" : ""}`);
+  if (abort) process.exitCode = 3; // signal the resume loop that quota was capped
   // NOTE: adapters that return PNG/JPEG (openai) are written with a .webp
   // extension as-is. If you need true webp, request webp output from the
   // provider (fal/replicate do above) or post-process with `sharp`.

@@ -56,7 +56,7 @@ async function imagen(prompt, aspect) {
   const body = JSON.stringify({ instances: [{ prompt }], parameters: { sampleCount: 1, aspectRatio: aspect, personGeneration: "allow_all" } });
   for (let attempt = 0; ; attempt++) {
     const res = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body });
-    if (res.status === 429 && attempt < 8) {
+    if (res.status === 429 && attempt < 2) {
       const txt = await res.text();
       const m = txt.match(/retry in ([\d.]+)s/i);
       const waitMs = Math.ceil((m ? parseFloat(m[1]) : 25) + 1) * 1000;
@@ -124,14 +124,28 @@ async function main() {
 
   if (which === "all" || which === "spells") {
     const { SPELL_CARDS } = require("../shared/spell-cards");
+    const pubBase = `${SUPABASE_URL}/storage/v1/object/public/${BUCKET}/spells`;
+    let quotaHit = false;
     for (const s of SPELL_CARDS) {
+      if (quotaHit) break;
+      // Skip spells already generated (resume-friendly).
+      const head = await fetch(`${pubBase}/${s.effect}.webp`, { method: "HEAD" }).catch(() => null);
+      if (head && head.ok) { console.log(`· spell ${s.effect} already done`); continue; }
       try {
         const bytes = await imagen(spellPrompt(s), "3:4");
         const u = await upload(`spells/${s.effect}.webp`, bytes);
         results[`spell:${s.effect}`] = u;
         console.log(`✓ spell ${s.effect} (${s.name}) -> ${u}`);
-      } catch (e) { console.error(`✗ spell ${s.effect}: ${e.message}`); }
+      } catch (e) {
+        if (/\b429\b|quota|RESOURCE_EXHAUSTED/i.test(e.message)) {
+          console.error("  quota cap hit — stopping spells (will resume later)");
+          quotaHit = true;
+        } else {
+          console.error(`✗ spell ${s.effect}: ${e.message}`);
+        }
+      }
     }
+    if (quotaHit) process.exitCode = 3;
   }
 
   if (which === "all" || which === "champions") {
