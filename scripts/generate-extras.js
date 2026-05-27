@@ -104,12 +104,12 @@ const SPELL_VIS = {
   "power-strike":"a heroic greatsword raised and wreathed in surging golden might",
   counter:      "a mirrored ward-rune deflecting an incoming blade in a flash of light",
   "stop-time":  "an ornate golden hourglass with its sand frozen mid-fall, arcane glow around it",
-  curse:        "a cursed obsidian idol leaking swirling violet hex-smoke and dark sigils",
+  curse:        "an ornate dark-violet hex rune carved in stone, glowing with eerie purple light and faint drifting motes",
   storm:        "a violent tempest of wind and rain captured churning inside a glass bottle",
   burst:        "an explosive fire-rune detonating in a blossom of flame and embers",
   "brave-strike":"a raised war-banner and a glowing gauntleted fist crackling with valor",
   refresh:      "a dew-laden sprig of glowing verdant leaves unfurling with renewing light",
-  drain:        "a bat-winged dark sigil siphoning glowing red life-essence into a black chalice",
+  drain:        "a dark winged sigil drawing glowing red magical wisps into an ornate golden goblet",
 };
 function spellPrompt(s) {
   const vis = SPELL_VIS[s.effect] || `a glowing magical relic representing ${s.name}`;

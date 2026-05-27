@@ -22,7 +22,14 @@ for ((p = 1; p <= MAX_PASSES; p++)); do
   echo "[resume] creatures with art: ${N}/200"
 
   if [ "${N}" -ge 200 ]; then
-    if node scripts/generate-extras.js spells; then
+    node scripts/generate-extras.js spells || true
+    SP=$(node -e '
+      require("dotenv").config();const{createClient}=require("@supabase/supabase-js");
+      const sb=createClient(process.env.SUPABASE_URL,process.env.SUPABASE_SERVICE_KEY,{auth:{persistSession:false}});
+      sb.storage.from("creatures").list("spells",{limit:100}).then(({data})=>{console.log((data||[]).filter(o=>o.name.endsWith(".webp")).length)});
+    ' 2>/dev/null || echo 0)
+    echo "[resume] spells with art: ${SP}/24"
+    if [ "${SP}" -ge 24 ]; then
       echo "[resume] ✅ ALL ART COMPLETE after ${p} pass(es)"
       exit 0
     fi
